@@ -166,6 +166,16 @@ Float::Float(const Float& self)
 Float::Float(Float&& self)
 : Object(std::move(self.m_type)), m_num{std::move(self.m_num)}{}
 
+Float& Float::operator=(const Float& self){
+    if(this != &self){
+        this->m_type = self.m_type;
+        this->m_num = self.m_num;
+    }
+
+    return *this;
+}
+
+
 
 
 // -*----------------------------------------------------------------*-
