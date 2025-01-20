@@ -78,6 +78,10 @@ Boolean::operator bool(){
     return this->m_value;
 }
 
+Boolean::operator i64(){
+    return this->m_value ? i64{1} : i64{0};
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
