@@ -86,6 +86,10 @@ Boolean::operator f64(){
     return this->m_value ? f64{1.0} : f64{0.0};
 }
 
+Boolean::operator Str(){
+    return this->str();
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
