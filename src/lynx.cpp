@@ -212,6 +212,12 @@ Float::operator Str(){
     return this->str();
 }
 
+// -*----------*-
+// -*- String -*-
+// -*----------*-
+String::String()
+: Object(Lynx::type("String")), m_str{""}{}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
