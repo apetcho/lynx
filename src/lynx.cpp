@@ -741,6 +741,18 @@ void Env::put(const Str& key, const Self& val){
     this->m_bindings[key] = val;
 }
 
+Self Env::update(const Str& key, const Self& val){
+    Self self = nullptr;
+    auto entry = this->m_bindings.find(key);
+    if(entry != this->m_bindings.end()){
+        self = entry->second;
+    }else{
+        self = std::make_shared<Object>(*val);
+    }
+    this->m_bindings[key] = std::make_shared<Object>(*val);
+    return std::move(self);
+}
+
 
 
 // -*----------------------------------------------------------------*-
