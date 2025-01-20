@@ -135,6 +135,10 @@ Str Integer::repr(void) const{
     return stream.str();
 }
 
+Integer::operator bool(){
+    return this->m_num==0? false : true;
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
