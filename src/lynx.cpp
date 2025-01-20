@@ -44,6 +44,9 @@ Boolean::Boolean()
 Boolean::Boolean(bool val)
 : Object(Lynx::type("Bool")), m_value{val}{}
 
+Boolean::Boolean(const Boolean& self)
+: Object(self.m_type), m_value{self.m_value}{}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
