@@ -437,6 +437,12 @@ File::File(const Str& filename, const Str& mode)
     );
 }
 
+File::File(File&& self)
+: Object(std::move(self.m_type))
+, m_filename{std::move(self.m_filename)}
+, m_mode{std::move(self.m_mode)}
+, m_stream{std::move(self.m_stream)}{}
+
 
 
 // -*----------------------------------------------------------------*-

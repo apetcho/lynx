@@ -20,14 +20,14 @@
 #define LYNX_UNUSED(arg)    (void)arg
 
 
-#define LYNX_DECLARE_COPY(Name)     \
-    Name(Name&& other);             \
-    Name& operator=(Name&& other)
+#define LYNX_DECLARE_COPY(Name)         \
+    Name(const Name& other);            \
+    Name& operator=(const Name& other)
 
 
 #define LYNX_DECLARE_MOVE(Name)         \
-    Name(const Name& other);            \
-    Name& operator=(const Name& other)
+    Name(Name&& other);                 \
+    Name& operator=(Name&& other)
 
 #define LYNX_OBJECT_COMMONS()           \
     Str str(void) const override;       \
@@ -258,7 +258,6 @@ public:
         - "wrb+":
     */
     File(const Str& filename, const Str& mode);
-    LYNX_DECLARE_COPY(File);
     LYNX_DECLARE_MOVE(File);
     ~File();
     LYNX_OBJECT_COMMONS();
