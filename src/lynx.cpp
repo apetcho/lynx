@@ -463,7 +463,11 @@ Str File::str(void) const{
     return stream.str();
 }
 
-
+Str File::repr(void) const{
+    std::stringstream stream;
+    stream << std::quoted(this->str());
+    return stream.str();
+}
 
 
 
