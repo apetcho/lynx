@@ -312,6 +312,10 @@ Array::operator bool(){
     return true;
 }
 
+Vec<Self> Array::data(void) const{
+    return this->m_data;
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
