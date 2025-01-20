@@ -327,12 +327,12 @@ bool Dict::Comparator::operator()(const Self& lhs, const Self& rhs) const{
     auto _rname = rhs->type()->name();
     if(!(_lname == "Integer" || _lname == "String" || _lname == "Bool")){
         std::stringstream stream;
-        stream << lhs->str() << " is not hashable";
+        stream << lhs->str() << " of type '" << _lname << "' is not hashable";
         throw TypeError(stream.str());
     }
     if(!(_rname == "Integer" || _rname == "String" || _rname == "Bool")){
         std::stringstream stream;
-        stream << rhs->str() << " is not hashable";
+        stream << rhs->str() << " of type '" << _rname << "' is not hashable";
         throw TypeError(stream.str());
     }
     return (lhs->str() < rhs->str());
@@ -390,6 +390,11 @@ Str Dict::str(void) const{
     return stream.str();
 }
 
+Str Dict::repr(void) const{
+    std::stringstream stream;
+    stream << std::quoted(this->str());
+    return stream.str();
+}
 
 
 
