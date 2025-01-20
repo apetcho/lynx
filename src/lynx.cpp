@@ -614,9 +614,17 @@ Function& Function::operator=(Function&& func){
 
 Str Function::str(void) const{
     std::stringstream stream;
-    stream << "Function::" << this->name();
+    stream << "Function::" << this->m_name;
+    stream << " @ " << std::hex << &this->m_body;
     return stream.str();
 }
+
+Str Function::repr(void) const{
+    std::stringstream stream;
+    stream << std::quoted(this->str());
+    return stream.str();
+}
+
 
 
 // -*----------------------------------------------------------------*-
