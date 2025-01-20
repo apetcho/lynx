@@ -143,6 +143,10 @@ Integer::operator i64(){
     return this->m_num;
 }
 
+Integer::operator f64(){
+    return static_cast<f64>(this->m_num);
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
