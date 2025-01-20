@@ -224,6 +224,9 @@ String::String(const Str& str)
 String::String(const String& self)
 : Object(self.m_type), m_str{self.m_str}{}
 
+String::String(String&& self)
+: Object(std::move(self.m_type)), m_str{std::move(self.m_str)}{}
+
 
 
 
