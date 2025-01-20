@@ -147,6 +147,10 @@ Integer::operator f64(){
     return static_cast<f64>(this->m_num);
 }
 
+Integer::operator Str(){
+    return this->str();
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
