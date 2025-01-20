@@ -455,6 +455,16 @@ File& File::operator=(File&& self){
     return *this;
 }
 
+// read the whole file to string
+Str File::str(void) const{
+    std::stringstream stream;
+    stream << "File::<" << this->m_filename << ">";
+    stream << " @ " << std::hex << (&this->m_stream);
+    return stream.str();
+}
+
+
+
 
 
 // -*----------------------------------------------------------------*-
