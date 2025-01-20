@@ -404,6 +404,13 @@ Dict::Map Dict::data(void) const{
     return this->m_data;
 }
 
+// -*--------*-
+// -*- File -*-
+// -*--------*-
+File::File(): Object(Lynx::type("File")){
+    this->m_stream = std::move(std::fstream(".untitled", std::ios::out));
+}
+
 
 
 // -*----------------------------------------------------------------*-
