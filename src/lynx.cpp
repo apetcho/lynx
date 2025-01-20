@@ -5,8 +5,10 @@
 // -*----------------------------------------------------------------*-
 namespace lynx{
 // -
-// -*-
-Object::Object(): m_type{Lynx::types["nil"].get()}{}
+// --------------
+// -*- Object -*-
+// --------------
+Object::Object(): m_type{Lynx::type("nil")}{}
 
 // -*-
 Object::Object(Type* type): m_type{type}{}
@@ -32,6 +34,15 @@ Object& Object::operator=(Object&& self){
     }
     return *this;
 }
+
+// ---------------
+// -*- Boolean -*-
+// ---------------
+Boolean::Boolean()
+: Object(Lynx::type("Bool")), m_value{false}{}
+
+Boolean::Boolean(bool val)
+: Object(Lynx::type("Bool")), m_value{val}{}
 
 
 // -*----------------------------------------------------------------*-

@@ -434,6 +434,9 @@ public:
     static std::map<Str, std::unique_ptr<Type>> types;
     static std::map<Str, BuiltinFn> bulitins;
     static std::map<Str, Self> runtime;
+    static Type* type(const Str& name){
+        return Lynx::types[name].get();
+    }
 };
 
 std::map<Str, BuiltinFn> Lynx::bulitins = {};
