@@ -688,6 +688,13 @@ Self Type::operator()(const Str& method, Self& self, Vec<Self> argv){
     return fun(self, argv);
 }
 
+// -*-------*-
+// -*- Env -*-
+// -*-------*-
+Env::Env()
+: m_bindings{}
+, m_parent{nullptr}
+{}
 
 
 // -*----------------------------------------------------------------*-
