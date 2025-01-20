@@ -592,6 +592,13 @@ Function::Function(const Str& name, Vec<Self> params, Vec<Self> body, Scope scop
 , m_scope{scope}
 , m_doc{doc}{}
 
+Function::Function(Function&& func)
+: Object(func.m_type)
+, m_name{func.m_name}
+, m_params{func.m_params}
+, m_body{func.m_body}
+, m_scope{func.m_scope}
+, m_doc{func.m_doc}{}
 
 
 
