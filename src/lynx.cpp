@@ -643,6 +643,13 @@ Lambda::Lambda()
 , m_body{}
 , m_scope{}{}
 
+Lambda::Lambda(Vec<Self> params, Vec<Self> body, Scope scope)
+: Object(Lynx::type("Lambda"))
+, m_params{params}
+, m_body{body}
+, m_scope{scope}
+{}
+
 
 
 // -*----------------------------------------------------------------*-

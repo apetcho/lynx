@@ -375,7 +375,7 @@ private:
     
 public:
     Lambda();
-    Lambda(Vec<Self> param, Vec<Self> body, Scope scope);
+    Lambda(Vec<Self> params, Vec<Self> body, Scope scope);
     LYNX_DECLARE_MOVE(Lambda);
     ~Lambda() = default;
     LYNX_OBJECT_COMMONS();
