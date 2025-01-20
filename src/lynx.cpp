@@ -737,6 +737,12 @@ Self Env::get(const Str& key) const{
     throw ValueError(stream.str());
 }
 
+void Env::put(const Str& key, const Self& val){
+    this->m_bindings[key] = val;
+}
+
+
+
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
 // -*----------------------------------------------------------------*-
