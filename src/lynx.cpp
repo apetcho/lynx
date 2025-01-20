@@ -25,6 +25,13 @@ Object& Object::operator=(const Object& self){
 // -*-
 Object::Object(Object&& self): m_type{self.m_type}{}
 
+// -*-
+Object& Object::operator=(Object&& self){
+    if(this != &self){
+        this->m_type = self.m_type;
+    }
+    return *this;
+}
 
 
 // -*----------------------------------------------------------------*-
