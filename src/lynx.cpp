@@ -273,6 +273,14 @@ Array::Array(const Array& self)
 Array::Array(Array&& self)
 : Object(std::move(self.m_type)), m_data{std::move(self.m_data)}{}
 
+Array& Array::operator=(const Array& self){
+    if(this != &self){
+        this->m_type = self.m_type;
+        this->m_data = self.m_data;
+    }
+    return *this;
+}
+
 
 
 
