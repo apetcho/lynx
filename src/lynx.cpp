@@ -720,6 +720,11 @@ Env& Env::operator=(Env&& env){
     return *this;
 }
 
+Env::Env(Scope& parent)
+: m_bindings{}
+, m_parent{parent}{}
+
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
