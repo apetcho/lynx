@@ -529,6 +529,8 @@ Str Builtin::repr(void) const{
     return stream.str();
 }
 
+Builtin::operator bool(){ return true; }
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
