@@ -267,6 +267,9 @@ Array::Array()
 Array::Array(Vec<Self> vec)
 : Object(Lynx::type("Array")), m_data{vec}{}
 
+Array::Array(const Array& self)
+: Object(self.m_type), m_data{self.m_data}{}
+
 
 
 
