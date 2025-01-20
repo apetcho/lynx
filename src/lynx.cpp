@@ -308,6 +308,9 @@ Str Array::repr(void) const{
     return stream.str();
 }
 
+Array::operator bool(){
+    return true;
+}
 
 
 // -*----------------------------------------------------------------*-
