@@ -400,6 +400,10 @@ Dict::operator bool(){
     return true;
 }
 
+Dict::Map Dict::data(void) const{
+    return this->m_data;
+}
+
 
 
 // -*----------------------------------------------------------------*-
