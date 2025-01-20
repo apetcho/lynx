@@ -657,6 +657,15 @@ Lambda::Lambda(Lambda&& lambda)
 , m_scope{std::move(lambda.m_scope)}
 {}
 
+Lambda& Lambda::operator=(Lambda&& lambda){
+    if(this != &lambda){
+        this->m_params = std::move(lambda.m_params);
+        this->m_body = std::move(lambda.m_body);
+        this->m_scope = std::move(lambda.m_scope);
+    }
+    return *this;
+}
+
 
 
 // -*----------------------------------------------------------------*-
