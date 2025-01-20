@@ -700,6 +700,11 @@ Env::Env(const Env& env)
 : m_bindings{env.m_bindings}
 , m_parent{env.m_parent}{}
 
+Env::Env(Env&& env)
+: m_bindings{std::move(env.m_bindings)}
+, m_parent{std::move(env.m_parent)}{}
+
+
 
 
 // -*----------------------------------------------------------------*-
