@@ -712,6 +712,14 @@ Env& Env::operator=(const Env& env){
     return *this;
 }
 
+Env& Env::operator=(Env&& env){
+    if(this != &env){
+        this->m_bindings = std::move(env.m_bindings);
+        this->m_parent = std::move(env.m_parent);
+    }
+    return *this;
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
