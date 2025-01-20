@@ -396,6 +396,10 @@ Str Dict::repr(void) const{
     return stream.str();
 }
 
+Dict::operator bool(){
+    return true;
+}
+
 
 
 // -*----------------------------------------------------------------*-
