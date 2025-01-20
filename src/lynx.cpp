@@ -415,6 +415,12 @@ File::File(const Str& filename): Object(Lynx::type("File")){
     this->m_stream = std::move(std::fstream(filename, std::ios::in));
 }
 
+File::File(const Str& filename, const Str& mode): Object(Lynx::type("File")){
+    if(!this->check_openmode(mode)){
+        throw ValueError("invalid file '" + mode + "'");
+    }
+    this->m_stream = std::move(std::fstream(filename, this->get_openmode(mode)));
+}
 
 
 // -*----------------------------------------------------------------*-
