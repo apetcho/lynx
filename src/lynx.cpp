@@ -200,6 +200,10 @@ Float::operator bool(){
     return this->m_num==0.0 ? false : true;
 }
 
+Float::operator i64(){
+    return static_cast<i64>(this->m_num);
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
