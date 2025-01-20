@@ -234,7 +234,14 @@ Symbol& Symbol::operator=(const Symbol& sym){
     return *this;
 }
 
+Symbol& Symbol::operator=(Symbol&& sym){
+    if(this != &sym){
+        this->m_type = std::move(sym.m_type);
+        this->m_str = std::move(sym.m_str);
+    }
 
+    return *this;
+}
 
 
 // -*----------*-
