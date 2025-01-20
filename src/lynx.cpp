@@ -281,7 +281,13 @@ Array& Array::operator=(const Array& self){
     return *this;
 }
 
-
+Array& Array::operator=(Array&& self){
+    if(this != &self){
+        this->m_type = std::move(self.m_type);
+        this->m_data = std::move(self.m_data);
+    }
+    return *this;
+}
 
 
 // -*----------------------------------------------------------------*-
