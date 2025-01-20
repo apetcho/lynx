@@ -247,6 +247,12 @@ Str Symbol::str(void) const{
     return this->m_str;
 }
 
+Str Symbol::repr(void) const{
+    return this->m_str;
+}
+
+Symbol::operator bool(){ return true; }
+
 
 // -*----------*-
 // -*- String -*-
