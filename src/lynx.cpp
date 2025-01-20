@@ -56,11 +56,11 @@ Boolean& Boolean::operator=(const Boolean& self){
 }
 
 Boolean::Boolean(Boolean&& self)
-: Object(self.m_type), m_value{std::move(self.m_value)}{}
+: Object(std::move(self.m_type)), m_value{std::move(self.m_value)}{}
 
 Boolean& Boolean::operator=(Boolean&& self){
     if(this != &self){
-        this->m_type = self.m_type;
+        this->m_type = std::move(self.m_type);
         this->m_value = std::move(self.m_value);
     }
     return *this;
@@ -103,7 +103,7 @@ Integer::Integer(const Integer& self)
 : Object(self.m_type), m_num{self.m_num}{}
 
 Integer::Integer(Integer&& self)
-: Object(self.m_type), m_num{self.m_num}{}
+: Object(std::move(self.m_type)), m_num{std::move(self.m_num)}{}
 
 Integer& Integer::operator=(const Integer& self){
     if(this != &self){
@@ -113,6 +113,13 @@ Integer& Integer::operator=(const Integer& self){
     return *this;
 }
 
+Integer& Integer::operator=(Integer&& self){
+    if(this != &self){
+        this->m_type = std::move(self.m_type);
+        this->m_num = std::move(self.m_num);
+    }
+    return *this;
+}
 
 
 
