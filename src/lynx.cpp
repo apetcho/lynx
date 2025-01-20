@@ -99,6 +99,9 @@ Integer::Integer()
 Integer::Integer(i64 num)
 : Object(Lynx::type("Integer")), m_num{num}{}
 
+Integer::Integer(const Integer& self)
+: Object(self.m_type), m_num{self.m_num}{}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
