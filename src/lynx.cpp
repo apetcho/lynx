@@ -58,6 +58,14 @@ Boolean& Boolean::operator=(const Boolean& self){
 Boolean::Boolean(Boolean&& self)
 : Object(self.m_type), m_value{std::move(self.m_value)}{}
 
+Boolean& Boolean::operator=(Boolean&& self){
+    if(this != &self){
+        this->m_type = self.m_type;
+        this->m_value = std::move(self.m_value);
+    }
+    return *this;
+}
+
 
 
 // -*----------------------------------------------------------------*-
