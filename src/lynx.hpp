@@ -415,7 +415,7 @@ public:
     LYNX_DECLARE_MOVE(Env);
     Env(Scope& parent);
     ~Env();
-    Self get(const Str& key);
+    Self get(const Str& key) const;
     void put(const Str& key, const Self& val);
     Self update(const Str& key, const Self& val);
 };

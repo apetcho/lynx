@@ -724,7 +724,18 @@ Env::Env(Scope& parent)
 : m_bindings{}
 , m_parent{parent}{}
 
+Self Env::get(const Str& key) const{
+    auto entry = this->m_bindings.find(key);
+    if(entry != this->m_bindings.end()){
+        return entry->second;
+    }else if(this->m_parent != nullptr){
+        return this->m_parent->get(key);
+    }
 
+    std::stringstream stream;
+    stream << key << " not bound";
+    throw ValueError(stream.str());
+}
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
