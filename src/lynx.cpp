@@ -248,6 +248,12 @@ Str String::str(void) const {
     return this->m_str;
 }
 
+Str String::repr(void) const{
+    std::stringstream stream;
+    stream << std::quoted(this->m_str);
+    return stream.str();
+}
+
 
 
 
