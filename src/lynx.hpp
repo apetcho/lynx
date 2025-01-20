@@ -305,59 +305,134 @@ std::map<Str, std::ios::openmode> File::openmodes = {
 };
 
 // -*-
-class Callable final: public Object{
+class Callable{
+protected:
+    virtual Self call(Vec<Self> argv) = 0;
+};
+
+class Builtin final: public Object, public Callable{
 private:
-    enum class Kind{Builtin, Function, Lambda};
-    
-    // - builtin
-    struct Builtin{
-        Str name;
-        i32 arity;
-        BuiltinFn fun;
-        Str docstr;
-        Builtin(const Str& name, i32 arity, BuiltinFn fn, Str doc="")
-        : name{name}, arity{arity}, fun{fn}, docstr{doc}{}
-    };
-
-    // - user-defined function
-    struct Function{
-        Str name;
-        Vec<Str> params;
-        Vec<Self> body;
-        Scope scope;
-        Str docstr;
-        Function(Str& name, Vec<Str> params, Vec<Self> body, Scope& scope, Str doc="")
-        : name{name}, params{params}, body{body}, scope{scope}, docstr{doc}{}
-    };
-
-    // - lambda
-    struct Lambda{
-        Vec<Str> params;
-        Vec<Self> body;
-        Scope scope;
-        Lambda(Vec<Str> params, Vec<Self> body, Scope& scope)
-        : params{params}, body{body}, scope{scope}{}
-    };
-
-    using Fn = std::variant<Builtin, Function, Lambda>;
-    Kind m_kind;
-    Fn m_fn;
+    Str m_name;
+    int m_arity;
+    BuiltinFn m_fn;
 
 public:
-    Callable(const Str& name, i32 arity, BuiltinFn fn, Str doc="");
-    Callable(Str& name, Vec<Str> params, Vec<Self> body, Scope& scope, Str doc="");
-    Callable(Vec<Str> params, Vec<Self> body, Scope& scope);
-    LYNX_DECLARE_MOVE(Callable);
-    ~Callable() = default;
+    Builtin();
+    Builtin(const Str& name, int arity, BuiltinFn fn);
+    LYNX_DECLARE_MOVE(Builtin);
+    ~Builtin() = default;
     LYNX_OBJECT_COMMONS();
+    
+    Self operator()(Vec<Self> argv){ return this->call(argv); }
 
-    Self operator()(Vec<Self> argv, Scope& scope);
-    const Str& help(void) const;
-    Str& help(void);
-    bool is_builtin(void) const;
-    bool is_function(void) const;
-    bool is_lambda(void) const;
+    const Str& name(void) const { return this->m_name; }
+    const int& arity(void) const { return this->m_arity; }
+    const BuiltinFn& fun(void) const { return this->m_fn; }
+
+private:
+    Self call(Vec<Self> argv) override{
+        return this->m_fn(argv);
+    }
 };
+
+// // -*-
+// class Callable final: public Object{
+// private:
+//     enum class Kind{Builtin, Function, Lambda};
+    
+//     // - builtin
+//     struct Builtin{
+//         Str name;
+//         i32 arity;
+//         BuiltinFn fun;
+//         Str docstr;
+//         Builtin() = default;
+//         Builtin(const Str& name, i32 arity, BuiltinFn fn, Str doc="")
+//         : name{name}, arity{arity}, fun{fn}, docstr{doc}{}
+
+//         Builtin& Builtin::operator=(Builtin&& builtin){
+//             if(this != &builtin){
+//                 this->name = std::move(builtin.name);
+//                 this->arity = std::move(builtin.arity);
+//                 this->fun = std::move(builtin.fun);
+//                 this->docstr = std::move(builtin.docstr);
+//             }
+//             return *this;
+//         }
+//         ~Builtin(){
+//             this->fun = nullptr;
+//         };
+//     };
+
+//     // - user-defined function
+//     struct Function{
+//         Str name;
+//         Vec<Str> params;
+//         Vec<Self> body;
+//         Scope scope;
+//         Str docstr;
+//         Function() = default;
+//         Function(Str& name, Vec<Str> params, Vec<Self> body, Scope& scope, Str doc="") noexcept
+//         : name{name}, params{params}, body{body}, scope{scope}, docstr{doc}{}
+//         Function& Function::operator=(Function&& func) noexcept;
+//         // {
+//         //     if(this != &func){
+//         //         this->name = std::move(func.name);
+//         //         this->params = std::move(func.params);
+//         //         this->body = std::move(func.body);
+//         //         this->body = std::move(func.scope);
+//         //     }
+//         // }
+//         ~Function() = default;
+//     };
+
+//     // - lambda
+//     struct Lambda{
+//         Vec<Str> params;
+//         Vec<Self> body;
+//         Scope scope;
+//         Lambda() = default;
+//         Lambda(Vec<Str> params, Vec<Self> body, Scope& scope)
+//         : params{params}, body{body}, scope{scope}{}
+//         Lambda& Lambda::operator=(Lambda&& lambda);
+//         ~Lambda() = default;
+//     };
+
+//     struct Fun{
+//         Kind kind;
+//         union{
+//             Builtin builtin;
+//             Function fn;
+//             Lambda lambda;
+//         };
+//         ~Fun() = default;
+//     };
+//     Fun m_fun;
+
+// public:
+//     Callable() noexcept;
+//     Callable(const Str& name, i32 arity, BuiltinFn fn, Str doc="") noexcept;
+//     Callable(Str& name, Vec<Str> params, Vec<Self> body, Scope& scope, Str doc="") noexcept;
+//     Callable(Vec<Str> params, Vec<Self> body, Scope& scope) noexcept;
+//     LYNX_DECLARE_MOVE(Callable);
+//     ~Callable(){
+//         if(this->m_fun.kind == Callable::Kind::Builtin){
+//             this->m_fun.builtin.~Builtin();
+//         }else if(this->m_fun.kind == Callable::Kind::Function){
+//             this->m_fun.fn.~Function();
+//         }else{
+//             this->m_fun.lambda.~Lambda();
+//         }
+//     };
+//     LYNX_OBJECT_COMMONS();
+
+//     Self operator()(Vec<Self> argv, Scope& scope);
+//     const Str& help(void) const;
+//     Str& help(void);
+//     bool is_builtin(void) const;
+//     bool is_function(void) const;
+//     bool is_lambda(void) const;
+// };
 
 // ------------
 // --- Type ---

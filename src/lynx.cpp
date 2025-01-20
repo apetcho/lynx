@@ -8,7 +8,7 @@ namespace lynx{
 // --------------
 // -*- Object -*-
 // --------------
-Object::Object(): m_type{Lynx::type("nil")}{}
+Object::Object(): m_type{Lynx::type("Nil")}{}
 
 // -*-
 Object::Object(Type* type): m_type{type}{}
@@ -472,6 +472,31 @@ Str File::repr(void) const{
 File::operator bool(){
     return true;
 }
+
+// -*------------*-
+// -*- Callable -*-
+// -*------------*-
+// -
+Self _fn_nil(Vec<Self> argv){
+    LYNX_UNUSED(argv);
+    return std::make_shared<Object>();
+}
+// -
+Builtin::Builtin()
+: Object(Lynx::type("Builtin"))
+, m_name{"Nil"}
+, m_arity{0}
+, m_fn{_fn_nil}{}
+
+
+// Callable::Callable(const Str& name, i32 arity, BuiltinFn fn, Str doc)
+// : Object(Lynx::type("")){}
+
+/*
+Callable(Str& name, Vec<Str> params, Vec<Self> body, Scope& scope, Str doc="");
+Callable(Vec<Str> params, Vec<Self> body, Scope& scope);
+Callable(Callable&& self);
+*/
 
 
 // -*----------------------------------------------------------------*-
