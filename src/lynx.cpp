@@ -650,6 +650,13 @@ Lambda::Lambda(Vec<Self> params, Vec<Self> body, Scope scope)
 , m_scope{scope}
 {}
 
+Lambda::Lambda(Lambda&& lambda)
+: Object(std::move(lambda.m_type))
+, m_params{std::move(lambda.m_params)}
+, m_body{std::move(lambda.m_body)}
+, m_scope{std::move(lambda.m_scope)}
+{}
+
 
 
 // -*----------------------------------------------------------------*-
