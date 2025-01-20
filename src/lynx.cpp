@@ -47,6 +47,14 @@ Boolean::Boolean(bool val)
 Boolean::Boolean(const Boolean& self)
 : Object(self.m_type), m_value{self.m_value}{}
 
+Boolean& Boolean::operator=(const Boolean& self){
+    if(this != &self){
+        this->m_type = self.m_type;
+        this->m_value = self.m_value;
+    }
+    return *this;
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
