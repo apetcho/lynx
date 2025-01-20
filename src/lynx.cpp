@@ -352,6 +352,13 @@ Dict::Dict(const Dict& self)
 Dict::Dict(Dict&& self)
 : Object(std::move(self.m_type)), m_data{std::move(self.m_data)}{}
 
+Dict& Dict::operator=(const Dict& self){
+    if(this != &self){
+        this->m_type = self.m_type;
+        this->m_data = self.m_data;
+    }
+    return *this;
+}
 
 
 
