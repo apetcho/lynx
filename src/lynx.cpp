@@ -625,6 +625,9 @@ Str Function::repr(void) const{
     return stream.str();
 }
 
+Function::operator bool(){
+    return true;
+}
 
 
 // -*----------------------------------------------------------------*-
