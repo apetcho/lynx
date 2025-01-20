@@ -227,6 +227,14 @@ String::String(const String& self)
 String::String(String&& self)
 : Object(std::move(self.m_type)), m_str{std::move(self.m_str)}{}
 
+String& String::operator=(const String& self){
+    if(this != &self){
+        this->m_type = self.m_type;
+        this->m_str = self.m_str;
+    }
+    return *this;
+}
+
 
 
 
