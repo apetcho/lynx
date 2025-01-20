@@ -360,6 +360,16 @@ Dict& Dict::operator=(const Dict& self){
     return *this;
 }
 
+Dict& Dict::operator=(Dict&& self){
+    if(this != &self){
+        this->m_type = self.m_type;
+        this->m_data = self.m_data;
+    }
+
+    return *this;
+}
+
+
 
 
 // -*----------------------------------------------------------------*-
