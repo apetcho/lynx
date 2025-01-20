@@ -666,6 +666,12 @@ Lambda& Lambda::operator=(Lambda&& lambda){
     return *this;
 }
 
+Str Lambda::str(void) const{
+    std::stringstream stream;
+    stream << "Lambda @ " << std::hex << &this->m_body;
+    return stream.str();
+}
+
 
 
 // -*----------------------------------------------------------------*-
