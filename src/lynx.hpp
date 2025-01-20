@@ -211,10 +211,10 @@ public:
 // ------------
 class Dict final: public Object{
 public:
-    struct Comparer{
+    struct Comparator{
         bool operator()(const Self& lhs, const Self& rhs) const;
     };
-    using Map = std::map<Self, Self, Comparer>;
+    using Map = std::map<Self, Self, Comparator>;
 
 private:
     Map m_data;

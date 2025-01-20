@@ -316,6 +316,25 @@ Vec<Self> Array::data(void) const{
     return this->m_data;
 }
 
+// -*--------*-
+// -*- Dict -*-
+// -*--------*-
+bool Dict::Comparator::operator()(const Self& lhs, const Self& rhs) const{
+    auto _lname = lhs->type()->name();
+    auto _rname = rhs->type()->name();
+    if(!(_lname == "Integer" || _lname == "String" || _lname == "Bool")){
+        std::stringstream stream;
+        stream << lhs->str() << " is not hashable";
+        throw TypeError(stream.str());
+    }
+    if(!(_rname == "Integer" || _rname == "String" || _rname == "Bool")){
+        std::stringstream stream;
+        stream << rhs->str() << " is not hashable";
+        throw TypeError(stream.str());
+    }
+    return (lhs->str() < rhs->str());
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
