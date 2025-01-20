@@ -102,6 +102,10 @@ Integer::Integer(i64 num)
 Integer::Integer(const Integer& self)
 : Object(self.m_type), m_num{self.m_num}{}
 
+Integer::Integer(Integer&& self)
+: Object(self.m_type), m_num{self.m_num}{}
+
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
