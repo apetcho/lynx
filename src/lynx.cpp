@@ -243,6 +243,10 @@ Symbol& Symbol::operator=(Symbol&& sym){
     return *this;
 }
 
+Str Symbol::str(void) const{
+    return this->m_str;
+}
+
 
 // -*----------*-
 // -*- String -*-
