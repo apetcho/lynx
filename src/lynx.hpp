@@ -98,6 +98,7 @@ protected:
     Type* m_type;
 
 public:
+    Object();
     Object(Type* type);
     LYNX_DECLARE_COPY(Object);
     LYNX_DECLARE_MOVE(Object);
