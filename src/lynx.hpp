@@ -315,19 +315,22 @@ private:
     Str m_name;
     int m_arity;
     BuiltinFn m_fn;
+    Str m_doc;
 
 public:
     Builtin();
-    Builtin(const Str& name, int arity, BuiltinFn fn);
+    Builtin(const Str& name, int arity, BuiltinFn fn, Str doc="");
     LYNX_DECLARE_MOVE(Builtin);
     ~Builtin() = default;
     LYNX_OBJECT_COMMONS();
-    
+
     Self operator()(Vec<Self> argv){ return this->call(argv); }
 
     const Str& name(void) const { return this->m_name; }
     const int& arity(void) const { return this->m_arity; }
     const BuiltinFn& fun(void) const { return this->m_fn; }
+    const Str& help(void) const { return this->m_doc; }
+    Str& help(){ return this->m_doc; }
 
 private:
     Self call(Vec<Self> argv) override{

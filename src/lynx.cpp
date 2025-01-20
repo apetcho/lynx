@@ -486,10 +486,18 @@ Builtin::Builtin()
 : Object(Lynx::type("Builtin"))
 , m_name{"Nil"}
 , m_arity{0}
-, m_fn{_fn_nil}{}
+, m_fn{_fn_nil}
+, m_doc{"Create nil object"} {}
 
+Builtin::Builtin(const Str& name, int arity, BuiltinFn fn, Str doc)
+: Object(Lynx::type(""))
+, m_name{name}
+, m_arity{arity}
+, m_fn{fn}
+, m_doc{doc}
+{}
 
-// Callable::Callable(const Str& name, i32 arity, BuiltinFn fn, Str doc)
+// Callable::Callable()
 // : Object(Lynx::type("")){}
 
 /*
