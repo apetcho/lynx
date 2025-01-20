@@ -244,6 +244,12 @@ String& String::operator=(String&& self){
     return *this;
 }
 
+Str String::str(void) const {
+    return this->m_str;
+}
+
+
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
