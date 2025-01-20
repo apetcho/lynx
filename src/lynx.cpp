@@ -235,7 +235,14 @@ String& String::operator=(const String& self){
     return *this;
 }
 
+String& String::operator=(String&& self){
+    if(this != &self){
+        this->m_type = std::move(self.m_type);
+        this->m_str = std::move(self.m_str);
+    }
 
+    return *this;
+}
 
 
 // -*----------------------------------------------------------------*-
