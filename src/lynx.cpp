@@ -79,7 +79,11 @@ Boolean::operator bool(){
 }
 
 Boolean::operator i64(){
-    return this->m_value ? i64{1} : i64{0};
+    return this->m_value ? i64(1) : i64(0);
+}
+
+Boolean::operator f64(){
+    return this->m_value ? f64{1.0} : f64{0.0};
 }
 
 
