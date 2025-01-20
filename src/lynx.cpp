@@ -505,6 +505,16 @@ Builtin::Builtin(Builtin&& self)
 , m_doc{std::move(self.m_doc)}
 {}
 
+Builtin& Builtin::operator=(Builtin&& self){
+    if(this != &self){
+        this->m_name = std::move(self.m_name);
+        this->m_arity = std::move(self.m_arity);
+        this->m_fn = std::move(self.m_fn);
+        this->m_doc = std::move(self.m_doc);
+    }
+    return *this;
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
