@@ -105,6 +105,15 @@ Integer::Integer(const Integer& self)
 Integer::Integer(Integer&& self)
 : Object(self.m_type), m_num{self.m_num}{}
 
+Integer& Integer::operator=(const Integer& self){
+    if(this != &self){
+        this->m_type = self.m_type;
+        this->m_num = self.m_num;
+    }
+    return *this;
+}
+
+
 
 
 // -*----------------------------------------------------------------*-
