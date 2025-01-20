@@ -629,6 +629,11 @@ Function::operator bool(){
     return true;
 }
 
+Self Function::call(Vec<Self> argv){
+    throw ValueError("not implemented here. Handled in the AST");
+    return nullptr;
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
