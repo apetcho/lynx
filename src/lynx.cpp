@@ -22,6 +22,9 @@ Object& Object::operator=(const Object& self){
     return *this;
 }
 
+// -*-
+Object::Object(Object&& self): m_type{self.m_type}{}
+
 
 
 // -*----------------------------------------------------------------*-
