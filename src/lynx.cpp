@@ -291,6 +291,9 @@ Array& Array::operator=(Array&& self){
 
 Str Array::str(void) const{
     std::stringstream stream;
+    if(this->m_data.size() == 0){
+        return "[]";
+    }
     stream << "[";
     for(std::size_t i=0; i < this->m_data.size(); i++){
         stream << this->m_data[i]->str();
@@ -367,6 +370,24 @@ Dict& Dict::operator=(Dict&& self){
     }
 
     return *this;
+}
+
+Str Dict::str(void) const{
+    std::stringstream stream;
+    if(this->m_data.size() == 0){
+        return "{}";
+    }
+    stream << "{";
+    std::size_t len = 0;
+    for(const auto& entry: this->m_data){
+        stream << "[" << entry.first->str() << ", ";
+        stream << entry.second->str() << "]";
+        if(++len < this->m_data.size()-1){
+            stream << ", ";
+        }
+    }
+    stream << "]";
+    return stream.str();
 }
 
 
