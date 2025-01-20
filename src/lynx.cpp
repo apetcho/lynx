@@ -221,6 +221,9 @@ String::String()
 String::String(const Str& str)
 : Object(Lynx::type("String")), m_str{str}{}
 
+String::String(const String& self)
+: Object(self.m_type), m_str{self.m_str}{}
+
 
 
 
