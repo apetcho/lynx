@@ -270,6 +270,9 @@ Array::Array(Vec<Self> vec)
 Array::Array(const Array& self)
 : Object(self.m_type), m_data{self.m_data}{}
 
+Array::Array(Array&& self)
+: Object(std::move(self.m_type)), m_data{std::move(self.m_data)}{}
+
 
 
 
