@@ -263,7 +263,6 @@ public:
         if(this->m_stream.is_open()){ this->m_stream.close(); }
     }
     LYNX_OBJECT_COMMONS();
-    std::fstream stream();
 
     const Str& filename(void) const{ return this->m_filename; }
     const Str& mode(void) const{ return this->m_mode; }

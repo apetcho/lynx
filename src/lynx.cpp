@@ -469,6 +469,9 @@ Str File::repr(void) const{
     return stream.str();
 }
 
+File::operator bool(){
+    return true;
+}
 
 
 // -*----------------------------------------------------------------*-
