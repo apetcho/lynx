@@ -696,6 +696,11 @@ Env::Env()
 , m_parent{nullptr}
 {}
 
+Env::Env(const Env& env)
+: m_bindings{env.m_bindings}
+, m_parent{env.m_parent}{}
+
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
