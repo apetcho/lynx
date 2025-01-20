@@ -204,6 +204,10 @@ Float::operator i64(){
     return static_cast<i64>(this->m_num);
 }
 
+Float::operator f64(){
+    return this->m_num;
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
