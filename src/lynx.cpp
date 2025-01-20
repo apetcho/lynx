@@ -223,6 +223,8 @@ Symbol::Symbol(const Str& str)
 Symbol::Symbol(const Symbol& sym)
 : Object(sym.m_type), m_str{sym.m_str}{}
 
+Symbol::Symbol(Symbol&& sym)
+: Object(sym.m_type), m_str{sym.m_str}{}
 
 
 
