@@ -1,4 +1,5 @@
 #include "lynx.hpp"
+#include<iomanip>
 
 // -*----------------------------------------------------------------*-
 // -*- begin::namespace::lynx                                       -*-
@@ -513,6 +514,13 @@ Builtin& Builtin::operator=(Builtin&& self){
         this->m_doc = std::move(self.m_doc);
     }
     return *this;
+}
+
+Str Builtin::str(void) const{
+    std::stringstream stream;
+    stream << "Builtin::" << this->name();
+    stream << " @ " << std::hex << this->m_fn;
+    return stream.str();
 }
 
 
