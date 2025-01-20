@@ -233,20 +233,69 @@ public:
 class File: public Object{
 private:
     std::fstream m_stream;
+    
 
 public:
+    static std::map<Str, std::ios::openmode> openmodes;
     File();
     File(const Str& filename);
     /*
     Mode:
-        - "r", "rw", "rb", "rw+"
-        - "w", "wb"
+        - "r" : open file for reading. The file must exist on disk
+        - "rb":
+        - "rw": open file for reading and writing.
+        - "rw+":
+        - "rwb":
+        - "rwb+":
+        - "w": open file for writing. File must exist
+        - "wb":
+        - "wb+"
+        - "wr": open file for reading and writing.
+        - "w+"
+        - "wr+"
+        - "wrb+":
     */
     File(const Str& filename, const Str& mode);
     LYNX_DECLARE_MOVE(File);
     ~File();
     LYNX_OBJECT_COMMONS();
     std::fstream stream();
+
+    bool check_openmode(const Str& mode){
+        if(File::openmodes.find(mode) == File::openmodes.end()){
+            return false;
+        }
+        return true;
+    }
+
+private:
+    // -
+    std::ios::openmode get_openmode(const Str& mode){
+        return File::openmodes[mode];
+    }
+    // -
+    Vec<Str> get_openmodes_list(void){
+        Vec<Str> result{};
+        for(auto entry: File::openmodes){
+            result.push_back(entry.first);
+        }
+        return result;
+    }
+};
+
+std::map<Str, std::ios::openmode> File::openmodes = {
+    {"r", std::ios::in},
+    {"rb", std::ios::in | std::ios::binary},
+    {"rw", std::ios::in | std::ios::out},
+    {"rw+", std::ios::in | std::ios::out | std::ios::ate},
+    {"rwb", std::ios::in | std::ios::out | std::ios::binary},
+    {"rwb+", std::ios::in | std::ios::out | std::ios::binary | std::ios::ate},
+    {"w", std::ios::out},
+    {"w+", std::ios::out| std::ios::ate},
+    {"wb", std::ios::out | std::ios::binary},
+    {"wb+", std::ios::out | std::ios::binary | std::ios::ate},
+    {"wrb", std::ios::in | std::ios::out | std::ios::binary},
+    {"wrb+", std::ios::in | std::ios::out | std::ios::binary | std::ios::ate},
 };
 
 // -*-
