@@ -70,6 +70,9 @@ Str Boolean::str(void) const{
     return this->m_value ? Str{"true"} : Str{"false"};
 }
 
+Str Boolean::repr(void) const{
+    return this->str();
+}
 
 
 // -*----------------------------------------------------------------*-
