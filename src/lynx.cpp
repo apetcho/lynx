@@ -90,6 +90,13 @@ Boolean::operator Str(){
     return this->str();
 }
 
+// -*-----------*-
+// -*- Integer -*-
+// -*-----------*-
+Integer::Integer()
+: Object(Lynx::type("Integer")), m_num(0){}
+
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
