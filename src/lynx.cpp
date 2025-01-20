@@ -160,6 +160,11 @@ Float::Float()
 Float::Float(f64 num)
 : Object(Lynx::type("Float")), m_num{num}{}
 
+Float::Float(const Float& self)
+: Object(self.m_type), m_num{self.m_num}{}
+
+
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
