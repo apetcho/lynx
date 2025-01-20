@@ -5,12 +5,6 @@
 // -*----------------------------------------------------------------*-
 namespace lynx{
 // -
-Object::Object(): m_type{Lynx::types["nil"].get()}{}
-
-// -
-Object::Object(Type* type): m_type{type}{}
-
-
 /*
 Self fn_input(Vec<Self> argv);
 Self fn_println(Vec<Self> argv);
