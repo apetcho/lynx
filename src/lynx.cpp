@@ -55,6 +55,10 @@ Boolean& Boolean::operator=(const Boolean& self){
     return *this;
 }
 
+Boolean::Boolean(Boolean&& self)
+: Object(self.m_type), m_value{std::move(self.m_value)}{}
+
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
