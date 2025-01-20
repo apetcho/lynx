@@ -96,6 +96,8 @@ Boolean::operator Str(){
 Integer::Integer()
 : Object(Lynx::type("Integer")), m_num(0){}
 
+Integer::Integer(i64 num)
+: Object(Lynx::type("Integer")), m_num{num}{}
 
 
 // -*----------------------------------------------------------------*-
