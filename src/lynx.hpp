@@ -232,6 +232,8 @@ public:
 // -*-
 class File: public Object{
 private:
+    Str m_filename;
+    Str m_mode;
     std::fstream m_stream;
     
 
@@ -256,10 +258,14 @@ public:
         - "wrb+":
     */
     File(const Str& filename, const Str& mode);
+    LYNX_DECLARE_COPY(File);
     LYNX_DECLARE_MOVE(File);
     ~File();
     LYNX_OBJECT_COMMONS();
     std::fstream stream();
+
+    const Str& filename(void) const{ return this->m_filename; }
+    const Str& mode(void) const{ return this->m_mode; }
 
     bool check_openmode(const Str& mode){
         if(File::openmodes.find(mode) == File::openmodes.end()){

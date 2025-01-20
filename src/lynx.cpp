@@ -407,20 +407,36 @@ Dict::Map Dict::data(void) const{
 // -*--------*-
 // -*- File -*-
 // -*--------*-
-File::File(): Object(Lynx::type("File")){
-    this->m_stream = std::move(std::fstream());
+File::File(): Object(Lynx::type("File"))
+, m_filename{".untitled"}
+, m_mode{"rw+"}{
+    this->m_stream = std::move(
+        std::fstream(this->m_filename,
+        this->get_openmode(this->m_mode))
+    );
 }
 
-File::File(const Str& filename): Object(Lynx::type("File")){
-    this->m_stream = std::move(std::fstream(filename, std::ios::in));
+File::File(const Str& filename)
+: Object(Lynx::type("File"))
+, m_filename{filename}
+, m_mode{"r"} {
+    this->m_stream = std::move(
+        std::fstream(this->m_filename, this->get_openmode(this->m_mode))
+    );
 }
 
-File::File(const Str& filename, const Str& mode): Object(Lynx::type("File")){
+File::File(const Str& filename, const Str& mode)
+: Object(Lynx::type("File"))
+, m_filename{filename}
+, m_mode{mode} {
     if(!this->check_openmode(mode)){
         throw ValueError("invalid file '" + mode + "'");
     }
-    this->m_stream = std::move(std::fstream(filename, this->get_openmode(mode)));
+    this->m_stream = std::move(
+        std::fstream(this->m_filename, this->get_openmode(this->m_mode))
+    );
 }
+
 
 
 // -*----------------------------------------------------------------*-
