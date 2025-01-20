@@ -264,6 +264,11 @@ String::operator bool(){
 Array::Array()
 : Object(Lynx::type("Array")), m_data{}{}
 
+Array::Array(Vec<Self> vec)
+: Object(Lynx::type("Array")), m_data{vec}{}
+
+
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
