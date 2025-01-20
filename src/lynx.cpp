@@ -74,6 +74,10 @@ Str Boolean::repr(void) const{
     return this->str();
 }
 
+Boolean::operator bool(){
+    return this->m_value;
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
