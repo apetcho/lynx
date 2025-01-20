@@ -339,6 +339,14 @@ Dict::Dict()
 : Object(Lynx::type("Dict")), m_data{}{}
 
 
+Dict::Dict(std::map<Str, Self>& data)
+: Object(Lynx::type("")){
+    for(auto entry: data){
+        this->m_data[std::make_shared<Object>(String(entry.first))] = entry.second;
+    }
+}
+
+
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
 // -*----------------------------------------------------------------*-

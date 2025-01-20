@@ -221,7 +221,7 @@ private:
 
 public:
     Dict();
-    Dict(Vec<Self>& data);
+    Dict(std::map<Str, Self>& data);
     LYNX_DECLARE_COPY(Dict);
     LYNX_DECLARE_MOVE(Dict);
     ~Dict();
