@@ -5,11 +5,14 @@
 // -*----------------------------------------------------------------*-
 namespace lynx{
 // -
-// -
+// -*-
 Object::Object(): m_type{Lynx::types["nil"].get()}{}
 
-// -
+// -*-
 Object::Object(Type* type): m_type{type}{}
+
+// -*-
+Object::Object(const Object& self): m_type{self.m_type}{}
 
 
 // -*----------------------------------------------------------------*-
