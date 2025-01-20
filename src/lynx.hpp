@@ -520,6 +520,7 @@ public:
     }
 };
 
+std::map<Str, std::unique_ptr<Type>> Lynx::types = {};
 std::map<Str, BuiltinFn> Lynx::bulitins = {};
 std::map<Str, Self> Lynx::runtime = {};
 
