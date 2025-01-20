@@ -71,7 +71,9 @@ Str Boolean::str(void) const{
 }
 
 Str Boolean::repr(void) const{
-    return this->str();
+    std::stringstream stream;
+    stream << std::quoted(this->str());
+    return stream.str();
 }
 
 Boolean::operator bool(){
@@ -124,6 +126,12 @@ Integer& Integer::operator=(Integer&& self){
 Str Integer::str(void) const{
     std::stringstream stream;
     stream << this->m_num;
+    return stream.str();
+}
+
+Str Integer::repr(void) const{
+    std::stringstream stream;
+    stream << std::quoted(this->str());
     return stream.str();
 }
 

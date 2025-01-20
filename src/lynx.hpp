@@ -105,7 +105,7 @@ public:
     virtual ~Object(){ this->m_type = nullptr; }
     Type* type(void) const{ return this->m_type; }
     virtual Str str(void) const { return "nil"; }
-    virtual Str repr(void) const { return "nil"; }
+    virtual Str repr(void) const { return "'nil'"; }
 };
 
 // ---------------
