@@ -593,12 +593,25 @@ Function::Function(const Str& name, Vec<Self> params, Vec<Self> body, Scope scop
 , m_doc{doc}{}
 
 Function::Function(Function&& func)
-: Object(func.m_type)
-, m_name{func.m_name}
-, m_params{func.m_params}
-, m_body{func.m_body}
-, m_scope{func.m_scope}
-, m_doc{func.m_doc}{}
+: Object(std::move(func.m_type))
+, m_name{std::move(func.m_name)}
+, m_params{std::move(func.m_params)}
+, m_body{std::move(func.m_body)}
+, m_scope{std::move(func.m_scope)}
+, m_doc{std::move(func.m_doc)}{}
+
+Function& Function::operator=(Function&& func){
+    if(this != &func){
+        this->m_name = std::move(func.m_name);
+        this->m_params = std::move(func.m_params);
+        this->m_body = std::move(func.m_body);
+        this->m_scope = std::move(func.m_scope);
+        this->m_doc = std::move(func.m_doc);
+    }
+
+    return *this;
+}
+
 
 
 
