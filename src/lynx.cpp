@@ -704,7 +704,13 @@ Env::Env(Env&& env)
 : m_bindings{std::move(env.m_bindings)}
 , m_parent{std::move(env.m_parent)}{}
 
-
+Env& Env::operator=(const Env& env){
+    if(this != &env){
+        this->m_bindings = env.m_bindings;
+        this->m_parent = env.m_parent;
+    }
+    return *this;
+}
 
 
 // -*----------------------------------------------------------------*-
