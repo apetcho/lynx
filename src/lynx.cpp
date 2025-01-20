@@ -289,6 +289,19 @@ Array& Array::operator=(Array&& self){
     return *this;
 }
 
+Str Array::str(void) const{
+    std::stringstream stream;
+    stream << "[";
+    for(std::size_t i=0; i < this->m_data.size(); i++){
+        stream << this->m_data[i]->str();
+        if(i < this->m_data.size()-1){
+            stream << ", ";
+        }
+    }
+    stream << "]";
+    return stream.str();
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
