@@ -612,7 +612,11 @@ Function& Function::operator=(Function&& func){
     return *this;
 }
 
-
+Str Function::str(void) const{
+    std::stringstream stream;
+    stream << "Function::" << this->name();
+    return stream.str();
+}
 
 
 // -*----------------------------------------------------------------*-
