@@ -580,7 +580,19 @@ Function::Function()
 , m_name{}
 , m_params{}
 , m_body{}
+, m_scope{}
+, m_doc{}
 {}
+
+Function::Function(const Str& name, Vec<Self> params, Vec<Self> body, Scope scope, Str doc)
+: Object(Lynx::type("Function"))
+, m_name{name}
+, m_params{params}
+, m_body{body}
+, m_scope{scope}
+, m_doc{doc}{}
+
+
 
 
 // -*----------------------------------------------------------------*-

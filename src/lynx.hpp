@@ -349,7 +349,7 @@ private:
 
 public:
     Function();
-    Function(const Str&, Vec<Self> param, Vec<Self> body, Scope scope, Str doc="");
+    Function(const Str& name, Vec<Self> param, Vec<Self> body, Scope scope, Str doc="");
     LYNX_DECLARE_MOVE(Function);
     ~Function() = default;
     LYNX_OBJECT_COMMONS();
