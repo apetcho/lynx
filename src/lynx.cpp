@@ -196,6 +196,10 @@ Str Float::repr(void) const{
     return stream.str();
 }
 
+Float::operator bool(){
+    return this->m_num==0.0 ? false : true;
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
