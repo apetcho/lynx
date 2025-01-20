@@ -335,6 +335,9 @@ bool Dict::Comparator::operator()(const Self& lhs, const Self& rhs) const{
     return (lhs->str() < rhs->str());
 }
 
+Dict::Dict()
+: Object(Lynx::type("Dict")), m_data{}{}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
