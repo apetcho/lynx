@@ -349,6 +349,9 @@ Dict::Dict(std::map<Str, Self>& data)
 Dict::Dict(const Dict& self)
 : Object(self.m_type), m_data{self.m_data}{}
 
+Dict::Dict(Dict&& self)
+: Object(std::move(self.m_type)), m_data{std::move(self.m_data)}{}
+
 
 
 
