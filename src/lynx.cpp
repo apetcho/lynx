@@ -163,6 +163,8 @@ Float::Float(f64 num)
 Float::Float(const Float& self)
 : Object(self.m_type), m_num{self.m_num}{}
 
+Float::Float(Float&& self)
+: Object(std::move(self.m_type)), m_num{std::move(self.m_num)}{}
 
 
 
