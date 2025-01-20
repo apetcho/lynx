@@ -634,6 +634,16 @@ Self Function::call(Vec<Self> argv){
     return nullptr;
 }
 
+// -*----------*-
+// -*- Lambda -*-
+// -*----------*-
+Lambda::Lambda()
+: Object(Lynx::type("Lambda"))
+, m_params{}
+, m_body{}
+, m_scope{}{}
+
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
