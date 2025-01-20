@@ -523,6 +523,12 @@ Str Builtin::str(void) const{
     return stream.str();
 }
 
+Str Builtin::repr(void) const{
+    std::stringstream stream;
+    stream << std::quoted(this->str());
+    return stream.str();
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
