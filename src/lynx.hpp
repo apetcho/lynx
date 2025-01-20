@@ -259,7 +259,9 @@ public:
     */
     File(const Str& filename, const Str& mode);
     LYNX_DECLARE_MOVE(File);
-    ~File();
+    ~File(){
+        if(this->m_stream.is_open()){ this->m_stream.close(); }
+    }
     LYNX_OBJECT_COMMONS();
     std::fstream stream();
 

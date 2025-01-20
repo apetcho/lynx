@@ -443,6 +443,18 @@ File::File(File&& self)
 , m_mode{std::move(self.m_mode)}
 , m_stream{std::move(self.m_stream)}{}
 
+// -*-
+File& File::operator=(File&& self){
+    if(this != &self){
+        this->m_type = std::move(self.m_type);
+        this->m_filename = std::move(self.m_filename);
+        this->m_mode = std::move(self.m_mode);
+        this->m_stream = std::move(self.m_stream);
+    }
+
+    return *this;
+}
+
 
 
 // -*----------------------------------------------------------------*-
