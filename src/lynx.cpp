@@ -175,6 +175,15 @@ Float& Float::operator=(const Float& self){
     return *this;
 }
 
+Float& Float::operator=(Float&& self){
+    if(this != &self){
+        this->m_type = std::move(self.m_type);
+        this->m_num = std::move(self.m_num);
+    }
+
+    return *this;
+}
+
 
 
 
