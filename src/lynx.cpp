@@ -254,6 +254,10 @@ Str String::repr(void) const{
     return stream.str();
 }
 
+String::operator bool(){
+    return true;
+}
+
 
 
 
