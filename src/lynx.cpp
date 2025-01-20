@@ -531,6 +531,16 @@ Str Builtin::repr(void) const{
 
 Builtin::operator bool(){ return true; }
 
+// -*------------*-
+// -*- Function -*-
+// -*------------*-
+Function::Function()
+: Object(Lynx::type("Function"))
+, m_name{}
+, m_params{}
+, m_body{}
+{}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
