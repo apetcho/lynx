@@ -218,6 +218,11 @@ Float::operator Str(){
 String::String()
 : Object(Lynx::type("String")), m_str{""}{}
 
+String::String(const Str& str)
+: Object(Lynx::type("String")), m_str{str}{}
+
+
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
