@@ -184,6 +184,11 @@ Float& Float::operator=(Float&& self){
     return *this;
 }
 
+Str Float::str(void) const{
+    std::stringstream stream;
+    stream << this->m_num;
+    return stream.str();
+}
 
 
 
