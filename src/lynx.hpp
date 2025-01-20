@@ -161,17 +161,17 @@ public:
 // --------------
 // --- Symbol ---
 // --------------
-// class Symbol final: public Object{
-// private:
-//     Str m_str;
+class Symbol final: public Object{
+private:
+    Str m_str;
 
-// public:
-//     Symbol(const Str& str);
-//     LYNX_DECLARE_COPY(Symbol);
-//     LYNX_DECLARE_MOVE(Symbol);
-//     ~Symbol() = default;
-//     LYNX_OBJECT_COMMONS();
-// };
+public:
+    Symbol(const Str& str);
+    LYNX_DECLARE_COPY(Symbol);
+    LYNX_DECLARE_MOVE(Symbol);
+    ~Symbol() = default;
+    LYNX_OBJECT_COMMONS();
+};
 
 // --------------
 // --- String ---

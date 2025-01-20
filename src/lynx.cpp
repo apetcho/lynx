@@ -214,6 +214,14 @@ Float::operator Str(){
 }
 
 // -*----------*-
+// -*- Symbol -*-
+// -*----------*-
+Symbol::Symbol(const Str& str)
+: Object(Lynx::type("Symbol"))
+, m_str{str}{}
+
+
+// -*----------*-
 // -*- String -*-
 // -*----------*-
 String::String()
