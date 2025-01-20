@@ -226,6 +226,15 @@ Symbol::Symbol(const Symbol& sym)
 Symbol::Symbol(Symbol&& sym)
 : Object(sym.m_type), m_str{sym.m_str}{}
 
+Symbol& Symbol::operator=(const Symbol& sym){
+    if(this != &sym){
+        this->m_type = sym.m_type;
+        this->m_str = sym.m_str;
+    }
+    return *this;
+}
+
+
 
 
 // -*----------*-
