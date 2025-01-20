@@ -672,6 +672,13 @@ Str Lambda::str(void) const{
     return stream.str();
 }
 
+Str Lambda::repr(void) const{
+    std::stringstream stream;
+    stream << std::quoted(this->str());
+    return stream.str();
+}
+
+
 
 
 // -*----------------------------------------------------------------*-
