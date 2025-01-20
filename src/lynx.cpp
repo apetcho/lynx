@@ -515,10 +515,9 @@ File::operator bool(){
     return true;
 }
 
-// -*------------*-
-// -*- Callable -*-
-// -*------------*-
-// -
+// -*-----------*-
+// -*- Builtin -*-
+// -*-----------*-
 Self _fn_nil(Vec<Self> argv){
     LYNX_UNUSED(argv);
     return std::make_shared<Object>();
@@ -526,13 +525,13 @@ Self _fn_nil(Vec<Self> argv){
 // -
 Builtin::Builtin()
 : Object(Lynx::type("Builtin"))
-, m_name{"Nil"}
-, m_arity{0}
-, m_fn{_fn_nil}
-, m_doc{"Create nil object"} {}
+, m_name{}
+, m_arity{}
+, m_fn{nullptr}
+, m_doc{} {}
 
 Builtin::Builtin(const Str& name, int arity, BuiltinFn fn, Str doc)
-: Object(Lynx::type(""))
+: Object(Lynx::type("Builtin"))
 , m_name{name}
 , m_arity{arity}
 , m_fn{fn}
@@ -629,10 +628,6 @@ Function::operator bool(){
     return true;
 }
 
-Self Function::call(Vec<Self> argv){
-    throw ValueError("not implemented here. Handled in the AST");
-    return nullptr;
-}
 
 // -*----------*-
 // -*- Lambda -*-
@@ -678,6 +673,20 @@ Str Lambda::repr(void) const{
     return stream.str();
 }
 
+// -*--------*-
+// -*- Type -*-
+// -*--------*-
+Self Type::operator()(const Str& method, Self& self, Vec<Self> argv){
+    auto iter = this->m_methods.find(method);
+    if(iter == this->m_methods.end()){
+        std::stringstream stream;
+        stream << "Type '" << self->type()->name() << "' does not support ";
+        stream << "method " << method;
+        throw Error(stream.str());
+    }
+    auto fun = iter->second;
+    return fun(self, argv);
+}
 
 
 

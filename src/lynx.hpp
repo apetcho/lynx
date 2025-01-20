@@ -304,13 +304,10 @@ std::map<Str, std::ios::openmode> File::openmodes = {
     {"wrb+", std::ios::in | std::ios::out | std::ios::binary | std::ios::ate},
 };
 
-// -*-
-class Callable{
-protected:
-    virtual Self call(Vec<Self> argv) = 0;
-};
-
-class Builtin final: public Object, public Callable{
+// -*-----------*-
+// -*- Builtin -*-
+// -*-----------*-
+class Builtin final: public Object{
 private:
     Str m_name;
     int m_arity;
@@ -333,13 +330,15 @@ public:
     Str& help(){ return this->m_doc; }
 
 private:
-    Self call(Vec<Self> argv) override{
+    Self call(Vec<Self> argv){
         return this->m_fn(argv);
     }
 };
 
-// -
-class Function final: public Object, public Callable{
+// -*------------*-
+// -*- Function -*-
+// -*------------*-
+class Function final: public Object{
 private:
     Str m_name;
     Vec<Self> m_params;
@@ -361,13 +360,12 @@ public:
     const Scope& scope(void) const { return this->m_scope; }
     const Str& help(void) const { return this->m_doc; }
     Str& help(void) { return this->m_doc; }
-
-private:
-    Self call(Vec<Self> argv) override;
 };
 
-// -
-class Lambda final: public Object, public Callable{
+// -*----------*-
+// -*- Lambda -*-
+// -*----------*-
+class Lambda final: public Object{
 private:
     Vec<Self> m_params;
     Vec<Self> m_body;
@@ -384,9 +382,6 @@ public:
     const Vec<Self>& params(void) const { return this->m_params; }
     const Vec<Self>& body(void) const { return this->m_body; }
     const Scope& scope(void) const { return this->m_scope; }
-    
-private:
-    Self call(Vec<Self> argv) override;
 };
 
 // ------------
@@ -416,7 +411,8 @@ private:
 
 public:
     Env();
-    Env(const Env& env);
+    LYNX_DECLARE_COPY(Env);
+    LYNX_DECLARE_MOVE(Env);
     Env(Scope& parent);
     ~Env();
     Self get(const Str& key);
