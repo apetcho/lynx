@@ -23,17 +23,54 @@ namespace lynx{
 [14] not: not x
 [15] equal: x == y
 [16] not_equal: x != y
+
+typedef Self (*Callback)(Self&, Vec<Self>)
 */
 namespace type{
 // -
-/*
-nil_str
-nil_repr
-nil_bool
-nil_equal
-nil_not_equal
-*/
-class Nil;
+// -*-
+Self nil_str(Self&, Vec<Self>){
+    //! @todo
+    return nullptr;
+}
+
+// -*-
+Self nil_repr(Self&, Vec<Self>){
+    //! @todo
+    return nullptr;
+}
+
+// -*-
+Self nil_bool(Self&, Vec<Self>){
+    //! @todo
+    return nullptr;
+}
+
+// -*-
+Self nil_equal(Self&, Vec<Self>){
+    //! @todo
+    return nullptr;
+}
+
+// -*-
+Self nil_not_equal(Self&, Vec<Self>){
+    //! @todo
+    return nullptr;
+}
+
+HashMap<Str, Callback> _nilMethods = {
+    {"str", nil_str},
+    {"repr", nil_repr},
+    {"equal", nil_equal},
+    {"bool", nil_bool},
+    {"not_equal", nil_not_equal},
+};
+
+class Nil final: public Type{
+public:
+    Nil(): Type{"Nile", std::move(_nilMethods)}{}
+    ~Nil() = default;
+};
 
 /*
 bool_str
