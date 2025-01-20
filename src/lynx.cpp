@@ -190,6 +190,11 @@ Str Float::str(void) const{
     return stream.str();
 }
 
+Str Float::repr(void) const{
+    std::stringstream stream;
+    stream << std::quoted(this->str());
+    return stream.str();
+}
 
 
 // -*----------------------------------------------------------------*-
