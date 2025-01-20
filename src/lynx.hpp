@@ -30,8 +30,8 @@
     Name& operator=(const Name& other)
 
 #define LYNX_OBJECT_COMMONS()           \
-    const Str str(void) const override; \
-    const Str repr(void) const override;\
+    Str str(void) const override;       \
+    Str repr(void) const override;      \
     operator bool()
 
 #define LYNX_SCALAR_COMMONS()           \
@@ -104,8 +104,8 @@ public:
     LYNX_DECLARE_MOVE(Object);
     virtual ~Object(){ this->m_type = nullptr; }
     Type* type(void) const{ return this->m_type; }
-    virtual const Str str(void) const { return "nil"; }
-    virtual const Str repr(void) const { return "nil"; }
+    virtual Str str(void) const { return "nil"; }
+    virtual Str repr(void) const { return "nil"; }
 };
 
 // ---------------

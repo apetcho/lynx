@@ -66,6 +66,10 @@ Boolean& Boolean::operator=(Boolean&& self){
     return *this;
 }
 
+Str Boolean::str(void) const{
+    return this->m_value ? Str{"true"} : Str{"false"};
+}
+
 
 
 // -*----------------------------------------------------------------*-
