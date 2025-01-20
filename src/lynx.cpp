@@ -139,6 +139,10 @@ Integer::operator bool(){
     return this->m_num==0? false : true;
 }
 
+Integer::operator i64(){
+    return this->m_num;
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
