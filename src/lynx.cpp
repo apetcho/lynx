@@ -121,6 +121,11 @@ Integer& Integer::operator=(Integer&& self){
     return *this;
 }
 
+Str Integer::str(void) const{
+    std::stringstream stream;
+    stream << this->m_num;
+    return stream.str();
+}
 
 
 // -*----------------------------------------------------------------*-
