@@ -157,6 +157,8 @@ Integer::operator Str(){
 Float::Float()
 : Object(Lynx::type("Float")), m_num{0.0}{}
 
+Float::Float(f64 num)
+: Object(Lynx::type("Float")), m_num{num}{}
 
 
 // -*----------------------------------------------------------------*-
