@@ -497,14 +497,13 @@ Builtin::Builtin(const Str& name, int arity, BuiltinFn fn, Str doc)
 , m_doc{doc}
 {}
 
-// Callable::Callable()
-// : Object(Lynx::type("")){}
-
-/*
-Callable(Str& name, Vec<Str> params, Vec<Self> body, Scope& scope, Str doc="");
-Callable(Vec<Str> params, Vec<Self> body, Scope& scope);
-Callable(Callable&& self);
-*/
+Builtin::Builtin(Builtin&& self)
+: Object(std::move(self.m_type))
+, m_name{std::move(self.m_name)}
+, m_arity{std::move(self.m_arity)}
+, m_fn{std::move(self.m_fn)}
+, m_doc{std::move(self.m_doc)}
+{}
 
 
 // -*----------------------------------------------------------------*-
