@@ -208,6 +208,10 @@ Float::operator f64(){
     return this->m_num;
 }
 
+Float::operator Str(){
+    return this->str();
+}
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
