@@ -734,7 +734,7 @@ Self Env::get(const Str& key) const{
 
     std::stringstream stream;
     stream << key << " not bound";
-    throw ValueError(stream.str());
+    throw RuntimeError(stream.str());
 }
 
 void Env::put(const Str& key, const Self& val){
