@@ -151,6 +151,13 @@ Integer::operator Str(){
     return this->str();
 }
 
+// -*---------*-
+// -*- Float -*-
+// -*---------*-
+Float::Float()
+: Object(Lynx::type("Float")), m_num{0.0}{}
+
+
 
 // -*----------------------------------------------------------------*-
 }//-*- end::namespace::lynx                                         -*-
