@@ -14,6 +14,7 @@ Self fn_eprint(Vec<Self> argv);
 Self fn_panic(Vec<Self> argv);
 Self fn_format(Vec<Self> argv);
 Self fn_repr(Vec<Self> argv);
+
 Self fn_negate(Vec<Self> argv);
 Self fn_add(Vec<Self> argv);
 Self fn_sub(Vec<Self> argv);
@@ -30,30 +31,44 @@ Self fn_and(Vec<Self> argv);
 Self fn_not(Vec<Self> argv);
 Self fn_equal(Vec<Self> argv);
 Self fn_not_equal(Vec<Self> argv);
+
 Self fn_filter(Vec<Self> argv);
 Self fn_reduce(Vec<Self> argv);
 Self fn_map(Vec<Self> argv);
 Self fn_zip(Vec<Self> argv);
 Self fn_range(Vec<Self> argv);
+
 Self fn_random(Vec<Self> argv);
-Self fn_is_callable(Vec<Self> argv);
+
+<Self fn_is_callable(Vec<Self> argv);>
+Self fn_is_builtin(Vec<Self> argv);
+Self fn_is_lambda(Vec<Self> argv);
+Self fn_is_function(Vec<Self> argv);
+<Self fn_is_macro(Vec<Self> argv);>
+
+
+<Self fn_instanceof(Vec<Self> argv);>
 Self fn_is_integer(Vec<Self> argv);
 Self fn_is_float(Vec<Self> argv);
 Self fn_is_number(Vec<Self> argv);
 Self fn_is_array(Vec<Self> argv);
 Self fn_is_dict(Vec<Self> argv);
-Self fn_is_builtin(Vec<Self> argv);
-Self fn_is_lambda(Vec<Self> argv);
-Self fn_is_function(Vec<Self> argv);
+
 Self fn_typeof(Vec<Self> argv);
 
 Self fn_bool(Vec<Self> argv);
 Self fn_integer(Vec<Self> argv);
 Self fn_float(Vec<Self> argv);
-Self fn_array(Vec<Self> argv);
-Self fn_dict(Vec<Self> argv);
+Self fn_symbol(Vec<Self> argv);
 Self fn_string(Vec<Self> argv);
+Self fn_tuple(Vec<Self> argv);
+Self fn_list(Vec<Self> argv);
+Self fn_hashset(Vec<Self> argv);
+Self fn_hashmap(Vec<Self> argv);
+Self fn_ok(Vec<Self> argv);
+Self fn_err(Vec<Self> argv);
 
+<Module::math>
 Self fn_abs(Vec<Self> argv);
 Self fn_min(Vec<Self> argv);
 Self fn_max(Vec<Self> argv);
@@ -81,6 +96,7 @@ Self fn_log(Vec<Self> argv);
 Self fn_pow(Vec<Self> argv);
 
 Self fn_parse(Vec<Self> argv);
+Self fn_eval(Vec<Self> argv);
 
 
 std::map<Str, BuiltinFn>
