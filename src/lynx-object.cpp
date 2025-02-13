@@ -267,29 +267,235 @@ Error Result::err(void) const{
 // -----------------
 // -*- Structure -*-
 // -----------------
-/*
+// -*-
+Structure::Structure(const Str& name) noexcept
+: m_name{Symbol(name)}
+, m_instance_name{Symbol("")}
+, m_attributes{}
+, m_properties{}
+, m_methods{}
+, m_object_attributes{}{}
 
-Structure::Structure(const Str& name) noexcept{}
-Structure::Structure(const Structure& structure) noexcept{}
-Structure::Structure(Structure&& structure) noexcept{}
-Structure& Structure::operator=(const Structure& structure) noexcept{}
-Structure& Structure::operator=(Structure&& structure) noexcept{}
-Str Structure::name(void) const{}
-HashMap<Str, Self> Structure::properties(void) const{}
-HashMap<Str, Self> Structure::objvars(void) const{}
-HashMap<Str, Ast> Structure::methods(void) const{}
-void Structure::define_initilizer(Self initfn){}
-void Structure::initialize(Args args){}
-void Structure::push_struct_attr(Self attr){}
-void Structure::push_property(Self property){}
-void Structure::push_objvar(Self var){}
-void Structure::push_method(Self method){}
-void Structure::pop_struct_attr(){}
-void Structure::pop_property(const Str& key){}
-void Structure::pop_objvar(const Str& key){}
-void Structure::pop_method(const Str& key){}
-*/
+// -*-
+Structure::Structure(const Structure& structure) noexcept
+: m_name{structure.m_name}
+, m_instance_name{structure.m_instance_name}
+, m_attributes{structure.m_attributes}
+, m_properties{structure.m_properties}
+, m_methods{structure.m_methods}
+, m_object_attributes{structure.m_object_attributes}{}
 
+// -*-
+Structure::Structure(Structure&& structure) noexcept
+: m_name{std::move(structure.m_name)}
+, m_instance_name{std::move(structure.m_instance_name)}
+, m_attributes{std::move(structure.m_attributes)}
+, m_properties{std::move(structure.m_properties)}
+, m_methods{std::move(structure.m_methods)}
+, m_object_attributes{std::move(structure.m_object_attributes)}{}
+
+// -*-
+Structure& Structure::operator=(const Structure& structure) noexcept{
+    if(this != &structure){
+        this->m_name = structure.m_name;
+        this->m_instance_name = structure.m_instance_name;
+        this->m_attributes = structure.m_attributes;
+        this->m_properties = structure.m_properties;
+        this->m_methods = structure.m_methods;
+        this->m_object_attributes = structure.m_object_attributes;
+    }
+    return *this;
+}
+
+Structure& Structure::operator=(Structure&& structure) noexcept{
+    if(this != &structure){
+        this->m_name = std::move(structure.m_name);
+        this->m_instance_name = std::move(structure.m_instance_name);
+        this->m_attributes = std::move(structure.m_attributes);
+        this->m_properties = std::move(structure.m_properties);
+        this->m_methods = std::move(structure.m_methods);
+        this->m_object_attributes = std::move(structure.m_object_attributes);
+    }
+    return *this;
+}
+
+// -*-
+Symbol Structure::name(void) const{
+    return this->m_name;
+}
+
+// -*-
+HashMap<Symbol, Self> Structure::attributes(void) const{
+    return this->m_attributes;
+}
+
+// -*-
+HashMap<Symbol, Self> Structure::properties(void) const{
+    return this->m_properties;
+}
+
+// -*-
+HashMap<Symbol, Self> Structure::object_attribues(void) const{
+    return this->m_object_attributes;
+}
+
+// -*-
+HashMap<Symbol, Self> Structure::methods(void) const{
+    return this->m_methods;
+}
+
+// -*-
+void Structure::define_initilizer(Self initfn){
+    this->m_methods[Symbol("@init")] = initfn;
+}
+
+// -*-
+void Structure::initialize(Args args){
+    auto fn = this->m_methods[Symbol("@init")];
+    auto fun = *fn;
+    fun(args);
+}
+
+// -*-
+void Structure::define_attribute(Self attr){
+    if(!attr->is_tuple()){
+        std::stringstream stream;
+        stream << "Structure::define_attribute():\n";
+        stream << "argument-type mismatch: expect a 'Tuple' but got ";
+        stream << "'" << static_cast<Str>(attr->type()) << "'";
+        throw std::runtime_error(stream.str());
+    }
+    auto len = static_cast<List>(*attr).size();
+    if(len != 2){
+        std::stringstream stream;
+        stream << "Structure::define_attribute():\n";
+        stream << "argument must be a tuple of two elements but got ";
+        stream << "\na tuple with " << len << " elemenets";
+        throw std::runtime_error(stream.str());
+    }
+    auto vec = static_cast<List>(*attr);
+    auto name = vec[0];
+    if(!name->is_symbol()){
+        throw std::runtime_error(
+            "Structure::define_attribute():\n"
+            "attribute name is not an identifier"
+        );
+    }
+    auto value = vec[1];
+    this->m_attributes[static_cast<Symbol>(*name)] = value;
+}
+
+// -*-
+void Structure::define_property(Self prop){
+    if(!prop->is_tuple()){
+        std::stringstream stream;
+        stream << "Structure::define_property():\n";
+        stream << "argument-type mismatch: expect a 'Tuple' but got ";
+        stream << "'" << static_cast<Str>(prop->type()) << "'";
+        throw std::runtime_error(stream.str());
+    }
+    auto len = static_cast<List>(*prop).size();
+    if(len != 2){
+        std::stringstream stream;
+        stream << "Structure::define_property():\n";
+        stream << "argument must be a tuple of two elements but got ";
+        stream << "\na tuple with " << len << " elemenets";
+        throw std::runtime_error(stream.str());
+    }
+    auto vec = static_cast<List>(*prop);
+    auto name = vec[0];
+    if(!name->is_symbol()){
+        throw std::runtime_error(
+            "Structure::define_property():\n"
+            "property name is not an identifier"
+        );
+    }
+    auto value = vec[1];
+    this->m_properties[static_cast<Symbol>(*name)] = value;
+}
+
+// -*-
+void Structure::define_object_attribute(Self attr){
+    if(!attr->is_tuple()){
+        std::stringstream stream;
+        stream << "Structure::define_object_attribute():\n";
+        stream << "argument-type mismatch: expect a 'Tuple' but got ";
+        stream << "'" << static_cast<Str>(attr->type()) << "'";
+        throw std::runtime_error(stream.str());
+    }
+    auto len = static_cast<List>(*attr).size();
+    if(len != 2){
+        std::stringstream stream;
+        stream << "Structure::define_object_attribute():\n";
+        stream << "argument must be a tuple of two elements but got ";
+        stream << "\na tuple with " << len << " elemenets";
+        throw std::runtime_error(stream.str());
+    }
+    auto vec = static_cast<List>(*attr);
+    auto name = vec[0];
+    if(!name->is_symbol()){
+        throw std::runtime_error(
+            "Structure::define_object_attribute():\n"
+            "attribute name is not an identifier"
+        );
+    }
+    auto value = vec[1];
+    this->m_object_attributes[static_cast<Symbol>(*name)] = value;
+}
+
+// -*-
+void Structure::define_method(Self method){
+    if(!method->is_function()){
+        std::stringstream stream;
+        stream << "Structure::define_method():\n";
+        stream << "argument-type mismatch: expect a 'Function' but got ";
+        stream << "'" << static_cast<Str>(method->type()) << "'";
+        throw std::runtime_error(stream.str());
+    }
+    auto ast = static_cast<Ast>(*method);
+    auto fnast = dynamic_cast<FunDefExprAst*>(ast.get());
+    auto name = fnast->name();
+    this->m_object_attributes[name] = std::move(method);
+}
+
+// -*-
+void Structure::delete_attribute(const Str& key){
+    Symbol sym(key);
+    if(this->m_attributes.find(sym)==this->m_attributes.end()){
+        std::stringstream stream;
+        stream << "undefined attribute: '" << key << "'\n";
+        stream << static_cast<Str>(this->m_name) << " does not have ";
+        stream << "attribute '" << key << "'";
+        throw std::runtime_error(stream.str());
+    }
+    this->m_attributes.erase(sym);
+}
+
+// -*-
+void Structure::delete_property(const Str& key){
+    Symbol sym(key);
+    if(this->m_properties.find(sym)==this->m_properties.end()){
+        std::stringstream stream;
+        stream << "undefined property: '" << key << "'\n";
+        stream << static_cast<Str>(this->m_name) << " does not have ";
+        stream << "property '" << key << "'";
+        throw std::runtime_error(stream.str());
+    }
+    this->m_properties.erase(sym);
+}
+
+// -*-
+void Structure::delete_object_attribute(const Str& key){
+    Symbol sym(key);
+    if(this->m_object_attributes.find(sym)==this->m_object_attributes.end()){
+        std::stringstream stream;
+        stream << "undefined object attribute: '" << key << "'\n";
+        stream << static_cast<Str>(this->m_instance_name);
+        stream << " does not have attribute '" << key << "'";
+        throw std::runtime_error(stream.str());
+    }
+    this->m_object_attributes.erase(sym);
+}
 
 // --------------
 // -*- Object -*-

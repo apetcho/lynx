@@ -90,12 +90,10 @@ __getitem__, __setitem__
     LYNX_DEF(__setattr__, "__setattr__", "setattr(obj, attr, val)")     \
     LYNX_DEF(__getattr__, "__getattr__", "getattr(obj, attr)")          \
     LYNX_DEF(__delattr__, "__delattr__", "delattr(obj, attr)")          \
-    LYNX_DEF(__logical_or__, "__logical_or__", "or")                    \
-    LYNX_DEF(__logical_and__, "__logical_and__", "and")                 \
-    LYNX_DEF(__logical_not__, "__logical_not__", "not")                 \
+    LYNX_DEF(__bool__, "__bool__", "Bool(scalar)")                      \
     LYNX_DEF(__integer__, "__integer__", "Integer(scalar)")             \
     LYNX_DEF(__float__, "__float__", "Float(scalar)")                   \
-    LYNX_DEF(__bool__, "__bool__", "Bool(scalar)")                      \
+    LYNX_DEF(__float__, "__complex__", "Complex(...)")                  \
     LYNX_DEF(__list__, "__list__", "List(iterable)")                    \
     LYNX_DEF(__tuple__, "__tuple__", "Tuple(iterable)")                 \
     LYNX_DEF(__hashmap__, "__hashmap__", "Dict(iterable)")              \
@@ -147,7 +145,7 @@ using Shared = std::shared_ptr<T>;
 template<typename T>
 using Weak = std::weak_ptr<T>;
 template<typename K, typename V>
-using HashMap = std::unordered_map<K, V>;
+using HashMap = std::map<K, V>;
 template<typename T>
 using HashSet = std::set<T>;
 template<typename T>
@@ -319,26 +317,127 @@ public:
     LYNX_DECLARE_COPY(Structure);
     LYNX_DECLARE_MOVE(Structure);
     ~Structure();
-    Str name(void) const;
-    HashMap<Str, Self> properties(void) const;
-    HashMap<Str, Self> objvars(void) const;
-    HashMap<Str, Ast> methods(void) const;
-    void define_initilizer(Self initfn=nullptr);    // initfn = Object(FunDefAstExpr)
+    Symbol name(void) const;
+    const Symbol& instance_name() const{ return this->m_instance_name; }
+    Symbol& instance_name(){ return this->m_instance_name; }
+    
+    HashMap<Symbol, Self> attributes(void) const;
+    HashMap<Symbol, Self> properties(void) const;
+    HashMap<Symbol, Self> object_attribues(void) const;
+    HashMap<Symbol, Self> methods(void) const;
+    void define_initilizer(Self initfn);            // initfn = Object(FunDefAstExpr)
     void initialize(Args args);                     // @init
-    void push_struct_attr(Self attr);               // 
-    void push_property(Self property);              // @x ...
-    void push_objvar(Self var);                     // obj:var = val
-    void push_method(Self method);                  // obj.fn(...)
-    void pop_struct_attr();                         //
-    void pop_property(const Str& key);              //
-    void pop_objvar(const Str& key);                //
-    void pop_method(const Str& key);                //
+    void define_attribute(Self attr);               // 
+    void define_property(Self property);            // @x ...
+    void define_object_attribute(Self var);         // obj:var = val
+    void define_method(Self method);                // obj.fn(...)
+    void delete_attribute(const Str& key);          //
+    void delete_property(const Str& key);           //
+    void delete_object_attribute(const Str& key);   //
+
+    friend class Object;
 
 private:
-    Str m_name;
-    HashMap<Str, Self> m_properties;
-    HashMap<Str, Ast> m_methods;
-    HashMap<Str, Self> m_objvars;
+    // New Structure|Type Name
+    Symbol m_name;
+    Symbol m_instance_name;
+    // store object attributes defined in structure block, but not in
+    // the init function
+    // to retrieve this attributes, the following syntax is used:
+    // let myattributeValue = obj::attribute
+    HashMap<Symbol, Self> m_attributes;
+
+    /*
+    Store object properties defined int the structure-init block using
+    the following syntax:
+
+        struct Point{
+            ...
+            @init(x, y){
+                ...
+                @x = x
+                @y = y
+                ....
+            }
+        }
+        
+        Accessing the properties is done as follows:
+        let point = Point(2, 3.14)
+        let x = point.x
+        let y = point.y
+    */
+    HashMap<Symbol, Self> m_properties;
+
+    /*
+    Store structure's methods:
+
+    Examples:
+        struct Name{
+            fun my_method1(...){ ... }
+            fun my_method2(...){ ... }
+            ; overload '+' operator
+            @operator+(other){ ....}
+            ...
+            ; index-or-key-access operator
+            ; Applicable for: String, Tuple, List, HashSet, HashMap
+            @operator[](index){ ... }
+            @operator[](index, value){ ... }
+            ; implement string-conversion for Name
+            fun __str__(){ ... }
+            ; implement parsable-string representation
+            fun __repr__(){ ... }
+            ; overload builtin function
+            fun __hash__(){ ... }
+            ; other conversion function
+            fun __bool__(){ ... }
+            fun __integer__(){ ... }
+            fun __float__(){ ... }
+            fun __complex__(){ ... }
+            fun __tuple__(){ ... }
+            fun __list__(){ ... }
+            fun __hashmap__(){ ... }
+            fun __hashset__(){ ... }
+            ; make a callable object
+            fun __call__(args){ ... }
+            ; iterator interface
+            fun __next__(){ ... }
+            fun __done__(){ ... }
+            ; attribute-access operators
+            fun __getattr__(...){ ... }
+            fun __setattr__(...){ ... }
+            fun __delattr__(...){ ... }
+        }
+
+        struct Point{
+            @init(x, y){
+                @x = x
+                @y = y
+            }
+            @operator+(other){
+                let x = @x + other.x
+                let y = @y + other.y
+                return Point(x, y)
+            }
+
+            fun __str__(){
+                return format("({@x}, {@y})")
+            }
+        }
+        
+        let point1 = Point(1, 2)
+        let point2 = Point(3, 2)
+        let point3 = point1 + point2
+        println(point1)                 ; (1, 2)
+        println(point2)                 ; (3, 2)
+        println(point3)                 ; (4, 4)
+    */
+    HashMap<Symbol, Self> m_methods;
+    /*
+    Store struct-object attributes. This can be accessed as follow:
+
+        let myAttr = obj:attr
+    */
+    HashMap<Symbol, Self> m_object_attributes;
 };
 
 
@@ -377,6 +476,7 @@ public:
     operator HMap();
     operator CFun();
     operator Result();
+    operator Ast();
 
     // -------------------------
     // -*- Logical Operators -*-
@@ -643,6 +743,7 @@ protected:
     Self __bool__(Args args);
     Self __integer__(Args args);
     Self __float__(Args args);
+    Self __cmplx__(Args args);
     Self __tuple__(Args args);
     Self __list__(Args args);
     Self __hashset__(Args args);
@@ -1836,6 +1937,9 @@ struct LambdaDefAst final: public BinaryExprAst{
     LYNX_DECLARE_MOVE(LambdaDefAst);
     ~LambdaDefAst() = default;
     LYNX_OVERLOAD_AST_COMMONS();
+    Vec<Parameter> parameters() const;
+    Ast body(void) const;
+    Self operator()(Args args);
 };
 
 /**
@@ -1880,6 +1984,11 @@ struct FunDefExprAst final: public BaseAst{
     LYNX_DECLARE_MOVE(FunDefExprAst);
     ~FunDefExprAst() = default;
     LYNX_OVERLOAD_AST_COMMONS();
+    Symbol name(void) const;
+    Vec<Parameter> parameters() const;
+    Ast body(void) const;
+    Self operator()(Args args);
+    Str docstr(void) const;
 };
 
 /**
@@ -1910,10 +2019,13 @@ struct MacroDefExprAst final: public BaseAst {
     LYNX_OVERLOAD_AST_COMMONS();
     // -
     Ast expand(void);
-    HashSet<Parameter> parameters(void) const;
+    Vec<Parameter> parameters(void) const;
+    Ast body(void) const;
+    Self operator()(Args args);
+    Str docstr(void) const;
 
 private:
-    HashSet<Parameter> m_params;
+    Vec<Parameter> m_params;
 };
 
 /**
@@ -1940,6 +2052,9 @@ struct GetExprAst final: public BinaryExprAst {
     LYNX_DECLARE_MOVE(GetExprAst);
     ~GetExprAst() = default;
     LYNX_OVERLOAD_AST_COMMONS();
+    // -
+    Self get(const Self& key);
+    Self put(const Self& key, const Self& value);
 };
 
 /**
