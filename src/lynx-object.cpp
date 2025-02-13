@@ -528,8 +528,29 @@ Object::Object(bool val) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
+/**
+ * @brief Construct a new Object:: Object object
+ * 
+ * Create an integer object
+ * 
+ * @param num 
+ */
+Object::Object(i64 num) noexcept
+: m_kind{Object::Kind::Integer}
+, m_value{num}
+, m_is_version{false}
+, m_newtype{false}
+, m_constant{false}
+, m_fixed_type{false}{}
+
 /*
-Object::Object(i64 num) noexcept{}
+: m_kind{Object::Kind::None}
+, m_value{Nil{}}
+, m_is_version{false}
+, m_newtype{false}
+, m_constant{false}
+, m_fixed_type{false}{}
+
 Object::Object(f64 num) noexcept{}
 Object::Object(Complex z) noexcept{}
 Object::Object(Symbol sym) noexcept{}
