@@ -793,6 +793,26 @@ Object& Object::operator=(const Object& obj) noexcept{
     return *this;
 }
 
+/**
+ * @brief Move object to a new target.
+ * 
+ * @param obj 
+ * @return Object& 
+ */
+Object& Object::operator=(Object&& obj) noexcept{
+    if(this != &obj){
+        this->m_kind = std::move(obj.m_kind);
+        this->m_value = std::move(obj.m_value);
+        this->m_name = std::move(obj.m_name);
+        this->m_is_version = std::move(obj.m_is_version);
+        this->m_newtype = std::move(obj.m_newtype);
+        this->m_constant = std::move(obj.m_constant);
+        this->m_fixed_type = std::move(obj.m_fixed_type);
+    }
+
+    return *this;
+}
+
 /*
 : m_kind{Object::Kind::None}
 , m_value{Nil{}}
@@ -802,7 +822,7 @@ Object& Object::operator=(const Object& obj) noexcept{
 , m_constant{false}
 , m_fixed_type{false}{}
 
-Object& Object::operator=(Object&& obj) noexcept{}
+
 Object::~Object(){}
 
 Object::operator bool(){}
