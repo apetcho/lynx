@@ -252,9 +252,9 @@ private:
     Str m_data;
 };
 
-#define LYNX_TYPE_VARIANTS()                        \
-    Nil, bool, i64, f64, Complex, Symbol, Str,      \
-    List, HSet, HMap, Structure, CFun, Ast, Result
+#define LYNX_TYPE_VARIANTS()                                \
+    Nil, bool, i64, f64, Complex, Symbol, Str,              \
+    List, HSet, HMap, Structure, Iterator, CFun, Ast, Result
 
 
 class Error final{

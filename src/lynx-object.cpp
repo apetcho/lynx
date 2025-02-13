@@ -659,6 +659,23 @@ Object::Object(Structure klass) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
+
+/**
+ * @brief Construct a new Object:: Object object
+ * 
+ * Create an Iterator object.
+ * @param iter 
+ */
+Object::Object(Iterator iter) noexcept
+: m_kind{Object::Kind::Iter}
+, m_value{iter}
+, m_is_version{false}
+, m_newtype{false}
+, m_constant{false}
+, m_fixed_type{false}{}
+
+
+
 /*
 : m_kind{Object::Kind::None}
 , m_value{Nil{}}
@@ -667,7 +684,6 @@ Object::Object(Structure klass) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
-Object::Object(Iterator iter) noexcept{}
 Object::Object(const Str& name, CFun cfun) noexcept{}
 Object::Object(Ast ast) noexcept{}
 Object::Object(Result result) noexcept{}
