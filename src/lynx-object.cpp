@@ -615,6 +615,20 @@ Object::Object(Object::Kind kind, List data) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
+/**
+ * @brief Construct a new Object:: Object object
+ * 
+ * Create a HashSet object.
+ * @param data 
+ */
+Object::Object(HSet data) noexcept
+: m_kind{Object::Kind::Set}
+, m_value{data}
+, m_is_version{false}
+, m_newtype{false}
+, m_constant{false}
+, m_fixed_type{false}{}
+
 /*
 : m_kind{Object::Kind::None}
 , m_value{Nil{}}
@@ -624,7 +638,6 @@ Object::Object(Object::Kind kind, List data) noexcept
 , m_fixed_type{false}{}
 
 
-Object::Object(HSet data) noexcept{}
 Object::Object(HMap data) noexcept{}
 Object::Object(Structure klass) noexcept{}
 Object::Object(Iterator iter) noexcept{}
