@@ -976,8 +976,19 @@ Object::operator Complex(){
     return z;
 }
 
+/**
+ * @brief Convert object to a Symbol-value
+ * 
+ * @return Symbol 
+ */
+Object::operator Symbol(){
+    if(!this->is_symbol()){
+        throw std::runtime_error("unable to extract a symbol-value from object");
+    }
+    return std::get<Symbol>(this->m_value);
+}
+
 /*
-Object::operator Symbol(){}
 Object::operator Str(){}
 Object::operator List(){}
 Object::operator HSet(){}
