@@ -513,16 +513,22 @@ Object::Object() noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
-/*
-Object::Kind m_kind;
-Value m_value;
-bool m_is_version;
-bool m_newtype;
-bool m_constant;
-bool m_fixed_type;
+/**
+ * @brief Construct a new Object:: Object object
+ * 
+ * Create a boolean object
+ * 
+ * @param val 
+ */
+Object::Object(bool val) noexcept
+: m_kind{Object::Kind::Bool}
+, m_value{val}
+, m_is_version{false}
+, m_newtype{false}
+, m_constant{false}
+, m_fixed_type{false}{}
 
-Object::Object() noexcept{}
-Object::Object(bool val) noexcept{}
+/*
 Object::Object(i64 num) noexcept{}
 Object::Object(f64 num) noexcept{}
 Object::Object(Complex z) noexcept{}
