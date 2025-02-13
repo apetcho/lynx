@@ -743,6 +743,16 @@ Object::Object(Result result) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
+
+Object::Object(const Object& obj) noexcept
+: m_kind{obj.m_kind}
+, m_value{obj.m_value}
+, m_name{obj.m_name}
+, m_is_version{obj.m_is_version}
+, m_newtype{obj.m_newtype}
+, m_constant{obj.m_constant}
+, m_fixed_type{obj.m_fixed_type}{}
+
 /*
 : m_kind{Object::Kind::None}
 , m_value{Nil{}}
@@ -752,7 +762,7 @@ Object::Object(Result result) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
-Object::Object(const Object& obj) noexcept{}
+
 Object::Object(Object&& obj) noexcept{}
 Object& Object::operator=(const Object& obj) noexcept{}
 Object& Object::operator=(Object&& obj) noexcept{}
