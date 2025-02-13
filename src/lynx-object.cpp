@@ -1029,8 +1029,33 @@ Object::operator Str(){
     return str;
 }
 
+/**
+ * @brief Convert object into a list.
+ * 
+ * This operation is valid for String, Tuple, List, HashSet, and HashMap.
+ * 
+ * @return List 
+ */
+Object::operator List(){
+    List xs{};
+    if(this->is_tuple() || this->is_list()){
+        xs = std::get<List>(this->m_value);
+    }else if(this->is_string()){
+        Str str = std::get<Str>(this->m_value);
+        for(auto iter = str.cbegin(); iter != str.cend(); iter++){
+            xs.emplace_back(std::make_shared<Object>(Str{*iter}));
+        }
+    }else if(this->is_hashset()){
+        HSet hset = std::get<HSet>(this->m_value);
+        for(auto iter = hset.cbegin(); iter != hset.cend(); iter++){
+            Self self = *iter;
+            xs.emplace_back(std::make_shared<Object>(*self));
+        }
+    }else if(this->is_hashmap()){}
+    return xs;
+}
+
 /*
-Object::operator List(){}
 Object::operator HSet(){}
 Object::operator HMap(){}
 Object::operator CFun(){}
