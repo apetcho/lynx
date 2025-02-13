@@ -571,6 +571,7 @@ public:
     bool is_lambda(void) const;
     bool is_callable(void) const;
     bool is_hashable(void) const;
+    bool is_iterable(void) const;
     bool is_ok(void) const;
     bool is_structure(void) const;
 

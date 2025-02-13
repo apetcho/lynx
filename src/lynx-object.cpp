@@ -1051,7 +1051,28 @@ Object::operator List(){
             Self self = *iter;
             xs.emplace_back(std::make_shared<Object>(*self));
         }
-    }else if(this->is_hashmap()){}
+    }else if(this->is_hashmap()){
+        HMap hmap = std::get<HMap>(this->m_value);
+        for(auto iter = hmap.cbegin(); iter != hmap.cend(); iter++){
+            Self key = iter->first;
+            Self val = iter->second;
+            Vec<Self> item{};
+            item.push_back(key);
+            item.push_back(val);
+            xs.emplace_back(std::make_shared<Object>(Object::Kind::Tuple, item));
+        }
+    }else if(this->is_iterable()){
+        Iterator iterator = std::get<Iterator>(this->m_value);
+        while(!static_cast<bool>(iterator->done())){
+            Self self = iterator->next();
+            xs.emplace_back(std::make_shared<Object>(*self));
+        }
+    }else{
+        Args args{};
+        args.emplace_back(std::make_shared<Object>(*this));
+        Self self = this->__list__(args);
+        xs.emplace_back(std::make_shared<Object>(*self));
+    }
     return xs;
 }
 
