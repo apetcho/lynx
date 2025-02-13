@@ -629,6 +629,21 @@ Object::Object(HSet data) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
+
+/**
+ * @brief Construct a new Object:: Object object
+ * 
+ * Create a HashMap object;
+ * @param data 
+ */
+Object::Object(HMap data) noexcept
+: m_kind{Object::Kind::Dict}
+, m_value{data}
+, m_is_version{false}
+, m_newtype{false}
+, m_constant{false}
+, m_fixed_type{false}{}
+
 /*
 : m_kind{Object::Kind::None}
 , m_value{Nil{}}
@@ -637,8 +652,6 @@ Object::Object(HSet data) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
-
-Object::Object(HMap data) noexcept{}
 Object::Object(Structure klass) noexcept{}
 Object::Object(Iterator iter) noexcept{}
 Object::Object(const Str& name, CFun cfun) noexcept{}
