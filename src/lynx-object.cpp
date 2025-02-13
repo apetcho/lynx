@@ -743,7 +743,12 @@ Object::Object(Result result) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
-
+/**
+ * @brief Construct a new Object:: Object object
+ * 
+ * Contruct a copy of object.
+ * @param obj 
+ */
 Object::Object(const Object& obj) noexcept
 : m_kind{obj.m_kind}
 , m_value{obj.m_value}
@@ -752,6 +757,21 @@ Object::Object(const Object& obj) noexcept
 , m_newtype{obj.m_newtype}
 , m_constant{obj.m_constant}
 , m_fixed_type{obj.m_fixed_type}{}
+
+/**
+ * @brief Construct a new Object:: Object object
+ * 
+ * Move object to a new target.
+ * @param obj 
+ */
+Object::Object(Object&& obj) noexcept
+: m_kind{std::move(obj.m_kind)}
+, m_value{std::move(obj.m_value)}
+, m_name{std::move(obj.m_name)}
+, m_is_version{std::move(obj.m_is_version)}
+, m_newtype{std::move(obj.m_newtype)}
+, m_constant{std::move(obj.m_constant)}
+, m_fixed_type{std::move(obj.m_fixed_type)}{}
 
 /*
 : m_kind{Object::Kind::None}
@@ -763,7 +783,6 @@ Object::Object(const Object& obj) noexcept
 , m_fixed_type{false}{}
 
 
-Object::Object(Object&& obj) noexcept{}
 Object& Object::operator=(const Object& obj) noexcept{}
 Object& Object::operator=(Object&& obj) noexcept{}
 Object::~Object(){}
