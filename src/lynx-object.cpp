@@ -571,6 +571,21 @@ Object::Object(Complex z) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
+
+/**
+ * @brief Construct a new Object:: Object object
+ * 
+ * Create Symbol object.
+ * @param sym 
+ */
+Object::Object(Symbol sym) noexcept
+: m_kind{Object::Kind::Sym}
+, m_value{sym}
+, m_is_version{false}
+, m_newtype{false}
+, m_constant{false}
+, m_fixed_type{false}{}
+
 /*
 : m_kind{Object::Kind::None}
 , m_value{Nil{}}
@@ -579,8 +594,6 @@ Object::Object(Complex z) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
-
-Object::Object(Symbol sym) noexcept{}
 Object::Object(Str str) noexcept{}
 Object::Object(TypeKind kind, List data) noexcept{}
 Object::Object(HSet data) noexcept{}
