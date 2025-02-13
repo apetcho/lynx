@@ -68,21 +68,120 @@ bool operator<(const Symbol& lhs, const Str& rhsStr){
 // -------------
 // -*- Error -*-
 // -------------
-/*
-Error::Error() noexcept{}
-Error::Error(Error::Kind kind, Str msg) noexcept{}
-Error::Error(Kind kind, const Self& reason) noexcept{}
-Error::Error(const Symbol& sym, Str msg) noexcept{}
-Error::Error(const Symbol& sym, const Self& reason) noexcept{}
-Error::Error(const Error& error) noexcept{}
-Error::Error(Error&& error) noexcept{}
-Error& Error::operator=(const Error& error) noexcept;
-Error::Error(Error&& error) noexcept{}
-Symbol Error::kind() const{}
-const Self& Error::reason(void) const{}
-const Str& Error::message(void) const{}
-Str Error::describe(void) const;
-*/
+// -*-
+Error::Error() noexcept
+: m_kind{Error::Kind::Error}
+, m_reason{nullptr}
+, m_msg{""}
+, m_symbol{}
+{}
+
+// -*-
+Error::Error(Error::Kind kind, Str msg) noexcept
+: m_kind{kind}
+, m_reason{nullptr}
+, m_msg{msg}
+, m_symbol{}
+{}
+
+// -*-
+Error::Error(Kind kind, const Self& reason) noexcept
+: m_kind{kind}
+, m_reason{reason}
+, m_msg{""}
+, m_symbol{}
+{}
+
+Error::Error(const Symbol& sym, Str msg) noexcept
+: m_kind{Error::Kind::Error}
+, m_reason{nullptr}
+, m_msg{msg}
+, m_symbol{sym}
+{}
+
+// -*-
+Error::Error(const Symbol& sym, const Self& reason) noexcept
+: m_kind{Error::Kind::Error}
+, m_reason{reason}
+, m_msg{""}
+, m_symbol{sym}
+{}
+
+Error::Error(const Error& error) noexcept
+: m_kind{error.m_kind}
+, m_reason{error.m_reason}
+, m_msg{error.m_msg}
+, m_symbol{error.m_symbol}
+{}
+
+Error::Error(Error&& error) noexcept
+: m_kind{std::move(error.m_kind)}
+, m_reason{std::move(error.m_reason)}
+, m_msg{std::move(error.m_msg)}
+, m_symbol{std::move(error.m_symbol)}
+{}
+
+Error& Error::operator=(const Error& error) noexcept{
+    if(this != &error){
+        this->m_kind = error.m_kind;
+        this->m_reason = error.m_reason;
+        this->m_msg = error.m_msg;
+        this->m_symbol = error.m_symbol;
+    }
+    return *this;
+}
+
+Error& Error::operator=(Error&& error) noexcept{
+    if(this != &error){
+        this->m_kind = std::move(error.m_kind);
+        this->m_reason = std::move(error.m_reason);
+        this->m_msg = std::move(error.m_msg);
+        this->m_symbol = std::move(error.m_symbol);
+    }
+    return *this;
+}
+
+Symbol Error::kind() const{
+    if(this->m_symbol.is_defined()){
+        return this->m_symbol;
+    }
+    static HashMap<Error::Kind, Symbol> ErrorKinds = {
+        {Error::Kind::Error, Symbol("Error")},
+        {Error::Kind::Error, Symbol("TypeError")},
+        {Error::Kind::Error, Symbol("ValueError")},
+        {Error::Kind::Error, Symbol("SyntaxError")},
+        {Error::Kind::Error, Symbol("IndexError")},
+        {Error::Kind::Error, Symbol("KeyError")},
+        {Error::Kind::Error, Symbol("SymbolError")},
+        {Error::Kind::Error, Symbol("AttributeError")},
+        {Error::Kind::Error, Symbol("RuntimeError")},
+    };
+
+    if(ErrorKinds.find(this->m_kind)!= ErrorKinds.end()){
+        return ErrorKinds[this->m_kind];
+    }
+    return ErrorKinds[Error::Kind::Error];
+}
+
+// -*-
+const Self& Error::reason(void) const{
+    return this->m_reason;
+}
+
+// -*-
+const Str& Error::message(void) const{ return this->m_msg; }
+
+// -*-
+Str Error::describe(void) const{
+    std::stringstream stream;
+    auto sym = Object(this->kind());
+    stream << sym << ":\n";
+    if(this->reason()){
+        stream << *this->reason();
+    }
+    stream << this->m_msg;
+    return stream.str();
+}
 
 // --------------
 // -*- Result -*-

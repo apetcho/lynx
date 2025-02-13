@@ -239,13 +239,14 @@ struct Nil{};
 // -*-
 class Symbol{
 public:
+    explicit Symbol() noexcept: m_data{""}{}
     explicit Symbol(const Str& sym) noexcept;
     Symbol(const Symbol& sym) noexcept;
     Symbol(Symbol&& other) noexcept;
     Symbol& operator=(const Symbol& other) noexcept;
     Symbol& operator=(Symbol&& other) noexcept;
 
-    bool is_defined(void) const{ return this->m_data.length()==0; }
+    bool is_defined(void) const{ return this->m_data.length()!=0; }
 
     operator Str();
     friend bool operator==(const Symbol& lhs, const Symbol& rhs);
@@ -268,7 +269,7 @@ class Error final{
 public:
     enum class Kind{
         Error, TypeError, ValueError, SyntaxError,
-        IndexError, KeyError, SymbolError,
+        IndexError, KeyError, SymbolError, AttributeError,
         RuntimeError,
     };
     explicit Error() noexcept;
@@ -288,7 +289,7 @@ private:
     Kind m_kind;
     Self m_reason;
     Str m_msg;
-    Shared<Symbol> m_symbol;
+    Symbol m_symbol;
 };
 
 class Result final{
