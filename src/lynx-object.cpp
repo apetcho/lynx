@@ -728,6 +728,21 @@ Object::Object(Ast ast) noexcept
     }
 }
 
+/**
+ * @brief Construct a new Object:: Object object
+ * 
+ * Create a Result object.
+ * @param result 
+ */
+Object::Object(Result result) noexcept
+: m_kind{Object::Kind::Result}
+, m_value{result}
+, m_name{Symbol("")}
+, m_is_version{false}
+, m_newtype{false}
+, m_constant{false}
+, m_fixed_type{false}{}
+
 /*
 : m_kind{Object::Kind::None}
 , m_value{Nil{}}
@@ -737,8 +752,6 @@ Object::Object(Ast ast) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
-
-Object::Object(Result result) noexcept{}
 Object::Object(const Object& obj) noexcept{}
 Object::Object(Object&& obj) noexcept{}
 Object& Object::operator=(const Object& obj) noexcept{}

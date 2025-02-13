@@ -214,7 +214,7 @@ using Ast = Shared<AbstractAST>;
     LYNX_DEF(Fun, "Function")       \
     LYNX_DEF(Lambda, "Lambda")      \
     LYNX_DEF(Macro, "Macro")        \
-    LYNX_DEF(OkErr, "Result")
+    LYNX_DEF(Result, "Result")
 
 
 // -*-
