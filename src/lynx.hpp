@@ -201,6 +201,7 @@ using Ast = Shared<AbstractAST>;
     LYNX_DEF(Bool, "Bool")          \
     LYNX_DEF(Integer, "Integer")    \
     LYNX_DEF(Float, "Float")        \
+    LYNX_DEF(Complex, "Complex")    \
     LYNX_DEF(Sym, "Symbol")         \
     LYNX_DEF(String, "String")      \
     LYNX_DEF(Tuple, "Tuple")        \

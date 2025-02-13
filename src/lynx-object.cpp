@@ -557,6 +557,20 @@ Object::Object(f64 num) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
+/**
+ * @brief Construct a new Object:: Object object
+ * 
+ * Create a Complex-number object.
+ * @param z 
+ */
+Object::Object(Complex z) noexcept
+: m_kind{Object::Kind::Complex}
+, m_value{z}
+, m_is_version{false}
+, m_newtype{false}
+, m_constant{false}
+, m_fixed_type{false}{}
+
 /*
 : m_kind{Object::Kind::None}
 , m_value{Nil{}}
@@ -565,7 +579,7 @@ Object::Object(f64 num) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
-Object::Object(Complex z) noexcept{}
+
 Object::Object(Symbol sym) noexcept{}
 Object::Object(Str str) noexcept{}
 Object::Object(TypeKind kind, List data) noexcept{}
