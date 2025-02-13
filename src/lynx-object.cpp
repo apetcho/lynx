@@ -186,18 +186,83 @@ Str Error::describe(void) const{
 // --------------
 // -*- Result -*-
 // --------------
-/*
-Result::Result() noexcept{}
-Result::Result(const Self& self) noexcept{}
-Result::Result(const Error& error) noexcept{}
-Result::Result(const Result& result) noexcept{}
-Result::Result(Result&& result) noexcept{}
-Result& Result::operator=(const Result& result) noexcept{}
-Result& Result::operator=(Result& result) noexcept{}
-Self Result::ok(void) const;
-Error Result::err(void) const;
-bool Result::is_ok(void) const;
-*/
+// -*- value = nil, is_ok() == true
+Result::Result() noexcept
+: m_value{std::make_shared<Object>()}
+, m_ok{true}{}
+
+// -*- value = nil, is_ok() == true
+Result::Result(const Self& self) noexcept
+: m_value{self}
+, m_ok{true}{}
+
+// -*- value = nil, is_ok() == true
+Result::Result(const Error& error) noexcept
+: m_value{error}
+, m_ok{false}{}
+
+// -*- value = nil, is_ok() == true
+Result::Result(const Symbol& sym, const Error& error) noexcept
+: m_value{error}
+, m_ok{false}{
+    std::get<Error>(this->m_value).m_symbol = sym;
+}
+
+// -*-
+Result::Result(const Result& result) noexcept
+: m_value{result.m_value}
+, m_ok{result.m_ok}{}
+
+
+// -*-
+Result::Result(Result&& result) noexcept
+: m_value{std::move(result.m_value)}
+, m_ok{std::move(result.m_ok)}{}
+
+// -*-
+Result& Result::operator=(const Result& result) noexcept{
+    if(this != &result){
+        this->m_value = result.m_value;
+        this->m_ok = result.m_ok;
+    }
+    return *this;
+}
+
+// -*-
+Result& Result::operator=(Result&& result) noexcept{
+    if(this != &result){
+        this->m_value = std::move(result.m_value);
+        this->m_ok = std::move(result.m_ok);
+    }
+    return *this;
+}
+
+// -*-
+Self Result::ok(void) const{
+    Self self = nullptr;
+    if(this->m_ok){
+        self = std::get<Self>(this->m_value);
+    }else{
+        // Result is not an error-reference
+        // return a new-error object
+        auto result = Result(std::get<Error>(this->m_value));
+        self = std::make_shared<Object>(result);
+    }
+
+    return self;
+}
+
+Error Result::err(void) const{
+    Error myErr;
+    if(!this->is_ok()){
+        myErr = std::get<Error>(this->m_value);
+    }else{
+        // object is not an error, but and ok-value
+        Self okVal = std::get<Self>(this->m_value);
+        myErr = Error(Error::Kind::Error, okVal);
+    }
+    return myErr;
+}
 
 // -----------------
 // -*- Structure -*-

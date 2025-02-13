@@ -285,6 +285,8 @@ public:
     const Str& message(void) const;
     Str describe(void) const;
 
+    friend class Result;
+
 private:
     Kind m_kind;
     Self m_reason;
@@ -297,17 +299,18 @@ public:
     explicit Result() noexcept;
     explicit Result(const Self& self) noexcept;
     explicit Result(const Error& error) noexcept;
+    explicit Result(const Symbol& sym, const Error& error) noexcept;
     LYNX_DECLARE_COPY(Result);
     LYNX_DECLARE_MOVE(Result);
     ~Result();
     Self ok(void) const;
     Error err(void) const;
-    bool is_ok(void) const;
+    bool is_ok(void) const{ return this->m_ok; }
 
 private:
     using Value = std::variant<Self, Error>;
-    bool m_ok;
     Value m_value;
+    bool m_ok;
 };
 
 class Structure final{
