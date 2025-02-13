@@ -543,6 +543,20 @@ Object::Object(i64 num) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
+/**
+ * @brief Construct a new Object:: Object object
+ * 
+ * Create a Float object.
+ * @param num 
+ */
+Object::Object(f64 num) noexcept
+: m_kind{Object::Kind::Float}
+, m_value{num}
+, m_is_version{false}
+, m_newtype{false}
+, m_constant{false}
+, m_fixed_type{false}{}
+
 /*
 : m_kind{Object::Kind::None}
 , m_value{Nil{}}
@@ -551,7 +565,6 @@ Object::Object(i64 num) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
-Object::Object(f64 num) noexcept{}
 Object::Object(Complex z) noexcept{}
 Object::Object(Symbol sym) noexcept{}
 Object::Object(Str str) noexcept{}
