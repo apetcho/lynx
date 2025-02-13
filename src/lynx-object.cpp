@@ -7,18 +7,63 @@ namespace lynx{
 // --------------
 // -*- Symbol -*-
 // --------------
-/*
-Symbol::Symbol(const Str& data) noexcept{}
-Symbol::Symbol(const Symbol& sym) noexcept{}
-Symbol::Symbol(Symbol&& sym) noexcept{}
-Symbol& Symbol::operator=(const Symbol& sym) noexcept{}
-Symbol& Symbol::operator=(Symbol&& sym) noexcept{}
-Symbol::operator Str(){}
-bool operator==(const Symbol& lhs, const Symbol& rhs){}
-bool operator<(const Symbol& lhs, const Symbol& rhs){}
-bool operator==(const Symbol& lhs, const Str& rhsStr){}
-bool operator<(const Str& lhsStr, const Symbol& rhs){}
-*/
+// -*-
+Symbol::Symbol(const Str& data) noexcept: m_data{data}{}
+
+// -*-
+Symbol::Symbol(const Symbol& sym) noexcept: m_data{sym.m_data}{}
+
+// -*-
+Symbol::Symbol(Symbol&& sym) noexcept: m_data{std::move(sym.m_data)} {}
+
+// -*-
+Symbol& Symbol::operator=(const Symbol& sym) noexcept{
+    if(this != &sym){
+        this->m_data = sym.m_data;
+    }
+    return *this;
+}
+
+// -*-
+Symbol& Symbol::operator=(Symbol&& sym) noexcept{
+    if(this != &sym){
+        this->m_data = std::move(sym.m_data); 
+    }
+    return *this;
+}
+
+// -*-
+Symbol::operator Str(){
+    return this->m_data;
+}
+
+// -*-
+bool operator==(const Symbol& lhs, const Symbol& rhs){
+    return lhs.m_data == rhs.m_data;
+}
+
+// -*-
+bool operator<(const Symbol& lhs, const Symbol& rhs){
+    return lhs.m_data < rhs.m_data;
+}
+
+// -*-
+bool operator==(const Symbol& lhs, const Str& rhsStr){
+    return lhs.m_data == rhsStr;
+}
+
+bool operator==(const Str& lhsStr, const Symbol& rhs){
+    return lhsStr == rhs.m_data;
+}
+
+// -*-
+bool operator<(const Str& lhsStr, const Symbol& rhs){
+    return lhsStr < rhs.m_data;
+}
+
+bool operator<(const Symbol& lhs, const Str& rhsStr){
+    return lhs.m_data < rhsStr;
+}
 
 // -------------
 // -*- Error -*-

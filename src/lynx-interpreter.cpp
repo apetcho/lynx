@@ -183,6 +183,10 @@ public:
     Self Lynx::operator()(GreaterEqExprAst);
     Self Lynx::operator()(EqualExprAst);
     Self Lynx::operator()(NotEqualExprAst);
+    Self Lynx::operator()(MatchExprAst);
+    Self Lynx::operator()(WithExprAst);
+    Self Lynx::operator()(AtArgvExprAst);
+    Self Lynx::operator()(AtVersionExprAst);
 
     void Lynx::initialize(void);
 };

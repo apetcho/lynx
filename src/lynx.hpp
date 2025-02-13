@@ -245,11 +245,15 @@ public:
     Symbol& operator=(const Symbol& other) noexcept;
     Symbol& operator=(Symbol&& other) noexcept;
 
+    bool is_defined(void) const{ return this->m_data.length()==0; }
+
     operator Str();
     friend bool operator==(const Symbol& lhs, const Symbol& rhs);
     friend bool operator<(const Symbol& lhs, const Symbol& rhs);
     friend bool operator==(const Symbol& lhs, const Str& rhsStr);
+    friend bool operator==(const Str& lhsStr, const Symbol& rhs);
     friend bool operator<(const Str& lhsStr, const Symbol& rhs);
+    friend bool operator<(const Symbol& lhs, const Str& rhsStr);
 
 private:
     Str m_data;
