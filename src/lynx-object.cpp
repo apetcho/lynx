@@ -163,6 +163,8 @@ bool Object::is_nil(void) const{}
 bool Object::is_bool(void) const{}
 bool Object::is_integer(void) const{}
 bool Object::is_float(void) const{}
+bool Object::is_complex(void) const{}
+bool Object::is_number(void) const{}
 bool Object::is_symbol(void) const{}
 bool Object::is_string(void) const{}
 bool Object::is_tuple(void) const{}

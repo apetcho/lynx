@@ -353,7 +353,7 @@ public:
     explicit Object(Result result) noexcept;            // OkErr
     LYNX_DECLARE_COPY(Object);
     LYNX_DECLARE_MOVE(Object);
-    virtual ~Object();
+    ~Object();
 
     // ------------------------------
     // -*- Type Casting Operators -*-
@@ -447,6 +447,8 @@ public:
     bool is_bool(void) const;
     bool is_integer(void) const;
     bool is_float(void) const;
+    bool is_complex(void) const;
+    bool is_number(void) const;
     bool is_symbol(void) const;
     bool is_string(void) const;
     bool is_tuple(void) const;
@@ -462,6 +464,8 @@ public:
     bool is_ok(void) const;
     bool is_structure(void) const;
 
+    bool& is_version(void){ return this->m_is_version; }
+    const bool& is_version(void) const{ return this->m_is_version; }
     bool is_newtype(void) const{ return this->m_newtype; }
     bool& is_constant(void){ return this->m_constant; }
     const bool& is_constant(void) const{ return this->m_constant; }
@@ -484,10 +488,10 @@ public:
     Error err(void) const;
 
     // -*-
-    virtual Symbol type(void) const;
-    virtual Str repr(void) const;
-    virtual usize hash(void) const;
-    virtual Iterator iter(void) const;
+    Symbol type(void) const;
+    Str repr(void) const;
+    usize hash(void) const;
+    Iterator iter(void) const;
 
     // -------------------------------
     // -*- Complex numbers methods -*-
@@ -543,8 +547,6 @@ public:
     Self keys(Args args);
     Self values(Args args);
     Self items(Args args);
-    Self get(Args args);
-    Self put(Args args);
     Self popitem(Args args);
     Self update(Args args);
 
@@ -561,6 +563,7 @@ private:
     using Value = std::variant<LYNX_TYPE_VARIANTS()>;
     TypeKind m_kind;
     Value m_value;
+    bool m_is_version;
     bool m_newtype;
     bool m_constant;
     bool m_fixed_type;
@@ -644,8 +647,8 @@ public:
     explicit StringIterator(const Self& data) noexcept;
     LYNX_DECLARE_MOVE(StringIterator);
     ~StringIterator();
-    virtual Self next(void) override;
-    virtual Self done(void) override;
+    Self next(void) override;
+    Self done(void) override;
 
 private:
     Self m_data;
@@ -656,8 +659,8 @@ public:
     explicit TupleIterator(const Self& data) noexcept;
     LYNX_DECLARE_MOVE(TupleIterator);
     ~TupleIterator();
-    virtual Self next(void) override;
-    virtual Self done(void) override;
+    Self next(void) override;
+    Self done(void) override;
 
 private:
     Self m_data;
@@ -669,8 +672,8 @@ public:
     explicit ListIterator(const Self& data) noexcept;
     LYNX_DECLARE_MOVE(ListIterator);
     ~ListIterator();
-    virtual Self next(void) override;
-    virtual Self done(void) override;
+    Self next(void) override;
+    Self done(void) override;
 
 private:
     Self m_data;
@@ -682,8 +685,8 @@ public:
     explicit DictIterator(const Self& data) noexcept;
     LYNX_DECLARE_MOVE(DictIterator);
     ~DictIterator();
-    virtual Self next(void) override;
-    virtual Self done(void) override;
+    Self next(void) override;
+    Self done(void) override;
 
 private:
     Self m_data;
@@ -695,8 +698,8 @@ public:
     explicit SetIterator(const Self& data) noexcept;
     LYNX_DECLARE_MOVE(SetIterator);
     ~SetIterator();
-    virtual Self next(void) override;
-    virtual Self done(void) override;
+    Self next(void) override;
+    Self done(void) override;
 
 private:
     Self m_data;
@@ -709,8 +712,8 @@ public:
     explicit RangeIterator(const Self& start, const Self& stop, const Self& step) noexcept;
     LYNX_DECLARE_MOVE(RangeIterator);
     ~RangeIterator();
-    virtual Self next(void) override;
-    virtual Self done(void) override;
+    Self next(void) override;
+    Self done(void) override;
 
 private:
     Self m_start;
@@ -719,43 +722,47 @@ private:
 };
 
 // -*-
-#define LYNX_RESERVED_WORD_KINDS()      \
-    LYNX_DEF(Import, "import")          \
-    LYNX_DEF(From, "from")              \
-    LYNX_DEF(In, "in")                  \
-    LYNX_DEF(Fun, "fun")                \
-    LYNX_DEF(Macro, "macro")            \
-    LYNX_DEF(Lambda, "lambda")          \
-    LYNX_DEF(Struct, "struct")          \
-    LYNX_DEF(When, "when")              \
-    LYNX_DEF(If, "if")                  \
-    LYNX_DEF(Elif, "elif")              \
-    LYNX_DEF(Else, "else")              \
-    LYNX_DEF(For, "for")                \
-    LYNX_DEF(While, "while")            \
-    LYNX_DEF(Break, "break")            \
-    LYNX_DEF(Continue, "continue")      \
-    LYNX_DEF(Return, "return")          \
-    LYNX_DEF(Let, "let")                \
-    LYNX_DEF(Var, "var")                \
-    LYNX_DEF(Ok, "Ok")                  \
-    LYNX_DEF(Err, "Err")                \
-    LYNX_DEF(AtInit, "@init")           \
-    LYNX_DEF(AtMain, "@main")           \
-    LYNX_DEF(AtArgv, "@argv")           \
-    LYNX_DEF(AtTesting, "@testing")     \
-    LYNX_DEF(AtTest, "@test")           \
-    LYNX_DEF(AtOperator, "@operator")   \
-    LYNX_DEF(AtSetup, "@setup")         \
-    LYNX_DEF(AtTeardown, "@teardown")   \
-    LYNX_DEF(AtDefine, "@define")       \
-    LYNX_DEF(AtDoc, "@doc")             \
-    LYNX_DEF(Key, ":keys")              \
-    LYNX_DEF(Optional, ":optional")     \
-    LYNX_DEF(Varargs, ":varargs")       \
-    LYNX_DEF(None, "nil")               \
-    LYNX_DEF(True, "true")              \
+#define LYNX_RESERVED_WORD_KINDS()          \
+    LYNX_DEF(Import, "import")              \
+    LYNX_DEF(From, "from")                  \
+    LYNX_DEF(In, "in")                      \
+    LYNX_DEF(Fun, "fun")                    \
+    LYNX_DEF(Macro, "macro")                \
+    LYNX_DEF(Lambda, "lambda")              \
+    LYNX_DEF(Struct, "struct")              \
+    LYNX_DEF(When, "when")                  \
+    LYNX_DEF(Match, "match")                \
+    LYNX_DEF(With, "with")                  \
+    LYNX_DEF(If, "if")                      \
+    LYNX_DEF(Elif, "elif")                  \
+    LYNX_DEF(Else, "else")                  \
+    LYNX_DEF(For, "for")                    \
+    LYNX_DEF(While, "while")                \
+    LYNX_DEF(Break, "break")                \
+    LYNX_DEF(Continue, "continue")          \
+    LYNX_DEF(Return, "return")              \
+    LYNX_DEF(Let, "let")                    \
+    LYNX_DEF(Var, "var")                    \
+    LYNX_DEF(Ok, "Ok")                      \
+    LYNX_DEF(Err, "Err")                    \
+    LYNX_DEF(AtVersion, "@version")         \
+    LYNX_DEF(AtInit, "@init")               \
+    LYNX_DEF(AtMain, "@main")               \
+    LYNX_DEF(AtArgv, "@argv")               \
+    LYNX_DEF(AtTesting, "@testing")         \
+    LYNX_DEF(AtTest, "@test")               \
+    LYNX_DEF(AtOperator, "@operator")       \
+    LYNX_DEF(AtSetup, "@setup")             \
+    LYNX_DEF(AtTeardown, "@teardown")       \
+    LYNX_DEF(AtDefine, "@define")           \
+    LYNX_DEF(AtDoc, "@doc")                 \
+    LYNX_DEF(Key, ":keys")                  \
+    LYNX_DEF(Optional, ":optional")         \
+    LYNX_DEF(Varargs, ":varargs")           \
+    LYNX_DEF(None, "nil")                   \
+    LYNX_DEF(True, "true")                  \
     LYNX_DEF(False, "false")
+
 
 #define LYNX_OPERATOR_KINDS()       \
     LYNX_DEF(And, "and")            \
@@ -957,8 +964,11 @@ private:
     LYNX_DEF(GreaterExpr, "GREATER_EXPR")                       \
     LYNX_DEF(GreaterEqExpr, "GREATER_EQUAL_EXPR")               \
     LYNX_DEF(EqualExpr, "EQUAL_EXPR")                           \
-    LYNX_DEF(NotEqualExpr, "NOT_EQUAL_EXPR")
-
+    LYNX_DEF(NotEqualExpr, "NOT_EQUAL_EXPR")                    \
+    LYNX_DEF(MatchExpr, "MATCH_EXPR")                           \
+    LYNX_DEF(WithExpr, "WITH_EXPR")                             \
+    LYNX_DEF(AtArgvExpr, "AT_ARGV_EXPR")                        \
+    LYNX_DEF(AtVersionExpr, "AT_VERSION_EXPR")
 
 
 enum class AstKind{
@@ -972,159 +982,176 @@ enum class AstKind{
 
 // [000]
 LYNX_DECLARE_AST_STRUCT(Identifier);
-LYNX_DECLARE_AST_STRUCT(NilLiteral);
 // [001]
-LYNX_DECLARE_AST_STRUCT(BoolLiteral);
+LYNX_DECLARE_AST_STRUCT(NilLiteral);
 // [002]
-LYNX_DECLARE_AST_STRUCT(IntegerLiteral);
+LYNX_DECLARE_AST_STRUCT(BoolLiteral);
 // [003]
-LYNX_DECLARE_AST_STRUCT(FloatLiteral);
-LYNX_DECLARE_AST_STRUCT(ComplexExpr);
+LYNX_DECLARE_AST_STRUCT(IntegerLiteral);
 // [004]
-LYNX_DECLARE_AST_STRUCT(SymbolLiteral);
+LYNX_DECLARE_AST_STRUCT(FloatLiteral);
 // [005]
-LYNX_DECLARE_AST_STRUCT(StringLiteral);
+LYNX_DECLARE_AST_STRUCT(ComplexExpr);
 // [006]
-LYNX_DECLARE_AST_STRUCT(TupleLiteral);
+LYNX_DECLARE_AST_STRUCT(SymbolLiteral);
 // [007]
-LYNX_DECLARE_AST_STRUCT(ListLiteral);
+LYNX_DECLARE_AST_STRUCT(StringLiteral);
 // [008]
-LYNX_DECLARE_AST_STRUCT(SetLiteral);
+LYNX_DECLARE_AST_STRUCT(TupleLiteral);
 // [009]
-LYNX_DECLARE_AST_STRUCT(DictLiteral);
+LYNX_DECLARE_AST_STRUCT(ListLiteral);
 // [010]
-LYNX_DECLARE_AST_STRUCT(ParameterListExpr);
-LYNX_DECLARE_AST_STRUCT(StructDefExpr);
+LYNX_DECLARE_AST_STRUCT(SetLiteral);
 // [011]
-LYNX_DECLARE_AST_STRUCT(LambdaDefExpr);
+LYNX_DECLARE_AST_STRUCT(DictLiteral);
+// [011]
+LYNX_DECLARE_AST_STRUCT(ParameterListExpr);
 // [012]
-LYNX_DECLARE_AST_STRUCT(FunDefExpr);
+LYNX_DECLARE_AST_STRUCT(StructDefExpr);
 // [013]
-LYNX_DECLARE_AST_STRUCT(MacroDefExpr);
+LYNX_DECLARE_AST_STRUCT(LambdaDefExpr);
 // [014]
-LYNX_DECLARE_AST_STRUCT(GetExpr);
+LYNX_DECLARE_AST_STRUCT(FunDefExpr);
 // [015]
-LYNX_DECLARE_AST_STRUCT(SetExpr);
+LYNX_DECLARE_AST_STRUCT(MacroDefExpr);
 // [016]
-LYNX_DECLARE_AST_STRUCT(FCallExpr);
+LYNX_DECLARE_AST_STRUCT(GetExpr);
 // [017]
-LYNX_DECLARE_AST_STRUCT(MCallExpr);
+LYNX_DECLARE_AST_STRUCT(SetExpr);
 // [018]
-LYNX_DECLARE_AST_STRUCT(Base);
+LYNX_DECLARE_AST_STRUCT(FCallExpr);
 // [019]
-LYNX_DECLARE_AST_STRUCT(TernaryExpr);
+LYNX_DECLARE_AST_STRUCT(MCallExpr);
 // [020]
-LYNX_DECLARE_AST_STRUCT(BinaryExpr);
+LYNX_DECLARE_AST_STRUCT(Base);
 // [021]
-LYNX_DECLARE_AST_STRUCT(UnaryExpr);
+LYNX_DECLARE_AST_STRUCT(TernaryExpr);
 // [022]
-LYNX_DECLARE_AST_STRUCT(NullaryExpr);
+LYNX_DECLARE_AST_STRUCT(BinaryExpr);
 // [023]
-LYNX_DECLARE_AST_STRUCT(Identifier);
-// [023]
-LYNX_DECLARE_AST_STRUCT(MinusExpr);
+LYNX_DECLARE_AST_STRUCT(UnaryExpr);
 // [024]
-LYNX_DECLARE_AST_STRUCT(PlusExpr);
+LYNX_DECLARE_AST_STRUCT(NullaryExpr);
 // [025]
-LYNX_DECLARE_AST_STRUCT(AddExpr);
+LYNX_DECLARE_AST_STRUCT(Identifier);
 // [026]
-LYNX_DECLARE_AST_STRUCT(SubExpr);
+LYNX_DECLARE_AST_STRUCT(MinusExpr);
 // [027]
-LYNX_DECLARE_AST_STRUCT(DivExpr);
+LYNX_DECLARE_AST_STRUCT(PlusExpr);
 // [028]
-LYNX_DECLARE_AST_STRUCT(ModExpr);
+LYNX_DECLARE_AST_STRUCT(AddExpr);
 // [029]
-LYNX_DECLARE_AST_STRUCT(PowExpr);
+LYNX_DECLARE_AST_STRUCT(SubExpr);
 // [030]
-LYNX_DECLARE_AST_STRUCT(AddAssignExpr);
+LYNX_DECLARE_AST_STRUCT(DivExpr);
 // [031]
-LYNX_DECLARE_AST_STRUCT(SubAssignExpr);
+LYNX_DECLARE_AST_STRUCT(ModExpr);
 // [032]
-LYNX_DECLARE_AST_STRUCT(DivAssignExpr);
+LYNX_DECLARE_AST_STRUCT(PowExpr);
 // [033]
-LYNX_DECLARE_AST_STRUCT(ModAssignExpr);
+LYNX_DECLARE_AST_STRUCT(AddAssignExpr);
 // [034]
-LYNX_DECLARE_AST_STRUCT(PowAssignExpr);
+LYNX_DECLARE_AST_STRUCT(SubAssignExpr);
 // [035]
-LYNX_DECLARE_AST_STRUCT(LogicalOrExpr);
+LYNX_DECLARE_AST_STRUCT(DivAssignExpr);
 // [036]
-LYNX_DECLARE_AST_STRUCT(LogicalAndExpr);
+LYNX_DECLARE_AST_STRUCT(ModAssignExpr);
 // [037]
-LYNX_DECLARE_AST_STRUCT(LogicalNotExpr);
+LYNX_DECLARE_AST_STRUCT(PowAssignExpr);
 // [038]
-LYNX_DECLARE_AST_STRUCT(BitNotExpr);
+LYNX_DECLARE_AST_STRUCT(LogicalOrExpr);
 // [039]
-LYNX_DECLARE_AST_STRUCT(BitOrExpr);
+LYNX_DECLARE_AST_STRUCT(LogicalAndExpr);
 // [040]
-LYNX_DECLARE_AST_STRUCT(BitAndExpr);
+LYNX_DECLARE_AST_STRUCT(LogicalNotExpr);
 // [041]
-LYNX_DECLARE_AST_STRUCT(BitXorExpr);
+LYNX_DECLARE_AST_STRUCT(BitNotExpr);
 // [042]
-LYNX_DECLARE_AST_STRUCT(BitShlExpr);
+LYNX_DECLARE_AST_STRUCT(BitOrExpr);
 // [043]
-LYNX_DECLARE_AST_STRUCT(BitShrExpr);
+LYNX_DECLARE_AST_STRUCT(BitAndExpr);
 // [044]
-LYNX_DECLARE_AST_STRUCT(BitOrAssignExpr);
+LYNX_DECLARE_AST_STRUCT(BitXorExpr);
 // [045]
-LYNX_DECLARE_AST_STRUCT(BitAndAssignExpr);
+LYNX_DECLARE_AST_STRUCT(BitShlExpr);
 // [046]
-LYNX_DECLARE_AST_STRUCT(BitXorAssignExpr);
+LYNX_DECLARE_AST_STRUCT(BitShrExpr);
 // [047]
-LYNX_DECLARE_AST_STRUCT(BitShlAssignExpr);
+LYNX_DECLARE_AST_STRUCT(BitOrAssignExpr);
 // [048]
-LYNX_DECLARE_AST_STRUCT(BitShrAssignExpr);
-// [49]
-LYNX_DECLARE_AST_STRUCT(CreateStructObjExpr);
+LYNX_DECLARE_AST_STRUCT(BitAndAssignExpr);
+// [049]
+LYNX_DECLARE_AST_STRUCT(BitXorAssignExpr);
 // [050]
-LYNX_DECLARE_AST_STRUCT(AtInitExpr);
+LYNX_DECLARE_AST_STRUCT(BitShlAssignExpr);
 // [051]
-LYNX_DECLARE_AST_STRUCT(AtMainExpr);
+LYNX_DECLARE_AST_STRUCT(BitShrAssignExpr);
 // [052]
-LYNX_DECLARE_AST_STRUCT(AtTestingExpr);
+LYNX_DECLARE_AST_STRUCT(CreateStructObjExpr);
 // [053]
-LYNX_DECLARE_AST_STRUCT(AtTestExpr);
+LYNX_DECLARE_AST_STRUCT(AtInitExpr);
 // [054]
-LYNX_DECLARE_AST_STRUCT(AtSetupExpr);
+LYNX_DECLARE_AST_STRUCT(AtMainExpr);
 // [055]
-LYNX_DECLARE_AST_STRUCT(AtTeardownExpr);
+LYNX_DECLARE_AST_STRUCT(AtTestingExpr);
 // [056]
-LYNX_DECLARE_AST_STRUCT(AtDefineExpr);
+LYNX_DECLARE_AST_STRUCT(AtTestExpr);
 // [057]
-LYNX_DECLARE_AST_STRUCT(AtOperatorExpr);
+LYNX_DECLARE_AST_STRUCT(AtSetupExpr);
 // [058]
-LYNX_DECLARE_AST_STRUCT(AtDocExpr);
+LYNX_DECLARE_AST_STRUCT(AtTeardownExpr);
 // [059]
-LYNX_DECLARE_AST_STRUCT(WhenExpr);
+LYNX_DECLARE_AST_STRUCT(AtDefineExpr);
 // [060]
-LYNX_DECLARE_AST_STRUCT(BlockStmt);
+LYNX_DECLARE_AST_STRUCT(AtOperatorExpr);
 // [061]
-LYNX_DECLARE_AST_STRUCT(LetStmt);
+LYNX_DECLARE_AST_STRUCT(AtDocExpr);
 // [062]
-LYNX_DECLARE_AST_STRUCT(VarStmt);
+LYNX_DECLARE_AST_STRUCT(WhenExpr);
 // [063]
-LYNX_DECLARE_AST_STRUCT(IfStmt);
+LYNX_DECLARE_AST_STRUCT(BlockStmt);
 // [064]
-LYNX_DECLARE_AST_STRUCT(ForStmt);
+LYNX_DECLARE_AST_STRUCT(LetStmt);
 // [065]
-LYNX_DECLARE_AST_STRUCT(WhileStmt);
+LYNX_DECLARE_AST_STRUCT(VarStmt);
 // [066]
-LYNX_DECLARE_AST_STRUCT(BreakStmt);
+LYNX_DECLARE_AST_STRUCT(IfStmt);
 // [067]
-LYNX_DECLARE_AST_STRUCT(ContinueStmt);
+LYNX_DECLARE_AST_STRUCT(ForStmt);
 // [068]
-LYNX_DECLARE_AST_STRUCT(ReturnStmt);
+LYNX_DECLARE_AST_STRUCT(WhileStmt);
 // [069]
-LYNX_DECLARE_AST_STRUCT(ImportStmt);
+LYNX_DECLARE_AST_STRUCT(BreakStmt);
 // [070]
-LYNX_DECLARE_AST_STRUCT(DestructuringExpr);
+LYNX_DECLARE_AST_STRUCT(ContinueStmt);
 // [071]
+LYNX_DECLARE_AST_STRUCT(ReturnStmt);
+// [072]
+LYNX_DECLARE_AST_STRUCT(ImportStmt);
+// [073]
+LYNX_DECLARE_AST_STRUCT(DestructuringExpr);
+// [074]
 LYNX_DECLARE_AST_STRUCT(ResultExpr);
+// [075]
 LYNX_DECLARE_AST_STRUCT(LessExpr);
+// [076]
 LYNX_DECLARE_AST_STRUCT(LessEqExpr);
+// [077]
 LYNX_DECLARE_AST_STRUCT(GreaterExpr);
+// [078]
 LYNX_DECLARE_AST_STRUCT(GreaterEqExpr);
+// [079]
 LYNX_DECLARE_AST_STRUCT(EqualExpr);
+// [080]
 LYNX_DECLARE_AST_STRUCT(NotEqualExpr);
+// [081]
+LYNX_DECLARE_AST_STRUCT(MatchExpr);
+// [082]
+LYNX_DECLARE_AST_STRUCT(WithExpr);
+// [083]
+LYNX_DECLARE_AST_STRUCT(AtArgvExpr);
+// [084]
+LYNX_DECLARE_AST_STRUCT(AtVersionExpr);
 
 // -*-
 class Parameter final{
@@ -2635,6 +2662,12 @@ struct AtTeardownExprAst final: public UnaryExprAst {
  * @brief AtDefineExprAst
  * Implement '@define' constant definition
  * 
+ * @define-expr: {node1, node2, [node3]}
+ * 
+ * node1: ident
+ * node2: value
+ * node3: doc-string
+ * 
  * Usage:
  *      @define(name, value)
  *      @define(name, value, @doc{...})
@@ -2658,9 +2691,10 @@ struct AtDefineExprAst final: public TernaryExprAst {
  *      @operator __str__(){ ... }
  *      @operator __repr__(){ ... }
  *      @operator __hash__(){ ... }
- *      @operator __setattr__(){ ... }      XXX
- *      @operator __getattr__(){ ... }      XXX
- *      @operator __delattr__(){ ... }      XXX
+ *      @operator __setattr__(){ ... }
+ *      @operator __getattr__(){ ... }
+ *      @operator __delattr__(){ ... }
+ *      @operator __bool__(){}
  *      @operator __integer__(){ ... }
  *      @operator __float__(){ ... }
  *      @operator __tuple__(){ ... }
@@ -2715,8 +2749,11 @@ struct AtOperatorExprAst final: public TernaryExprAst {
  * @brief AtDocExprAst
  * Implement '@doc' documentation-string expression
  * 
+ * doc-expr: { rhs }
+ * rhs: string
+ * 
  * Usage:
- *      @doc{ ... }
+ *      @doc{ string }
  * 
  * [063]
  */
@@ -2732,8 +2769,13 @@ struct AtDocExprAst final: public UnaryExprAst {
  * @brief AtWhenExprAst
  * Implement '@when' ternary-expression operator
  * 
+ * when-expr: {node1, node2, node3 }
+ * node1: test-node
+ * node2: ok-node
+ * node3: alt-node
+ * 
  * Usage:
- *      let name = @when(test){ok}{no}
+ *      let name = @when(test){ok}{alt}
  * 
  * [064]
  */
@@ -2982,6 +3024,8 @@ struct DestructuringExprAst final: public BinaryExprAst {
  * Usage:
  *      let ok = Ok(arg)
  *      let err = Err(arg)
+ *      let myErrSymbol = :MyError
+ *      err = Err(:MyError, message)
  * 
  * [076]
  */
@@ -3109,6 +3153,130 @@ struct NotEqualExprAst final: public BinaryExprAst {
     LYNX_OVERLOAD_AST_COMMONS();
 };
 
+/**
+ * @brief MatchExprAst
+ * Implement match-expression semantic AST
+ * lhs: match-args
+ * rhs: with-cases
+ * 
+ * Usage:
+ * -----
+ *      match(val){
+ *          with(xval){ ... }
+ *          with(complex(x, y)){ ... }
+ *          with(structName(x, _, z)){ ... }
+ *          with((x, y, _)){ ... }
+ *          with([x, _, z]){ ...}
+ *          with(#{x, _, z}){ ... }
+ *          with({xk -> xv, _, zk -> zv}){ ... }
+ *          with( x | y | z){ ... }
+ *          with( _ ){ ...}
+ *      }
+ * 
+ * [083]
+ */
+struct MatchExprAst final: public BinaryExprAst {
+    explicit MatchExprAst(Vec<Token>::iterator begin, Vec<Token>::iterator end) noexcept;
+    LYNX_DECLARE_COPY(MatchExprAst);
+    LYNX_DECLARE_MOVE(MatchExprAst);
+    ~MatchExprAst() = default;
+    LYNX_OVERLOAD_AST_COMMONS();
+};
+
+/**
+ * @brief WithExprAst
+ * Implement with-expression semantic AST
+ * 
+ * with-case := with(pattern){body}
+ * lhs: with-pattern
+ * rhs: with-body
+ * 
+ * Usage:
+ *      (1) scalars | string
+ *          with(value){ .... }
+ *      (2) complex-number
+ *          with(complex(x, y)){ ... }
+ *      (3) tuple
+ *          with((x, y, _)){ ... }
+ *      (4) list
+ *          with([x, y, _]){ ... }
+ *      (5) hashset
+ *          with(#{x, y, _}){ ... }
+ *      (6) hashmap
+ *          with({xk -> xv, yk -> yv, _}){ ... }
+ *          with({k1, k2, _}){ ... }
+ *      (7) Structure
+ *          with(structName(field1, field2, _)){ ... }
+ *      (8) Result
+ *          with(Ok(value)){ ... }
+ *          with(Err(error)){ ... }
+ *          with(Error(Symbol, message)){ ... }
+ *          with(Error(Symbol, _)){ ... }
+ *      (9) WithOr-expression
+ *          with(x | y | z){ ... }
+ * 
+ * [084]
+ */
+struct WithExprAst final: public BinaryExprAst {
+    explicit WithExprAst(Vec<Token>::iterator begin, Vec<Token>::iterator end) noexcept;
+    LYNX_DECLARE_COPY(WithExprAst);
+    LYNX_DECLARE_MOVE(WithExprAst);
+    ~WithExprAst() = default;
+    LYNX_OVERLOAD_AST_COMMONS();
+};
+
+/**
+ * @brief AtArgvExprAst
+ * Implement '@argv'-expression semantic
+ * 
+ * '@argv' is a builtin symbol used for collection command-line arguments
+ * 
+ * Usage:
+ *      let argv = @argv
+ *      println(typeof(argv))       ; Tuple
+ * 
+ * [085]
+ */
+struct AtArgvExprAst final: public NullaryExprAst {
+    explicit AtArgvExprAst(Vec<Token>::iterator begin, Vec<Token>::iterator end) noexcept;
+    LYNX_DECLARE_COPY(AtArgvExprAst);
+    LYNX_DECLARE_MOVE(AtArgvExprAst);
+    ~AtArgvExprAst() = default;
+    LYNX_OVERLOAD_AST_COMMONS();
+};
+
+/**
+ * @brief AtVersionExprAst
+ * Implement '@version'-expression semantic AST
+ * 
+ * rhs: ([major], [minor], [patch])
+ * 
+ * Usage:
+ *      let myversion = @version            ; current interpreter version
+ *      let version1 = @version(2, 3, 0)
+ *      let version2 = @version(2, _, 0)
+ *      version1 == version2                ; false
+ *      version1 >= version2                ; true
+ *      version1 > version2                 ; true
+ *      version1 == "2.3.0"                 ; true
+ *      println(version1)                   ; "2.3.0"
+ *      println(version2)                   ; "2.*.0"
+ * 
+ *      if myversion == @version(3){
+ *           import mymodule
+ *      }else{
+ *           import MymoduleNewName
+ *      }
+ * 
+ */
+struct AtVersionExprAst final: public UnaryExprAst {
+    explicit AtVersionExprAst(Vec<Token>::iterator begin, Vec<Token>::iterator end) noexcept;
+    LYNX_DECLARE_COPY(AtVersionExprAst);
+    LYNX_DECLARE_MOVE(AtVersionExprAst);
+    ~AtVersionExprAst() = default;
+    LYNX_OVERLOAD_AST_COMMONS();
+};
+
 
 // ------------------------
 // -*- Lynx Interpreter -*-
@@ -3129,22 +3297,6 @@ public:
     private:
         HashMap<Str, Self> m_bindings;
         Frame* m_parent;
-    };
-
-    // -*-
-    class Module final{
-    public:
-        explicit Module() noexcept;
-        explicit Module(const Str& name, const fs::path& path) noexcept;
-        LYNX_DECLARE_MOVE(Module);
-        ~Module();
-        Lynx::Frame& frame(void);
-        const Lynx::Frame& frame(void) const;
-
-    private:
-        Symbol m_name;
-        fs::path m_path;
-        Lynx::Frame m_frame;
     };
 
     // -*-
@@ -3204,14 +3356,59 @@ public:
 
     struct Version{
         // major: u32
-        u32 major;
-        u32 minor;
-        u32 patch;
+        i32 major;
+        i32 minor;
+        i32 patch;
         Version();
-        Version(u32 maj, u32 min, u32 patch);
+        Version(i32 maj, i32 min=-1, i32 patch=-1);
         Version& operator=(const Version& version);
         ~Version() = default;
         operator Str();
+        operator Object();
+        friend bool operator==(const Version& lhs, const Version& rhs);
+        friend bool operator!=(const Version& lhs, const Version& rhs);
+        friend bool operator>(const Version& lhs, const Version& rhs);
+        friend bool operator>=(const Version& lhs, const Version& rhs);
+
+        friend bool operator==(const Version& lhs, const Str& rhs);
+        friend bool operator!=(const Version& lhs, const Str& rhs);
+        friend bool operator>(const Version& lhs, const Str& rhs);
+        friend bool operator>=(const Version& lhs, const Str& rhs);
+
+        friend bool operator==(const Str& lhs, const Version& rhs);
+        friend bool operator!=(const Str& lhs, const Version& rhs);
+        friend bool operator>(const Str& lhs, const Version& rhs);
+        friend bool operator>=(const Str& lhs, const Version& rhs);
+
+        friend bool operator==(const Version& lhs, const i32& rhs);
+        friend bool operator!=(const Version& lhs, const i32& rhs);
+        friend bool operator>(const Version& lhs, const i32& rhs);
+        friend bool operator>=(const Version& lhs, const i32& rhs);
+
+        friend bool operator==(const i32& lhs, const Version& rhs);
+        friend bool operator!=(const i32& lhs, const Version& rhs);
+        friend bool operator>(const i32& lhs, const Version& rhs);
+        friend bool operator>=(const i32& lhs, const Version& rhs);
+    };
+
+    // -*-
+    class Module final{
+    public:
+        explicit Module() noexcept;
+        explicit Module(const Str& name, const fs::path& path) noexcept;
+        LYNX_DECLARE_MOVE(Module);
+        ~Module();
+        Lynx::Frame& frame(void);
+        const Lynx::Frame& frame(void) const;
+
+        Version& version();
+        const Version& version() const;
+
+    private:
+        Symbol m_name;
+        fs::path m_path;
+        Lynx::Frame m_frame;
+        Version m_version;
     };
 
     using CallBackDict = HashMap<Str, Callaback>;
@@ -3317,7 +3514,10 @@ public:
     Self operator()(GreaterEqExprAst);
     Self operator()(EqualExprAst);
     Self operator()(NotEqualExprAst);
-
+    Self operator()(MatchExprAst);
+    Self operator()(WithExprAst);
+    Self operator()(AtArgvExprAst);
+    Self operator()(AtVersionExprAst);
 
 private:
     Str m_license;
