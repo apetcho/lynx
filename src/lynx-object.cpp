@@ -813,17 +813,21 @@ Object& Object::operator=(Object&& obj) noexcept{
     return *this;
 }
 
+Object::~Object(){
+    if(this->is_callable() && !this->is_builtin()){
+        Ast ast = std::get<Ast>(this->m_value);
+        ast.reset();
+    }else if(this->is_tuple() || this->is_list()){
+        List vec = std::get<List>(this->m_value);
+        for(auto& item: vec){ item.reset();}
+    }else if(this->is_hashset()){
+        std::get<HSet>(this->m_value).clear();
+    }else if(this->is_hashmap()){
+        std::get<HMap>(this->m_value).clear();
+    }
+}
+
 /*
-: m_kind{Object::Kind::None}
-, m_value{Nil{}}
-, m_name{Symbol("")}
-, m_is_version{false}
-, m_newtype{false}
-, m_constant{false}
-, m_fixed_type{false}{}
-
-
-Object::~Object(){}
 
 Object::operator bool(){}
 Object::operator i64(){}
@@ -836,6 +840,7 @@ Object::operator HSet(){}
 Object::operator HMap(){}
 Object::operator CFun(){}
 Object::operator Result(){}
+Object::operator Ast(){}
 
 Object& Object::operator!(){}
 Object operator&&(const Object& lhs, const Object& rhs){}
