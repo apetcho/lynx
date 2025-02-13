@@ -508,6 +508,7 @@ void Structure::delete_object_attribute(const Str& key){
 Object::Object() noexcept
 : m_kind{Object::Kind::None}
 , m_value{Nil{}}
+, m_name{Symbol("")}
 , m_is_version{false}
 , m_newtype{false}
 , m_constant{false}
@@ -523,6 +524,7 @@ Object::Object() noexcept
 Object::Object(bool val) noexcept
 : m_kind{Object::Kind::Bool}
 , m_value{val}
+, m_name{Symbol("")}
 , m_is_version{false}
 , m_newtype{false}
 , m_constant{false}
@@ -538,6 +540,7 @@ Object::Object(bool val) noexcept
 Object::Object(i64 num) noexcept
 : m_kind{Object::Kind::Integer}
 , m_value{num}
+, m_name{Symbol("")}
 , m_is_version{false}
 , m_newtype{false}
 , m_constant{false}
@@ -552,6 +555,7 @@ Object::Object(i64 num) noexcept
 Object::Object(f64 num) noexcept
 : m_kind{Object::Kind::Float}
 , m_value{num}
+, m_name{Symbol("")}
 , m_is_version{false}
 , m_newtype{false}
 , m_constant{false}
@@ -566,6 +570,7 @@ Object::Object(f64 num) noexcept
 Object::Object(Complex z) noexcept
 : m_kind{Object::Kind::Complex}
 , m_value{z}
+, m_name{Symbol("")}
 , m_is_version{false}
 , m_newtype{false}
 , m_constant{false}
@@ -581,6 +586,7 @@ Object::Object(Complex z) noexcept
 Object::Object(Symbol sym) noexcept
 : m_kind{Object::Kind::Sym}
 , m_value{sym}
+, m_name{Symbol("")}
 , m_is_version{false}
 , m_newtype{false}
 , m_constant{false}
@@ -595,6 +601,7 @@ Object::Object(Symbol sym) noexcept
 Object::Object(Str str) noexcept
 : m_kind{Object::Kind::String}
 , m_value{str}
+, m_name{Symbol("")}
 , m_is_version{false}
 , m_newtype{false}
 , m_constant{false}
@@ -610,6 +617,7 @@ Object::Object(Str str) noexcept
 Object::Object(Object::Kind kind, List data) noexcept
 : m_kind{kind}
 , m_value{data}
+, m_name{Symbol("")}
 , m_is_version{false}
 , m_newtype{false}
 , m_constant{false}
@@ -624,6 +632,7 @@ Object::Object(Object::Kind kind, List data) noexcept
 Object::Object(HSet data) noexcept
 : m_kind{Object::Kind::Set}
 , m_value{data}
+, m_name{Symbol("")}
 , m_is_version{false}
 , m_newtype{false}
 , m_constant{false}
@@ -639,6 +648,7 @@ Object::Object(HSet data) noexcept
 Object::Object(HMap data) noexcept
 : m_kind{Object::Kind::Dict}
 , m_value{data}
+, m_name{Symbol("")}
 , m_is_version{false}
 , m_newtype{false}
 , m_constant{false}
@@ -654,6 +664,7 @@ Object::Object(HMap data) noexcept
 Object::Object(Structure klass) noexcept
 : m_kind{Object::Kind::Struct}
 , m_value{klass}
+, m_name{Symbol("")}
 , m_is_version{false}
 , m_newtype{false}
 , m_constant{false}
@@ -669,22 +680,39 @@ Object::Object(Structure klass) noexcept
 Object::Object(Iterator iter) noexcept
 : m_kind{Object::Kind::Iter}
 , m_value{iter}
+, m_name{Symbol("")}
 , m_is_version{false}
 , m_newtype{false}
 , m_constant{false}
 , m_fixed_type{false}{}
 
 
+/**
+ * @brief Construct a new Object:: Object object
+ * 
+ * Create a builtin function object.
+ * 
+ * @param name 
+ * @param cfun 
+ */
+Object::Object(const Str& name, CFun cfun) noexcept
+: m_kind{Object::Kind::None}
+, m_value{cfun}
+, m_name{Symbol(name)}
+, m_is_version{false}
+, m_newtype{false}
+, m_constant{false}
+, m_fixed_type{false}{}
 
 /*
 : m_kind{Object::Kind::None}
 , m_value{Nil{}}
+, m_name{Symbol("")}
 , m_is_version{false}
 , m_newtype{false}
 , m_constant{false}
 , m_fixed_type{false}{}
 
-Object::Object(const Str& name, CFun cfun) noexcept{}
 Object::Object(Ast ast) noexcept{}
 Object::Object(Result result) noexcept{}
 Object::Object(const Object& obj) noexcept{}

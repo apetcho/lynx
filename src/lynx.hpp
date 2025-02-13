@@ -675,6 +675,7 @@ private:
     using Value = std::variant<LYNX_TYPE_VARIANTS()>;
     Object::Kind m_kind;
     Value m_value;
+    Symbol m_name; // builtin function name
     bool m_is_version;
     bool m_newtype;
     bool m_constant;
