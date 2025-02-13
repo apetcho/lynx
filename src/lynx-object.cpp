@@ -704,6 +704,30 @@ Object::Object(const Str& name, CFun cfun) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
+
+/**
+ * @brief Construct a new Object:: Object object
+ * 
+ * Create a user-defined callable, i.e Lambda, Function, or Macro
+ * @param ast 
+ */
+Object::Object(Ast ast) noexcept
+: m_kind{Object::Kind::None}
+, m_value{ast}
+, m_name{Symbol("")}
+, m_is_version{false}
+, m_newtype{false}
+, m_constant{false}
+, m_fixed_type{false}{
+    if(ast->kind() == AstKind::LambdaDefExpr){
+        this->m_kind = Object::Kind::Lambda;
+    }else if(ast->kind() == AstKind::FunDefExpr){
+        this->m_kind = Object::Kind::Fun;
+    }else if(ast->kind() == AstKind::MacroDefExpr){
+        this->m_kind = Object::Kind::Macro;
+    }
+}
+
 /*
 : m_kind{Object::Kind::None}
 , m_value{Nil{}}
@@ -713,7 +737,7 @@ Object::Object(const Str& name, CFun cfun) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
-Object::Object(Ast ast) noexcept{}
+
 Object::Object(Result result) noexcept{}
 Object::Object(const Object& obj) noexcept{}
 Object::Object(Object&& obj) noexcept{}
