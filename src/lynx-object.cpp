@@ -773,6 +773,26 @@ Object::Object(Object&& obj) noexcept
 , m_constant{std::move(obj.m_constant)}
 , m_fixed_type{std::move(obj.m_fixed_type)}{}
 
+/**
+ * @brief Create a copy of object.
+ * 
+ * @param obj 
+ * @return Object& 
+ */
+Object& Object::operator=(const Object& obj) noexcept{
+    if(this != &obj){
+        this->m_kind = obj.m_kind;
+        this->m_value = obj.m_value;
+        this->m_name = obj.m_name;
+        this->m_is_version = obj.m_is_version;
+        this->m_newtype = obj.m_newtype;
+        this->m_constant = obj.m_constant;
+        this->m_fixed_type = obj.m_fixed_type;
+    }
+
+    return *this;
+}
+
 /*
 : m_kind{Object::Kind::None}
 , m_value{Nil{}}
@@ -782,8 +802,6 @@ Object::Object(Object&& obj) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
-
-Object& Object::operator=(const Object& obj) noexcept{}
 Object& Object::operator=(Object&& obj) noexcept{}
 Object::~Object(){}
 
