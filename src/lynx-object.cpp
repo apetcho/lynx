@@ -900,8 +900,62 @@ Object::operator i64(){
     return num;
 }
 
+/**
+ * @brief Convert object to a floating-point value.
+ * 
+ * @return f64 
+ */
+Object::operator f64(){
+    f64 num{};
+    if(this->is_integer()){
+        num = static_cast<f64>(std::get<i64>(this->m_value));
+    }else if(this->is_bool()){
+        num = static_cast<f64>(static_cast<i64>(std::get<bool>(this->m_value)));
+    }else if(this->is_float()){
+        num = std::get<f64>(this->m_value);
+    }else if(this->is_string()){
+        Str numstr = std::get<Str>(this->m_value);
+        usize pos = 0;
+        if(numstr.find('.')==std::string::npos){
+            i64 inum{};
+            try{
+                inum = std::stol(numstr, &pos);
+                if(numstr.length() != pos){
+                    throw std::runtime_error("invalid numeric string");
+                }
+            }catch(const std::invalid_argument& err){
+                throw std::runtime_error("invalid numeric string");
+            }catch(const std::out_of_range& err){
+                throw std::runtime_error("integer value overflow");
+            }catch(const std::runtime_error& err){
+                throw std::runtime_error(err.what());
+            }catch(...){
+                throw std::runtime_error("unable to convert object into number");
+            }
+            num = static_cast<f64>(inum);
+        }else if(numstr.find('.')!=std::string::npos){
+            try{
+                num = std::stod(numstr, &pos);
+                if(numstr.length() != pos){
+                    throw std::runtime_error("invalid numeric string");
+                }
+            }catch(const std::invalid_argument& err){
+                throw std::runtime_error("invalid numeric string");
+            }catch(const std::out_of_range& err){
+                throw std::runtime_error("floating-point value overflow");
+            }catch(const std::runtime_error& err){
+                throw std::runtime_error(err.what());
+            }catch(...){
+                throw std::runtime_error("unable to convert object into number");
+            }
+        }
+    }else{
+        throw std::runtime_error("unable to convert object into number");
+    }
+    return num;
+}
+
 /*
-Object::operator f64(){}
 Object::operator Complex(){}
 Object::operator Symbol(){}
 Object::operator Str(){}
