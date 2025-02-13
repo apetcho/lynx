@@ -600,6 +600,21 @@ Object::Object(Str str) noexcept
 , m_constant{false}
 , m_fixed_type{false}{}
 
+/**
+ * @brief Construct a new Object:: Object object
+ * 
+ * Create a Tuple or List object.
+ * @param kind  Object::Kind::Tuple or Object::Kind::List
+ * @param data 
+ */
+Object::Object(Object::Kind kind, List data) noexcept
+: m_kind{kind}
+, m_value{data}
+, m_is_version{false}
+, m_newtype{false}
+, m_constant{false}
+, m_fixed_type{false}{}
+
 /*
 : m_kind{Object::Kind::None}
 , m_value{Nil{}}
@@ -609,7 +624,6 @@ Object::Object(Str str) noexcept
 , m_fixed_type{false}{}
 
 
-Object::Object(TypeKind kind, List data) noexcept{}
 Object::Object(HSet data) noexcept{}
 Object::Object(HMap data) noexcept{}
 Object::Object(Structure klass) noexcept{}
