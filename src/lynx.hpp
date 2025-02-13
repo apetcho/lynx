@@ -215,13 +215,6 @@ using Ast = Shared<AbstractAST>;
     LYNX_DEF(Macro, "Macro")        \
     LYNX_DEF(OkErr, "Result")
 
-// LYNX_DEF()
-
-enum class TypeKind{
-#define LYNX_DEF(tok, _) tok,
-    LYNX_TYPE_KINDS()
-#undef LYNX_DEF
-};
 
 // -*-
 class Iterable{
@@ -443,6 +436,12 @@ private:
 
 class Object final{
 public:
+    enum class Kind{
+    #define LYNX_DEF(tok, _) tok,
+        LYNX_TYPE_KINDS()
+    #undef LYNX_DEF
+    };
+public:
     explicit Object() noexcept;                         // None
     explicit Object(bool val) noexcept;                 // Bool
     explicit Object(i64 num) noexcept;                  // Integer
@@ -450,7 +449,7 @@ public:
     explicit Object(Complex z) noexcept;                // Complex
     explicit Object(Symbol sym) noexcept;               // Sym
     explicit Object(Str str) noexcept;                  // String
-    explicit Object(TypeKind kind, List data) noexcept; // Tutple, List
+    explicit Object(Kind kind, List data) noexcept;     // Tutple, List
     explicit Object(HSet data) noexcept;                // Set
     explicit Object(HMap data) noexcept;                // Dict
     explicit Object(Structure klass) noexcept;          // Struct
@@ -572,13 +571,17 @@ public:
     bool is_ok(void) const;
     bool is_structure(void) const;
 
-    bool& is_version(void){ return this->m_is_version; }
-    const bool& is_version(void) const{ return this->m_is_version; }
+    void as_version(void){ this->m_is_version = true; }
+    bool is_version(void) const{ return this->m_is_version; }
+
+    void as_newtype(void){ this->m_newtype = true; }
     bool is_newtype(void) const{ return this->m_newtype; }
-    bool& is_constant(void){ return this->m_constant; }
-    const bool& is_constant(void) const{ return this->m_constant; }
-    bool& is_fixed_type(void){ return this->m_fixed_type; }
-    const bool& is_fixed_type(void) const { return this->m_fixed_type; }
+
+    void as_constant(void){ this->m_constant = true; }
+    bool is_constant(void) const{ return this->m_constant; }
+
+    void as_fixed_type(void){ this->m_fixed_type = true; }
+    bool is_fixed_type(void) const { return this->m_fixed_type; }
 
     // ------------------------------
     // -*- fn, fun, lambda, macro -*-
@@ -669,7 +672,7 @@ public:
 
 private:
     using Value = std::variant<LYNX_TYPE_VARIANTS()>;
-    TypeKind m_kind;
+    Object::Kind m_kind;
     Value m_value;
     bool m_is_version;
     bool m_newtype;
@@ -696,10 +699,10 @@ protected:
     Self __div_assign__(Args args);
     Self __mod_assign__(Args args);
     Self __pow_assign__(Args args);
-    // Logical-ops
-    Self __logical_or__(Args args);
-    Self __logical_and__(Args args);
-    Self __logical_not__(Args args);
+    // // Logical-ops
+    // Self __logical_or__(Args args);
+    // Self __logical_and__(Args args);
+    // Self __logical_not__(Args args);
     // Relational-ops
     Self __lt__(Args args);
     Self __le__(Args args);

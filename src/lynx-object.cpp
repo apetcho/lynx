@@ -500,7 +500,27 @@ void Structure::delete_object_attribute(const Str& key){
 // --------------
 // -*- Object -*-
 // --------------
+/**
+ * @brief Construct a new Object:: Object object
+ * 
+ * Create Nil object.
+ */
+Object::Object() noexcept
+: m_kind{Object::Kind::None}
+, m_value{Nil{}}
+, m_is_version{false}
+, m_newtype{false}
+, m_constant{false}
+, m_fixed_type{false}{}
+
 /*
+Object::Kind m_kind;
+Value m_value;
+bool m_is_version;
+bool m_newtype;
+bool m_constant;
+bool m_fixed_type;
+
 Object::Object() noexcept{}
 Object::Object(bool val) noexcept{}
 Object::Object(i64 num) noexcept{}
