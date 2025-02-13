@@ -827,9 +827,26 @@ Object::~Object(){
     }
 }
 
-/*
+/**
+ * @brief Convert object a boolean value.
+ * 
+ * @return true 
+ * @return false 
+ */
+Object::operator bool(){
+    if(this->is_bool()){ return std::get<bool>(this->m_value); }
+    else if(this->is_integer()){
+        auto num = std::get<i64>(this->m_value);
+        return (num == 0);
+    }else if(this->is_float()){
+        auto num = std::get<f64>(this->m_value);
+        return (num == 0.0);
+    }else if(this->is_nil()){ return false; }
+    return true;
+}
 
-Object::operator bool(){}
+
+/*
 Object::operator i64(){}
 Object::operator f64(){}
 Object::operator Complex(){}
