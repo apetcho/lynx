@@ -248,6 +248,8 @@ public:
     friend bool operator<(const Str& lhsStr, const Symbol& rhs);
     friend bool operator<(const Symbol& lhs, const Str& rhsStr);
 
+    friend class Object;
+
 private:
     Str m_data;
 };

@@ -988,8 +988,48 @@ Object::operator Symbol(){
     return std::get<Symbol>(this->m_value);
 }
 
+/**
+ * @brief Convert object to String-value
+ * 
+ * @return Str 
+ */
+Object::operator Str(){
+    Str str{};
+    if(this->is_nil()){
+        str = Str{"nil"};
+    }else if(this->is_bool()){
+        bool flag = std::get<bool>(this->m_value);
+        if(flag){ str = Str{"true"}; }
+        else{ str = Str{"false"}; }
+    }else if(this->is_integer()){
+        std::stringstream stream;
+        stream << std::get<i64>(this->m_value);
+        str = stream.str();
+    }else if(this->is_float()){
+        std::stringstream stream;
+        stream << std::get<f64>(this->m_value);
+        str = stream.str();
+    }else if(this->is_complex()){
+        Complex z = std::get<Complex>(this->m_value);
+        std::stringstream stream;
+        stream << "Complex(" << z.real() << ", " << z.imag() << ")";
+        str = stream.str();
+    }else if(this->is_symbol()){
+        Symbol sym = std::get<Symbol>(this->m_value);
+        str = sym.m_data;
+    }else if(this->is_string()){
+        str = std::get<Str>(this->m_value);
+    }else{
+        Args args{};
+        args.emplace_back(std::make_shared<Object>(*this));
+        Self self = this->__str__(args);
+        str = static_cast<Str>(*self);
+    }
+
+    return str;
+}
+
 /*
-Object::operator Str(){}
 Object::operator List(){}
 Object::operator HSet(){}
 Object::operator HMap(){}
