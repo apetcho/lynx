@@ -955,8 +955,28 @@ Object::operator f64(){
     return num;
 }
 
+/**
+ * @brief Convert object into a complex-number value.
+ * 
+ * @return Complex 
+ */
+Object::operator Complex(){
+    Complex z{};
+    if(this->is_integer()){
+        f64 x = static_cast<f64>(std::get<i64>(this->m_value));
+        z = Complex(x, 0.0);
+    }else if(this->is_float()){
+        f64 x = std::get<f64>(this->m_value);
+        z = Complex(x, 0.0);
+    }else if(this->is_complex()){
+        z = std::get<Complex>(this->m_value);
+    }else{
+        throw std::runtime_error("unable to convert object into a complex-number");
+    }
+    return z;
+}
+
 /*
-Object::operator Complex(){}
 Object::operator Symbol(){}
 Object::operator Str(){}
 Object::operator List(){}
