@@ -512,7 +512,7 @@ public:
     Self items(void) const;
     Self update(const Self& key, const Self value);
 
-    Dict::UserDict data(void) const;
+    Dict::UserDict data(void) const{ return this->m_data; }
 
     friend class Object;
 

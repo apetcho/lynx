@@ -693,8 +693,8 @@ Set operator&(const Set& lhs, const Set& rhs){}
 // ------------
 
 /*
-usize Dict::Hasher::operator()(const Self& lhs){}
-bool Dict::Equal::operator()(const Self& lhs, const Self& rhs){}
+usize Dict::Hasher::operator()(const Self& lhs) const{}
+bool Dict::Equal::operator()(const Self& lhs, const Self& rhs) const{}
 
 Dict::Dict() noexcept{}
 Dict::Dict(Self iterable) noexcept{}
