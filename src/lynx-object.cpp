@@ -1537,11 +1537,12 @@ Object::operator Ast(){
 Object& Object::operator!(){
     auto val = static_cast<bool>(*this);
     this->m_value = val;
+    this->m_kind = Object::Kind::Bool;
     return *this;
 }
 
 /**
- * @brief Implement logical or (||) operation on Object.
+ * @brief Implement logical 'and' (&&) operation on Object.
  * 
  * @param lhs 
  * @param rhs 
@@ -1554,7 +1555,7 @@ Object operator&&(const Object& lhs, const Object& rhs){
 }
 
 /**
- * @brief Implement logical and (&&) operation on Object.
+ * @brief Implement logical 'or' (||) operation on Object.
  * 
  * @param lhs 
  * @param rhs 
