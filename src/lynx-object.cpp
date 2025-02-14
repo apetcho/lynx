@@ -892,10 +892,23 @@ Self Dict::update(const Self& key, const Self& value){
     return std::make_shared<Object>(Result(err));
 }
 
-/*
-Dict::UserDict Dict::data(void) const{}
-Self operator+(const Dict& lhs, const Dict& rhs){}
-*/
+/**
+ * @brief Concatenate two dictionaries.
+ * 
+ * @param lhs 
+ * @param rhs 
+ * @return Self 
+ */
+Self operator+(const Dict& lhs, const Dict& rhs){
+    Dict dict{};
+    for(auto entry: lhs.m_data){
+        dict.m_data[entry.first] = entry.second;
+    }
+    for(auto entry: rhs.m_data){
+        dict.m_data[entry.first] = entry.second;
+    }
+    return std::make_shared<Object>(dict);
+}
 
 // --------------
 // -*- Object -*-
