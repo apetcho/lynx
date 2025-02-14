@@ -798,8 +798,22 @@ Self Dict::popitem(const Self& key){
     return std::move(self);
 }
 
+/**
+ * @brief Add (key, value) entry of Dict
+ * 
+ * @param key 
+ * @return Self& 
+ */
+Self& Dict::operator[](const Self& key){
+    if(this->contains(key)){
+        return this->m_data[key];
+    }
+    // -*- object not found. We create a new entry with 'nil' value
+    this->m_data[key] = std::make_shared<Object>(); // nil object
+    return this->m_data[key];
+}
+
 /*
-Self& Dict::operator[](const Self& key){}
 const Self& Dict::operator[](const Self& key) const{}
 Self Dict::values(void) const{}
 Self Dict::keys(void) const{}
