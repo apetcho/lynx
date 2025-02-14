@@ -2174,29 +2174,61 @@ bool Object::is_lambda(void) const{
 
 // -*-
 bool Object::is_callable(void) const{
-    return (
+    bool flag = (
         this->is_builtin() ||
         this->is_function() ||
         this->is_lambda() ||
         this->is_macro()
     );
+    if(flag){ return true; }
+    if(this->is_structure()){
+        auto cls = std::get<Structure>(this->m_value);
+        if(cls.methods().find(Symbol("__call__")) != cls.methods().end()){
+            return true;
+        }
+    }
+    return false;
 }
 
 // -*-
 bool Object::is_hashable(void) const{
-    Args args{};
-    args.push_back(std::make_shared<Object>(*this));
-    auto self = Object().__hash__(args);
-    return (!self->is_result());
+    bool flag = (
+        this->is_bool() ||
+        this->is_integer() ||
+        this->is_symbol() ||
+        this->is_string() ||
+        this->is_tuple()
+    );
+    if(flag){ return true; }
+    if(this->is_structure()){
+        auto cls = std::get<Structure>(this->m_value);
+        if(cls.methods().find(Symbol("__hash__")) != cls.methods().end()){
+            return true;
+        }
+    }
+
+    return false;
 }
 
 // -*-
 bool Object::is_iterable(void) const{
-    Args args{};
-    args.push_back(std::make_shared<Object>(*this));
-    auto x = Object().__next__(args);
-    auto y = Object().__done__(args);
-    return (!(x->is_result() && y->is_result()));
+    bool flag = (
+        this->is_string() ||
+        this->is_tuple() ||
+        this->is_list() ||
+        this->is_hashset() ||
+        this->is_hashmap()
+    );
+    if(flag){ return true; }
+    if(this->is_structure()){
+        auto cls = std::get<Structure>(this->m_value);
+        flag = (
+            (cls.methods().find(Symbol("__next__")) != cls.methods().end()) &&
+            (cls.methods().find(Symbol("__done__")) != cls.methods().end())
+        );
+        if(flag){ return true; }
+    }
+    return false;
 }
 
 // -*-
@@ -2238,12 +2270,47 @@ bool Object::is_builitn_type(void) const{
     );
 }
 
-/*
 // ------------------------------
 // -*- fn, fun, lambda, macro -*-
 // ------------------------------
-Self Object::operator()(Args args){}
+Self Object::operator()(Args args){
+    if(this->is_callable()){
+        if(this->is_builtin()){
+            auto cfun = std::get<CFun>(this->m_value);
+            return cfun(args);
+        }
+        if(this->is_function()){
+            auto ast = std::get<Ast>(this->m_value);
+            auto fun = reinterpret_cast<FunDefExprAst*>(ast.get());
+            auto fn = *fun;
+            return fn(args);
+        }
+        if(this->is_macro()){
+            auto ast = std::get<Ast>(this->m_value);
+            auto macro = reinterpret_cast<MacroDefExprAst*>(ast.get());
+            auto fn = *macro;
+            return fn(args);
+        }
+        if(this->is_lambda()){
+            auto ast = std::get<Ast>(this->m_value);
+            auto lambda = reinterpret_cast<LambdaDefExprAst*>(ast.get());
+            auto fn = *lambda;
+            return fn(args);
+        }
+        if(this->is_structure()){
+            auto cls = std::get<Structure>(this->m_value);
+            auto ast = cls.methods()[Symbol("__call__")];
+            auto fun = reinterpret_cast<FunDefExprAst*>(ast.get());
+            auto fn = *fun;
+            return fn(args);
+        }
+    }
 
+    auto err = Error(Error::Kind::SyntaxError, "cannot call a non-callable object.");
+    return std::make_shared<Object>(Result(err));
+}
+
+/*
 // ------------------------
 // -*- call type method -*-
 // ------------------------

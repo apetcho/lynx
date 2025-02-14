@@ -2044,11 +2044,11 @@ struct StructDefExprAst final: public BinaryExprAst{
  * 
  * [019]
  */
-struct LambdaDefAst final: public BinaryExprAst{
-    explicit LambdaDefAst(Vec<Token>::iterator begin, Vec<Token>::iterator end) noexcept;
-    LYNX_DECLARE_COPY(LambdaDefAst);
-    LYNX_DECLARE_MOVE(LambdaDefAst);
-    ~LambdaDefAst() = default;
+struct LambdaDefExprAst final: public BinaryExprAst{
+    explicit LambdaDefExprAst(Vec<Token>::iterator begin, Vec<Token>::iterator end) noexcept;
+    LYNX_DECLARE_COPY(LambdaDefExprAst);
+    LYNX_DECLARE_MOVE(LambdaDefExprAst);
+    ~LambdaDefExprAst() = default;
     LYNX_OVERLOAD_AST_COMMONS();
     Vec<Parameter> parameters() const;
     Ast body(void) const;
