@@ -1580,8 +1580,25 @@ Object& Object::operator~(){
     return *this;
 }
 
+/**
+ * @brief Implement bitwise 'or' operation on Object.
+ * 
+ * Assumes object is an integer.
+ * 
+ * @param lhs 
+ * @param rhs 
+ * @return Object 
+ */
+Object operator|(const Object& lhs, const Object& rhs){
+    Object x = lhs;
+    Object y = rhs;
+    auto xnum = static_cast<i64>(x);
+    auto ynum = static_cast<i64>(y);
+    return Object((xnum | ynum));
+}
+
+
 /*
-Object operator|(const Object& lhs, const Object& rhs){}
 Object operator&(const Object& lhs, const Object& rhs){}
 Object operator^(const Object& lhs, const Object& rhs){}
 Object operator<<(const Object& lhs, const Object& rhs){}
