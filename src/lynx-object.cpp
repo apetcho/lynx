@@ -2162,12 +2162,17 @@ bool Object::is_function(void) const{
     return this->m_kind == Object::Kind::Fun;
 }
 
+// -*-
 bool Object::is_macro(void) const{
     return this->m_kind == Object::Kind::Macro;
 }
 
+// -*-
+bool Object::is_lambda(void) const{
+    return this->m_kind == Object::Kind::Lambda;
+}
+
 /*
-bool Object::is_lambda(void) const{}
 bool Object::is_callable(void) const{}
 bool Object::is_hashable(void) const{}
 bool Object::is_ok(void) const{}
