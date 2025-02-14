@@ -665,8 +665,13 @@ Set operator-(const Set& lhs, const Set& rhs){
     return hset;
 }
 
+// -*-
+Set operator|(const Set& lhs, const Set& rhs){
+    Set hset = lhs + rhs;
+    return hset;
+}
+
 /*
-Set operator|(const Set& lhs, const Set& rhs){}
 Set operator^(const Set& lhs, const Set& rhs){}
 Set operator&(const Set& lhs, const Set& rhs){}
 */
