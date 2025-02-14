@@ -828,8 +828,20 @@ const Self& Dict::operator[](const Self& key) const{
     throw std::runtime_error("key not found");
 }
 
+/**
+ * @brief Return a list of value entries.
+ * 
+ * @return Self 
+ */
+Self Dict::values(void) const{
+    List vec{};
+    for(auto entry: this->m_data){
+        vec.push_back(std::make_shared<Object>(*entry.second));
+    }
+    return std::make_shared<Object>(Object::Kind::Vector, vec);
+}
+
 /*
-Self Dict::values(void) const{}
 Self Dict::keys(void) const{}
 Self Dict::items(void) const{}
 Self Dict::update(const Self& key, const Self value){}
