@@ -692,6 +692,9 @@ public:
     usize hash(void) const;
     Iterator iter(void) const;
 
+    Str& docstr(void){ return this->m_doc; }
+    const Str& doctrs(void) const{ return this->m_doc; }
+
     // -------------------------------
     // -*- Complex numbers methods -*-
     // -------------------------------
@@ -769,6 +772,8 @@ private:
     bool m_newtype;
     bool m_constant;
     bool m_fixed_type;
+
+    Str m_doc = ""; // builtin function documentation string
 
     friend class StringIterator;
     friend class TupleIterator;

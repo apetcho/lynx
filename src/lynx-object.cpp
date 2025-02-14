@@ -854,8 +854,26 @@ Self Dict::keys(void) const{
     return std::make_shared<Object>(Object::Kind::Vector, vec);
 }
 
+/**
+ * @brief Return a list (key, value) pairs
+ * 
+ * @return Self 
+ */
+Self Dict::items(void) const{
+    List vec{};
+    for(auto entry: this->m_data){
+        List xs{};
+        xs.push_back(std::make_shared<Object>(*entry.first));
+        xs.push_back(std::make_shared<Object>(*entry.second));
+        auto item = std::make_shared<Object>(Object::Kind::Tuple, xs);
+        vec.push_back(std::move(item));
+    }
+
+    return std::make_shared<Object>(Object::Kind::Vector, vec);
+}
+
+
 /*
-Self Dict::items(void) const{}
 Self Dict::update(const Self& key, const Self value){}
 Dict::UserDict Dict::data(void) const{}
 Self operator+(const Dict& lhs, const Dict& rhs){}
