@@ -730,11 +730,25 @@ Dict::Dict(Self iterable) noexcept: Dict{}{
     }
 }
 
+// -*-
+Dict::Dict(const Dict& dict) noexcept: m_data{dict.m_data}{}
+
+// -*-
+Dict::Dict(Dict&& dict) noexcept: m_data{std::move(dict.m_data)}{}
+
+// -*-
+Dict& Dict::operator=(const Dict& dict) noexcept{
+    if(this != &dict){ this->m_data = dict.m_data; }
+    return *this;
+}
+
+// -*-
+Dict& Dict::operator=(Dict&& dict) noexcept{
+    if(this != &dict){ this->m_data = std::move(dict.m_data); }
+    return *this;
+}
+
 /*
-Dict::Dict(const Dict& dict) noexcept{}
-Dict::Dict(Dict&& dict) noexcept{}
-Dict& Dict::operator=(const Dict& dict) noexcept{}
-Dict& Dict::operator=(Dict&& dict) noexcept{}
 Dict::~Dict(){}
 bool Dict::contains(const Self& key) const{}
 usize Dict::len(void) const{}
