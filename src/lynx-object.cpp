@@ -527,8 +527,14 @@ bool Set::Equal::operator()(const Self& lhs, const Self& rhs){
     return (*lhs) == (*rhs);
 }
 
+/**
+ * @brief Construct a Set empty object.
+ * 
+ */
+Set::Set() noexcept: m_data{}{}
+
+
 /*
-Set::Set() noexcept{}
 Set::Set(Self iterable) noexcept{}
 Set::Set(const Set& hset) noexcept{}
 Set::Set(Set&& hset) noexcept{}
