@@ -841,8 +841,20 @@ Self Dict::values(void) const{
     return std::make_shared<Object>(Object::Kind::Vector, vec);
 }
 
+/**
+ * @brief Return a list of keys in the dictionary.
+ * 
+ * @return Self 
+ */
+Self Dict::keys(void) const{
+    List vec{};
+    for(auto entry: this->m_data){
+        vec.push_back(std::make_shared<Object>(*entry.first));
+    }
+    return std::make_shared<Object>(Object::Kind::Vector, vec);
+}
+
 /*
-Self Dict::keys(void) const{}
 Self Dict::items(void) const{}
 Self Dict::update(const Self& key, const Self value){}
 Dict::UserDict Dict::data(void) const{}
