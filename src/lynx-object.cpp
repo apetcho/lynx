@@ -2122,8 +2122,12 @@ bool Object::is_number(void) const{
     );
 }
 
+// -*-
+bool Object::is_symbol(void) const{
+    return this->m_kind == Object::Kind::Sym;
+}
+
 /*
-bool Object::is_symbol(void) const{}
 bool Object::is_string(void) const{}
 bool Object::is_tuple(void) const{}
 bool Object::is_list(void) const{}
