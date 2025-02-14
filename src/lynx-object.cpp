@@ -691,9 +691,13 @@ Set operator&(const Set& lhs, const Set& rhs){}
 // ------------
 // -*- Dict -*-
 // ------------
+// -*-
+usize Dict::Hasher::operator()(const Self& lhs) const{
+    Self self = lhs->__hash__(Args{lhs});
+    return static_cast<usize>(std::get<i64>(self->m_value));
+}
 
 /*
-usize Dict::Hasher::operator()(const Self& lhs) const{}
 bool Dict::Equal::operator()(const Self& lhs, const Self& rhs) const{}
 
 Dict::Dict() noexcept{}
