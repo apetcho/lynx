@@ -653,9 +653,19 @@ Set operator+(const Set& lhs, const Set& rhs){
     return hset;
 }
 
+Set operator-(const Set& lhs, const Set& rhs){
+    Set hset{};
+    for(auto key=lhs.m_data.cbegin(); key != lhs.m_data.cend(); key++){
+        hset.insert(*key);
+    }
+    for(auto key=rhs.m_data.cbegin(); key != rhs.m_data.cend(); key++){
+        if(hset.contains(*key)){ hset.remove(*key); }
+    }
+
+    return hset;
+}
+
 /*
-Set operator+(const Set& lhs, const Set& rhs){}
-Set operator-(const Set& lhs, const Set& rhs){}
 Set operator|(const Set& lhs, const Set& rhs){}
 Set operator^(const Set& lhs, const Set& rhs){}
 Set operator&(const Set& lhs, const Set& rhs){}
