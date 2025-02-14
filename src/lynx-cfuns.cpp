@@ -54,6 +54,8 @@ Self fn_format(Args args);
 Self fn_repr(Args args);
 Self fn_chr(Args args);
 Self fn_ord(Args args);
+Self fn_all(Args args);
+Self fn_any(Args args);
 Self fn_filter(Args args);
 Self fn_reduce(Args args);
 Self fn_map(Args args);

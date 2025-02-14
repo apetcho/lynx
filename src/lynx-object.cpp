@@ -2666,7 +2666,7 @@ Self Object::find(Args args){
     }
     Self self = args[0];
     Self needle = args[1];
-    if(self->is_string()){
+    if(self->is_string() && needle->is_string()){
         i64 pos{};
         auto str = std::get<Str>(self->m_value);
         auto key = std::get<Str>(self->m_value);
@@ -2700,8 +2700,43 @@ Self Object::find(Args args){
 }
 
 
+// -*-
+Self Object::find_all(Args args){
+    if(!check_argcount(args, 2)){
+        Error err(Error::Kind::ValueError, "invalid number of argument");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = args[0];
+    auto needle = args[1];
+    if(self->is_string() && needle->is_string()){
+        auto str = std::get<Str>(self->m_value);
+        auto key = std::get<Str>(needle->m_value);
+        List vec{};
+        auto pos = str.find(key);
+        while((pos != Str::npos)){
+            vec.push_back(std::make_shared<Object>(static_cast<i64>(pos)));
+            pos += key.length();
+            pos = str.find(key, pos);
+        }
+        return std::make_shared<Object>(Object::Kind::Tuple, vec);
+    }else if(self->is_list() || self->is_tuple()){
+        auto xlist = std::get<List>(self->m_value);
+        List vec{};
+        for(auto key=xlist.begin(); key != xlist.end(); key++){
+            auto obj = *key;
+            if((*obj == *needle)){
+                auto pos = std::distance(key, xlist.begin());
+                vec.push_back(std::make_shared<Object>(static_cast<i64>(pos)));
+            }
+        }
+        return std::make_shared<Object>(Object::Kind::Tuple, vec);
+    }
+    Error err(Error::Kind::SyntaxError, " method `find` is not implemented");
+    return std::make_shared<Object>(Result(err));
+}
+
+
 /*
-Self Object::find_all(Args args){}
 Self Object::find_last(Args args){}
 Self Object::slice(Args args){}
 Self Object::sort(Args args){}
