@@ -2157,8 +2157,12 @@ bool Object::is_builtin(void) const{
     return this->m_kind == Object::Kind::CFun;
 }
 
+// -*-
+bool Object::is_function(void) const{
+    return this->m_kind == Object::Kind::Fun;
+}
+
 /*
-bool Object::is_function(void) const{}
 bool Object::is_macro(void) const{}
 bool Object::is_lambda(void) const{}
 bool Object::is_callable(void) const{}
