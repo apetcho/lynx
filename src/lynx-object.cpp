@@ -753,8 +753,15 @@ Dict::~Dict(){
     this->m_data.clear();
 }
 
+// -*-
+bool Dict::contains(const Self& key) const{
+    if(this->m_data.find(key) != this->m_data.end()){
+        return true;
+    }
+    return false;
+}
+
 /*
-bool Dict::contains(const Self& key) const{}
 usize Dict::len(void) const{}
 void Dict::remove(const Self& key){}
 Self Dict::popitem(const Self& key){}
