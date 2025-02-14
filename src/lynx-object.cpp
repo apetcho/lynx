@@ -2221,10 +2221,24 @@ bool Object::is_structure(void) const{
     return this->m_kind == Object::Kind::Struct;
 }
 
+// -*-
+bool Object::is_builitn_type(void) const{
+    return (
+        this->is_nil() ||
+        this->is_integer() ||
+        this->is_float() ||
+        this->is_complex() ||
+        this->is_symbol() ||
+        this->is_string() ||
+        this->is_tuple() ||
+        this->is_list() ||
+        this->is_hashset() ||
+        this->is_hashmap() ||
+        this->is_result()
+    );
+}
+
 /*
-bool Object::is_builitn_type(void) const{}
-
-
 // ------------------------------
 // -*- fn, fun, lambda, macro -*-
 // ------------------------------
