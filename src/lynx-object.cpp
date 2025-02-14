@@ -634,8 +634,10 @@ void Set::remove(const Self& item){
     }
 }
 
+// -*-
+void Set::clear(void){ this->m_data.clear(); }
+
 /*
-void Set::clear(void){}
 Set::UserSet Set::data(void) const{}
 
 Set operator+(const Set& lhs, const Set& rhs){}
