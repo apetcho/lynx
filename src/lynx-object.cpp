@@ -2468,8 +2468,15 @@ Symbol Object::type(void) const{
     return cls.name();
 }
 
+
+Str Object::repr(void) const{
+    Args args{};
+    args.push_back(std::make_shared<Object>(*this));
+    Self self = Object().__repr__(args);
+    return static_cast<Str>(*self);
+}
+
 /*
-Str Object::repr(void) const{}
 usize Object::hash(void) const{}
 Iterator Object::iter(void) const{}
 
