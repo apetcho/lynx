@@ -617,8 +617,17 @@ bool Set::is_superset(const Set& hset) const{
     return true;
 }
 
+// -*-
+bool Set::is_subset(const Set& hset) const{
+    if(hset.len() < this->len()){ return false; }
+    for(auto key=this->m_data.cbegin(); key != this->m_data.cend(); key++){
+        if(!hset.contains(*key)){ return false; }
+    }
+
+    return true;
+}
+
 /*
-bool Set::is_subset(const Set& hset) const{}
 void Set::remove(const Self& item){}
 void Set::clear(void){}
 Set::UserSet Set::data(void) const{}
