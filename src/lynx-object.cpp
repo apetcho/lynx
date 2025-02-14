@@ -2636,8 +2636,26 @@ Self Object::clear(Args args){
     return std::make_shared<Object>(*this);
 }
 
+// -*-
+Self Object::len(Args args){
+    if(!check_argcount(args, 1)){
+        Error err(Error::Kind::ValueError, "invalid number of argument");
+        return std::make_shared<Object>(Result(err));
+    }
+    usize xlen{};
+    if(this->is_list()){
+        xlen = std::get<List>(this->m_value).size();    
+    }else if(this->is_hashset()){
+        xlen = std::get<Set>(this->m_value).m_data.size();
+    }else if(this->is_hashmap()){
+        xlen = std::get<Dict>(this->m_value).m_data.size();
+    }else if(this->is_string()){
+        xlen = std::get<Str>(this->m_value).length();
+    }
+    return std::make_shared<Object>(static_cast<i64>(xlen));
+}
+
 /*
-Self Object::len(Args args){}
 Self Object::find(Args args){}
 Self Object::find_all(Args args){}
 Self Object::find_last(Args args){}
