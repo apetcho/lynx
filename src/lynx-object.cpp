@@ -2137,8 +2137,12 @@ bool Object::is_tuple(void) const{
     return this->m_kind == Object::Kind::Tuple;
 }
 
+// -*-
+bool Object::is_list(void) const{
+    return this->m_kind == Object::Kind::Vector;
+}
+
 /*
-bool Object::is_list(void) const{}
 bool Object::is_hashset(void) const{}
 bool Object::is_hashmap(void) const{}
 bool Object::is_builtin(void) const{}
