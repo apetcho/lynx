@@ -2618,12 +2618,25 @@ Self Object::polar(Args args){
     return std::make_shared<Object>(std::polar(rho, theta));
 }
 
-
-/*
 // -*---------------------------------
 // -*- Sequence Specific Operators -*-
 // -----------------------------------
-Self Object::clear(Args args){}
+Self Object::clear(Args args){
+    if(!check_argcount(args, 1)){
+        Error err(Error::Kind::ValueError, "invalid number of argument");
+        return std::make_shared<Object>(Result(err));
+    }
+    if(this->is_list()){
+        std::get<List>(this->m_value).clear();    
+    }else if(this->is_hashset()){
+        std::get<Set>(this->m_value).clear();
+    }else if(this->is_hashmap()){
+        std::get<Dict>(this->m_value).m_data.clear();
+    }
+    return std::make_shared<Object>(*this);
+}
+
+/*
 Self Object::len(Args args){}
 Self Object::find(Args args){}
 Self Object::find_all(Args args){}
