@@ -2113,8 +2113,16 @@ bool Object::is_complex(void) const{
     return this->m_kind == Object::Kind::Complex;
 }
 
+// -*-
+bool Object::is_number(void) const{
+    return (
+        this->is_integer() ||
+        this->is_float() ||
+        this->is_complex()
+    );
+}
+
 /*
-bool Object::is_number(void) const{}
 bool Object::is_symbol(void) const{}
 bool Object::is_string(void) const{}
 bool Object::is_tuple(void) const{}
