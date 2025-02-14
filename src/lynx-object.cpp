@@ -761,8 +761,12 @@ bool Dict::contains(const Self& key) const{
     return false;
 }
 
+// -*-
+usize Dict::len(void) const{
+    return this->m_data.size();
+}
+
 /*
-usize Dict::len(void) const{}
 void Dict::remove(const Self& key){}
 Self Dict::popitem(const Self& key){}
 Self& Dict::operator[](const Self& key){}
