@@ -607,8 +607,17 @@ bool Set::is_disjoint(const Set& hset) const{
     return true;
 }
 
+// -*-
+bool Set::is_superset(const Set& hset) const{
+    if(this->len() < hset.len()){ return false; }
+    for(auto key=hset.m_data.cbegin(); key != hset.m_data.cend(); key++){
+        if(!this->contains(*key)){ return false; }
+    }
+
+    return true;
+}
+
 /*
-bool Set::is_superset(const Set& hset) const{}
 bool Set::is_subset(const Set& hset) const{}
 void Set::remove(const Self& item){}
 void Set::clear(void){}
