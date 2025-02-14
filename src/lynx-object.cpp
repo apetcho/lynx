@@ -2098,8 +2098,12 @@ bool Object::is_bool(void) const{
     return this->m_kind == Object::Kind::Bool;
 }
 
+// -*-
+bool Object::is_integer(void) const{
+    return this->m_kind == Object::Kind::Integer;
+}
+
 /*
-bool Object::is_integer(void) const{}
 bool Object::is_float(void) const{}
 bool Object::is_complex(void) const{}
 bool Object::is_number(void) const{}
