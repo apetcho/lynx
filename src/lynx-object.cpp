@@ -2031,9 +2031,31 @@ Object& Object::operator%=(const Object& lhs){
     return *this;
 }
 
-/*
-Object& Object::operator*=(const Object& lhs){}
+/**
+ * @brief Implement "*=" operatin on object.
+ * 
+ * The '*=' operator is applicable on the following builtin types:
+ * 
+ * (1) Integer: (x *= y) -> Integer
+ * (2) Float: (x *= y) -> Float
+ *      - Float *= Integer -> Float
+ *      - Integer *= Float -> Float
+ * 
+ * @param lhs 
+ * @param rhs 
+ * @return Object 
+ */
+Object& Object::operator*=(const Object& lhs){
+    Args args{};
+    args.push_back(std::make_shared<Object>(*this));
+    args.push_back(std::make_shared<Object>(lhs));
+    Self self = Object().__mul__(args);
+    this->m_value = std::move(self->m_value);
 
+    return *this;
+}
+
+/*
 // -----------------------
 // -*- Index Operators -*-
 // -----------------------
