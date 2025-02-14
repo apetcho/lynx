@@ -1981,8 +1981,33 @@ Object& Object::operator-=(const Object& lhs){
     return *this;
 }
 
+/**
+ * @brief Implement "/=" operatin on object.
+ * 
+ * The '/=' operator is applicable on the following builtin types:
+ * 
+ * (1) Integer: (x /= y) -> Integer
+ * (2) Float: (x /= y) -> Float
+ *      - Float /= Integer -> Float
+ *      - Integer /= Float -> Float
+ * (3) Complex: (z1 /= z2) -> Complex
+ *      - Complex /= Number -> Complex
+ * 
+ * @param lhs 
+ * @param rhs 
+ * @return Object 
+ */
+Object& Object::operator/=(const Object& lhs){
+    Args args{};
+    args.push_back(std::make_shared<Object>(*this));
+    args.push_back(std::make_shared<Object>(lhs));
+    Self self = Object().__div__(args);
+    this->m_value = std::move(self->m_value);
+
+    return *this;
+}
+
 /*
-Object& Object::operator/=(const Object& lhs){}
 Object& Object::operator%=(const Object& lhs){}
 Object& Object::operator*=(const Object& lhs){}
 
