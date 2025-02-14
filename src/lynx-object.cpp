@@ -2527,8 +2527,17 @@ Self Object::abs(Args args){
     return std::make_shared<Object>(std::abs(z));
 }
 
+// -*-
+Self Object::arg(Args args){
+    if(!check_argcount(args, 1)){
+        Error err(Error::Kind::ValueError, "invalid number of argument");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto z = std::get<Complex>(args[0]->m_value);
+    return std::make_shared<Object>(std::arg(z));
+}
+
 /*
-Self Object::arg(Args args){}
 Self Object::norm(Args args){}
 Self Object::conj(Args args){}
 Self Object::polar(Args args){}
