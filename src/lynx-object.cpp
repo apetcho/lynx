@@ -1664,8 +1664,24 @@ Object operator^(const Object& lhs, const Object& rhs){
     return Object(*obj.__bit_xor__(args));
 }
 
+/**
+ * @brief Implement bitwise left-shift on object.
+ * 
+ * Assumes object is an Integer
+ * 
+ * @param lhs 
+ * @param rhs 
+ * @return Object 
+ */
+Object operator<<(const Object& lhs, const Object& rhs){
+    Object x = lhs;
+    Object y = rhs;
+    auto xnum = static_cast<i64>(x);
+    auto ynum = static_cast<i64>(y);
+    return Object((xnum << ynum));
+}
+
 /*
-Object operator<<(const Object& lhs, const Object& rhs){}
 Object operator>>(const Object& lhs, const Object& rhs){}
 
 bool operator==(const Object& lhs, const Object& rhs){}
