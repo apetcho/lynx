@@ -702,8 +702,13 @@ bool Dict::Equal::operator()(const Self& lhs, const Self& rhs) const{
     return ((*lhs) == (*rhs));
 }
 
+/**
+ * @brief Construct a new Dict:: Dict object
+ * 
+ */
+Dict::Dict() noexcept: m_data{}{}
+
 /*
-Dict::Dict() noexcept{}
 Dict::Dict(Self iterable) noexcept{}
 Dict::Dict(const Dict& dict) noexcept{}
 Dict::Dict(Dict&& dict) noexcept{}
