@@ -549,12 +549,33 @@ Set::Set(Self iterable) noexcept: Set{}{
     }
 }
 
+/**
+ * @brief Construct a new Set:: Set object
+ * 
+ * @param hset 
+ */
+Set::Set(const Set& hset) noexcept: m_data{hset.m_data}{}
+
+Set::Set(Set&& hset) noexcept: m_data{std::move(hset.m_data)}{}
+
+Set& Set::operator=(const Set& hset) noexcept {
+    if(this != &hset){ this->m_data = hset.m_data; }
+    return *this;
+}
+
+Set& Set::operator=(Set&& hset) noexcept {
+    if(this != &hset){ this->m_data = std::move(hset.m_data);}
+    return *this;
+}
+
+Set::~Set(){
+    for(auto keyIter=this->m_data.begin(); keyIter != this->m_data.end(); keyIter++){
+        Self self = *keyIter;
+        self.reset();
+    }
+}
+
 /*
-Set::Set(const Set& hset) noexcept{}
-Set::Set(Set&& hset) noexcept{}
-Set& Sef::operator=(const Set& hset){}
-Set& Sef::operator=(Set&& hset){}
-Set::~Set(){}
 bool Set::contains(const Self& key) const{}
 usize Set::len(void) const{}
 void Set::insert(const Self& item){}
