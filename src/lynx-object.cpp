@@ -2199,8 +2199,12 @@ bool Object::is_iterable(void) const{
     return (!(x->is_result() && y->is_result()));
 }
 
+// -*-
+bool Object::is_iterator(void) const{
+    return this->m_kind == Object::Kind::Iter;
+}
+
 /*
-bool Object::is_iterator(void) const{}
 bool Object::is_result(void) const{}
 bool Object::is_ok(void) const{}
 bool Object::is_structure(void) const{}
