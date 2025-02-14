@@ -2072,10 +2072,21 @@ const Self& Object::operator[](int idx) const{
     return std::get<List>(this->m_value)[idx];
 }
 
-/*
-Self& Object::operator[](const Self& key){}
-const Self& Object::operator[](const Self& key) const{}
+/**
+ * @brief Implement key-access on dictionary object
+ * 
+ * @param key 
+ * @return Self& 
+ */
+Self& Object::operator[](const Self& key){
+    return std::get<Dict>(this->m_value)[key];
+}
 
+const Self& Object::operator[](const Self& key) const{
+    return std::get<Dict>(this->m_value)[key];
+}
+
+/*
 // ------------------
 // -*- Predicates -*-
 // ------------------
