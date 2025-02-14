@@ -2190,8 +2190,16 @@ bool Object::is_hashable(void) const{
     return (!self->is_result());
 }
 
+// -*-
+bool Object::is_iterable(void) const{
+    Args args{};
+    args.push_back(std::make_shared<Object>(*this));
+    auto x = Object().__next__(args);
+    auto y = Object().__done__(args);
+    return (!(x->is_result() && y->is_result()));
+}
+
 /*
-bool Object::is_iterable(void) const{}
 bool Object::is_iterator(void) const{}
 bool Object::is_result(void) const{}
 bool Object::is_ok(void) const{}
