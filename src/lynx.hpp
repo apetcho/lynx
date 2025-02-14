@@ -793,6 +793,7 @@ private:
     friend class DictIterator;
     friend class SetIterator;
     friend class RangeIterator;
+    friend class WrappedIterator;
 
 protected:
     // Arithmethic-ops
@@ -940,6 +941,19 @@ private:
     Self m_start;
     Self m_stop;
     Self m_step;
+};
+
+// -*-
+class WrappedIterator final: public Iterable{
+public:
+    explicit WrappedIterator(Self selfStruct) noexcept;
+    LYNX_DECLARE_MOVE(WrappedIterator);
+    ~WrappedIterator();
+    Self next(void) override;
+    Self done(void) override;
+
+private:
+    Self m_userType;
 };
 
 // -*-

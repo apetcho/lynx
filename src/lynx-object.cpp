@@ -2485,9 +2485,12 @@ usize Object::hash(void) const{
     return static_cast<usize>(val);
 }
 
-/*
-Iterator Object::iter(void) const{}
+// -*-
+Iterator Object::iter(void) const{
+    return std::get<Iterator>(this->m_value);
+}
 
+/*
 Str Object::format(void) const{}
 
 // -------------------------------
