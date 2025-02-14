@@ -2182,10 +2182,21 @@ bool Object::is_callable(void) const{
     );
 }
 
+// -*-
+bool Object::is_hashable(void) const{
+    Args args{};
+    args.push_back(std::make_shared<Object>(*this));
+    auto self = Object().__hash__(args);
+    return (!self->is_result());
+}
+
 /*
-bool Object::is_hashable(void) const{}
+bool Object::is_iterable(void) const{}
+bool Object::is_iterator(void) const{}
+bool Object::is_result(void) const{}
 bool Object::is_ok(void) const{}
 bool Object::is_structure(void) const{}
+bool is_builitn_type(void) const;
 
 
 // ------------------------------

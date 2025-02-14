@@ -656,8 +656,12 @@ public:
     bool is_callable(void) const;
     bool is_hashable(void) const;
     bool is_iterable(void) const;
+    bool is_iterator(void) const;
+    bool is_result(void) const;
     bool is_ok(void) const;
     bool is_structure(void) const;
+    // -
+    bool is_builitn_type(void) const;
 
     void as_version(void){ this->m_is_version = true; }
     bool is_version(void) const{ return this->m_is_version; }
