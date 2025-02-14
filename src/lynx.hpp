@@ -788,6 +788,7 @@ protected:
     Self __sub__(Args args);
     Self __mul__(Args args);
     Self __div__(Args args);
+    Self __mod__(Args args);
     Self __pow__(Args args);
     Self __add_assign__(Args args);
     Self __sub_assign__(Args args);

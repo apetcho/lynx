@@ -1878,8 +1878,28 @@ Object operator/(const Object& lhs, const Object& rhs){
     return Object(*Object().__div__(args));
 }
 
+/**
+ * @brief Implement "%" operatin on object.
+ * 
+ * The '%' operator is applicable on the following builtin types:
+ * 
+ * (1) Integer: (x % y) -> Integer
+ * (2) Float: (x % y) -> Float
+ *      - Float % Integer -> Float
+ *      - Integer % Float -> Float
+ * 
+ * @param lhs 
+ * @param rhs 
+ * @return Object 
+ */
+Object operator%(const Object& lhs, const Object& rhs){
+    Args args{};
+    args.push_back(std::make_shared<Object>(lhs));
+    args.push_back(std::make_shared<Object>(rhs));
+    return Object(*Object().__mod__(args));
+}
+
 /*
-Object operator%(const Object& lhs, const Object& rhs){}
 Object operator*(const Object& lhs, const Object& rhs){}
 Object& Object::operator+=(const Object& lhs){}
 Object& Object::operator-=(const Object& lhs){}
