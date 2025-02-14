@@ -558,8 +558,8 @@ public:
     operator Symbol();
     operator Str();
     operator List();
-    operator HSet();
-    operator HMap();
+    operator Set();
+    operator Dict();
     operator CFun();
     operator Result();
     operator Ast();

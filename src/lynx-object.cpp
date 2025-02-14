@@ -1498,15 +1498,15 @@ Object::operator List(){
  * 
  * @return HSet 
  */
-Object::operator HSet(){
-    HSet hset{};
-
+Object::operator Set(){
+    Set hset{};
+    hset = std::get<Set>(this->m_value);
     return hset;
 }
 
 
 /*
-Object::operator HMap(){}
+Object::operator Dict(){}
 Object::operator CFun(){}
 Object::operator Result(){}
 Object::operator Ast(){}
