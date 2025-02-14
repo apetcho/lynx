@@ -772,8 +772,33 @@ void Dict::remove(const Self& key){
     }
 }
 
+/**
+ * @brief Remove the entry with 'key'.
+ * 
+ * If 'key' is not in 'Dict' then return Error object
+ * 
+ * @param key 
+ * @return Self 
+ */
+Self Dict::popitem(const Self& key){
+    Self self = nullptr;
+    if(this->contains(key)){
+        auto entry = this->m_data.find(key);
+        List xs{}; // = {*entry->first, *entry->second};
+        xs.push_back(std::make_shared<Object>(*entry->first));
+        xs.push_back(std::make_shared<Object>(*entry->second));
+        Self obj = std::make_shared<Object>(Object::Kind::Tuple, xs);
+        self = std::make_shared<Object>(Result(obj));
+        this->m_data.erase(key);
+    }else{
+        // key not in dict
+        Error err = Error(Error::Kind::KeyError, "key not found");
+        self = std::make_shared<Object>(Result(err));
+    }
+    return std::move(self);
+}
+
 /*
-Self Dict::popitem(const Self& key){}
 Self& Dict::operator[](const Self& key){}
 const Self& Dict::operator[](const Self& key) const{}
 Self Dict::values(void) const{}
