@@ -1581,9 +1581,9 @@ Object& Object::operator~(){
 }
 
 /**
- * @brief Implement bitwise 'or' operation on Object.
+ * @brief Implement bitwise 'or' operation on object.
  * 
- * Assumes object is an integer or a Set.
+ * Assumes object is an Integer or a HashSet.
  * 
  * @param lhs 
  * @param rhs 
@@ -1606,13 +1606,29 @@ Object operator|(const Object& lhs, const Object& rhs){
 }
 
 /**
- * @brief 
+ * @brief Implement bitwise 'and' (&) operation on object.
+ * 
+ * Assumes object is an Integer or a HashSet.
  * 
  * @param lhs 
  * @param rhs 
  * @return Object 
  */
-Object operator&(const Object& lhs, const Object& rhs){}
+Object operator&(const Object& lhs, const Object& rhs){
+    if(lhs.is_integer() && rhs.is_integer()){   
+        Object x = lhs;
+        Object y = rhs;
+        auto xnum = static_cast<i64>(x);
+        auto ynum = static_cast<i64>(y);
+        return Object((xnum & ynum));
+    }
+    // Assumes lhs and rhs are Set-object.
+    Args args{};
+    args.push_back(std::make_shared<Object>(lhs));
+    args.push_back(std::make_shared<Object>(rhs));
+    Object obj = lhs;
+    return Object(*obj.__bit_and__(args));
+}
 
 /*
 Object operator^(const Object& lhs, const Object& rhs){}
