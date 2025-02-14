@@ -1828,8 +1828,33 @@ Object operator+(const Object& lhs, const Object& rhs){
     return Object(*Object().__add__(args));
 }
 
+
+/**
+ * @brief Implement "-" operatin on object.
+ * 
+ * The '-' operator is applicable on the following builtin types:
+ * 
+ * (1) Integer: (x - y) -> Integer
+ * (2) Float: (x - y) -> Float
+ *      - Float - Integer -> Float
+ *      - Integer - Float -> Float
+ * (3) Complex: (z1 - z2) -> Complex
+ *      - Number - Complex -> Complex
+ *      - Complex - Number -> Complex
+ * (4) HashSet: (lhs - rhs) -> HashSet
+ * 
+ * @param lhs 
+ * @param rhs 
+ * @return Object 
+ */
+Object operator-(const Object& lhs, const Object& rhs){
+    Args args{};
+    args.push_back(std::make_shared<Object>(lhs));
+    args.push_back(std::make_shared<Object>(rhs));
+    return Object(*Object().__sub__(args));
+}
+
 /*
-Object operator-(const Object& lhs, const Object& rhs){}
 Object operator/(const Object& lhs, const Object& rhs){}
 Object operator%(const Object& lhs, const Object& rhs){}
 Object operator*(const Object& lhs, const Object& rhs){}
