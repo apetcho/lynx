@@ -2468,7 +2468,7 @@ Symbol Object::type(void) const{
     return cls.name();
 }
 
-
+// -*-
 Str Object::repr(void) const{
     Args args{};
     args.push_back(std::make_shared<Object>(*this));
@@ -2476,8 +2476,16 @@ Str Object::repr(void) const{
     return static_cast<Str>(*self);
 }
 
+// -*-
+usize Object::hash(void) const{
+    Args args{};
+    args.push_back(std::make_shared<Object>(*this));
+    Self self = Object().__repr__(args);
+    auto val = static_cast<i64>(*self);
+    return static_cast<usize>(val);
+}
+
 /*
-usize Object::hash(void) const{}
 Iterator Object::iter(void) const{}
 
 Str Object::format(void) const{}
