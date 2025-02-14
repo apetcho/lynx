@@ -748,8 +748,12 @@ Dict& Dict::operator=(Dict&& dict) noexcept{
     return *this;
 }
 
+// -*-
+Dict::~Dict(){
+    this->m_data.clear();
+}
+
 /*
-Dict::~Dict(){}
 bool Dict::contains(const Self& key) const{}
 usize Dict::len(void) const{}
 void Dict::remove(const Self& key){}
