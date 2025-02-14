@@ -2204,8 +2204,12 @@ bool Object::is_iterator(void) const{
     return this->m_kind == Object::Kind::Iter;
 }
 
+// -*-
+bool Object::is_result(void) const{
+    return this->m_kind == Object::Kind::Result;
+}
+
 /*
-bool Object::is_result(void) const{}
 bool Object::is_ok(void) const{}
 bool Object::is_structure(void) const{}
 bool is_builitn_type(void) const;
