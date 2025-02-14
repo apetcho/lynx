@@ -2313,6 +2313,37 @@ Self Object::operator()(Args args){
 // ------------------------
 // -*- call type method -*-
 // ------------------------
+/**
+ * @brief Call a method, a special-method or an operator object.
+ * 
+ * (1) Method form: `obj.method(args)`
+ * (2) Special-Method form: special-method(args)
+ *     Special method includes:
+ *      - `__hash__` ==> hash()
+ *      - '__repr__` ==> repr()
+ *      - `__bool__` ==> Bool()
+ *      - `__integer__` ==> Integer()
+ *      - `__float__` ==> Float()
+ *      - `__string__` ==> String()
+ *      - `__tuple__` ==> Tuple()
+ *      - `__list__` ==> List()
+ *      - `__hashset__` ==> HashSet()
+ *      - `__hashmap__` ==> HashMap()
+ *      - `__next__` && `__done__` ==> Iterator()
+ * 
+ * (3) Operator-form:
+ *      - binary-operator: lsh `op` rhs
+ *      - unary-operator: `op` rhs
+ * 
+ *  Main operators includes:
+ *      +, -, *, /, %, ~, |, &, ^, <<, >>,
+ *      +=, -=, *=, /=, %=, |=, &=, ^=, <<=, >>=
+ *      and, or, not
+ * 
+ * @param fname 
+ * @param args 
+ * @return Self 
+ */
 Self Object::operator()(const Str& fname, Args args){
     if(this->is_bool()){
         if(Lynx::boolMethods.find(fname) != Lynx::boolMethods.end()){
@@ -2392,8 +2423,25 @@ Self Object::operator()(const Str& fname, Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+/**
+ * @brief Unwrap the value encapsulated in Result-object.
+ * 
+ * Assumes object is a result-type
+ * if result-object rather encapsulates an Error, the throw std::runtime_error
+ * 
+ * @return Self 
+ */
+Self Object::unwrap(void) const{
+    auto result = std::get<Result>(this->m_value);
+    if(!result.is_ok()){
+        std::stringstream stream;
+        stream << "Fatal error: " << result.err().message();
+        throw std::runtime_error(stream.str());
+    }
+    return std::move(result.ok());
+}
+
 /*
-Self Object::ok(void) const{}
 Error Object::err(void) const{}
 
 Symbol Object::type(void) const{}
