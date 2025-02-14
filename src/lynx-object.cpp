@@ -1585,6 +1585,9 @@ Object& Object::operator~(){
  * 
  * Assumes object is an Integer or a HashSet.
  * 
+ * (1) As Integer: '|' is just a bitwise or operation
+ * (2) As HashSet: '|' is used as union operation on HashSet
+ * 
  * @param lhs 
  * @param rhs 
  * @return Object 
@@ -1610,12 +1613,15 @@ Object operator|(const Object& lhs, const Object& rhs){
  * 
  * Assumes object is an Integer or a HashSet.
  * 
+ * (1) As Integer: '&' is just a bitwise or operation
+ * (2) As HashSet: '&' is used as intersection operation on HashSet
+ * 
  * @param lhs 
  * @param rhs 
  * @return Object 
  */
 Object operator&(const Object& lhs, const Object& rhs){
-    if(lhs.is_integer() && rhs.is_integer()){   
+    if(lhs.is_integer() && rhs.is_integer()){
         Object x = lhs;
         Object y = rhs;
         auto xnum = static_cast<i64>(x);
@@ -1630,8 +1636,35 @@ Object operator&(const Object& lhs, const Object& rhs){
     return Object(*obj.__bit_and__(args));
 }
 
+/**
+ * @brief Implement bitwise 'xor' (^) operation on object.
+ * 
+ * Assumes object is an Integer or a HashSet.
+ * 
+ * (1) As Integer: '^' is just a bitwise or operation
+ * (2) As HashSet: '^' is used as symmetric-difference operation on HashSet
+ * 
+ * @param lhs 
+ * @param rhs 
+ * @return Object 
+ */
+Object operator^(const Object& lhs, const Object& rhs){
+    if(lhs.is_integer() && rhs.is_integer()){   
+        Object x = lhs;
+        Object y = rhs;
+        auto xnum = static_cast<i64>(x);
+        auto ynum = static_cast<i64>(y);
+        return Object((xnum ^ ynum));
+    }
+    // Assumes lhs and rhs are Set-object.
+    Args args{};
+    args.push_back(std::make_shared<Object>(lhs));
+    args.push_back(std::make_shared<Object>(rhs));
+    Object obj = lhs;
+    return Object(*obj.__bit_xor__(args));
+}
+
 /*
-Object operator^(const Object& lhs, const Object& rhs){}
 Object operator<<(const Object& lhs, const Object& rhs){}
 Object operator>>(const Object& lhs, const Object& rhs){}
 
