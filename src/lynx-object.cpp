@@ -2055,12 +2055,24 @@ Object& Object::operator*=(const Object& lhs){
     return *this;
 }
 
+// --------------------------
+// -*- Indexind Operators -*-
+// --------------------------
+/**
+ * @brief Implement indexing for Tuple and List
+ * 
+ * @param idx 
+ * @return Self& 
+ */
+Self& Object::operator[](int idx){
+    return std::get<List>(this->m_value)[idx];
+}
+
+const Self& Object::operator[](int idx) const{
+    return std::get<List>(this->m_value)[idx];
+}
+
 /*
-// -----------------------
-// -*- Index Operators -*-
-// -----------------------
-Self& Object::operator[](int idx){}
-const Self& Object::operator[](int idx) const{}
 Self& Object::operator[](const Self& key){}
 const Self& Object::operator[](const Self& key) const{}
 
