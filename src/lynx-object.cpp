@@ -1,4 +1,5 @@
 #include "lynx.hpp"
+#include<algorithm>
 
 // -*----------------------------------------------------------------*-
 // -*- begin::namespace::lynx                                       -*-
@@ -2626,14 +2627,15 @@ Self Object::clear(Args args){
         Error err(Error::Kind::ValueError, "invalid number of argument");
         return std::make_shared<Object>(Result(err));
     }
-    if(this->is_list()){
-        std::get<List>(this->m_value).clear();    
-    }else if(this->is_hashset()){
-        std::get<Set>(this->m_value).clear();
-    }else if(this->is_hashmap()){
-        std::get<Dict>(this->m_value).m_data.clear();
+    Self self = args[0];
+    if(self->is_list()){
+        std::get<List>(self->m_value).clear();    
+    }else if(self->is_hashset()){
+        std::get<Set>(self->m_value).clear();
+    }else if(self->is_hashmap()){
+        std::get<Dict>(self->m_value).m_data.clear();
     }
-    return std::make_shared<Object>(*this);
+    return std::make_shared<Object>(*self);
 }
 
 // -*-
@@ -2643,20 +2645,62 @@ Self Object::len(Args args){
         return std::make_shared<Object>(Result(err));
     }
     usize xlen{};
-    if(this->is_list()){
-        xlen = std::get<List>(this->m_value).size();    
-    }else if(this->is_hashset()){
-        xlen = std::get<Set>(this->m_value).m_data.size();
-    }else if(this->is_hashmap()){
-        xlen = std::get<Dict>(this->m_value).m_data.size();
-    }else if(this->is_string()){
-        xlen = std::get<Str>(this->m_value).length();
+    auto self = args[0];
+    if(self->is_list()){
+        xlen = std::get<List>(self->m_value).size();    
+    }else if(self->is_hashset()){
+        xlen = std::get<Set>(self->m_value).m_data.size();
+    }else if(self->is_hashmap()){
+        xlen = std::get<Dict>(self->m_value).m_data.size();
+    }else if(self->is_string()){
+        xlen = std::get<Str>(self->m_value).length();
     }
     return std::make_shared<Object>(static_cast<i64>(xlen));
 }
 
+// -*-
+Self Object::find(Args args){
+    if(!check_argcount(args, 2)){
+        Error err(Error::Kind::ValueError, "invalid number of argument");
+        return std::make_shared<Object>(Result(err));
+    }
+    Self self = args[0];
+    Self needle = args[1];
+    if(self->is_string()){
+        i64 pos{};
+        auto str = std::get<Str>(self->m_value);
+        auto key = std::get<Str>(self->m_value);
+        auto ptr = str.find(key);
+        if(ptr != std::string::npos){
+            pos = static_cast<i64>(ptr);
+        }else{
+            pos = -1;
+        }
+        return std::make_shared<Object>(pos);
+    }else if(self->is_tuple() || self->is_list()){
+        i64 pos{};
+        auto vec = std::get<List>(self->m_value);
+        Vec<Object> myvec{};
+        for(auto x: vec){ myvec.push_back(Object(*x)); }
+        auto val = *needle;
+        auto ptr = std::find(myvec.begin(), myvec.end(), val);
+        if(ptr == myvec.end()){ pos = -1; }
+        else{ pos = std::distance(ptr, myvec.end()); }
+        return std::make_shared<Object>(pos);
+    }else if(self->is_hashset()){
+        auto hset = std::get<Set>(self->m_value);
+        return std::make_shared<Object>(hset.contains(needle));
+    }else if(self->is_hashmap()){
+        auto hmap = std::get<Dict>(self->m_value);
+        return std::make_shared<Object>(hmap.contains(needle));
+    }
+
+    Error err(Error::Kind::SyntaxError, " method `find` is not implemented");
+    return std::make_shared<Object>(Result(err));
+}
+
+
 /*
-Self Object::find(Args args){}
 Self Object::find_all(Args args){}
 Self Object::find_last(Args args){}
 Self Object::slice(Args args){}
