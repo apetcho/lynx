@@ -1529,8 +1529,18 @@ Object::operator Ast(){
     return std::get<Ast>(this->m_value);
 }
 
+/**
+ * @brief Apply logical not operator on object.
+ * 
+ * @return Object& 
+ */
+Object& Object::operator!(){
+    auto val = static_cast<bool>(*this);
+    this->m_value = val;
+    return *this;
+}
+
 /*
-Object& Object::operator!(){}
 Object operator&&(const Object& lhs, const Object& rhs){}
 Object operator||(const Object& lhs, const Object& rhs){}
 
