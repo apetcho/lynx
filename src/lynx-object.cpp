@@ -524,7 +524,7 @@ usize Set::Hasher::operator()(const Self& key) const {
  * @return false 
  */
 bool Set::Equal::operator()(const Self& lhs, const Self& rhs) const{
-    return (*lhs) == (*rhs);
+    return ((*lhs) == (*rhs));
 }
 
 /**
@@ -697,9 +697,12 @@ usize Dict::Hasher::operator()(const Self& lhs) const{
     return static_cast<usize>(std::get<i64>(self->m_value));
 }
 
-/*
-bool Dict::Equal::operator()(const Self& lhs, const Self& rhs) const{}
+// -*-
+bool Dict::Equal::operator()(const Self& lhs, const Self& rhs) const{
+    return ((*lhs) == (*rhs));
+}
 
+/*
 Dict::Dict() noexcept{}
 Dict::Dict(Self iterable) noexcept{}
 Dict::Dict(const Dict& dict) noexcept{}
