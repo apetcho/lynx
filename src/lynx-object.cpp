@@ -627,8 +627,14 @@ bool Set::is_subset(const Set& hset) const{
     return true;
 }
 
+// -*-
+void Set::remove(const Self& item){
+    if(this->contains(item)){
+        this->m_data.erase(item);
+    }
+}
+
 /*
-void Set::remove(const Self& item){}
 void Set::clear(void){}
 Set::UserSet Set::data(void) const{}
 
