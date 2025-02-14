@@ -543,7 +543,7 @@ Set::Set() noexcept: m_data{}{}
  */
 Set::Set(Self iterable) noexcept: Set{}{
     Iterator iterator = std::get<Iterator>(iterable->m_value);
-    while(static_cast<bool>(iterator->done())){
+    while(!static_cast<bool>(iterator->done())){
         Self key = iterator->next();
         this->m_data.insert(key);
     }
@@ -708,8 +708,29 @@ bool Dict::Equal::operator()(const Self& lhs, const Self& rhs) const{
  */
 Dict::Dict() noexcept: m_data{}{}
 
+/**
+ * @brief Construct a new Dict:: Dict object
+ * 
+ * Construct a Dict from an iterable.
+ * 
+ * Assumes iterable is a ListIterator or TupleIterator. Each elements
+ * of the iterator it expected to be a Tuple of two items in the form (key, value) pair.
+ * 
+ * @param iterable 
+ */
+Dict::Dict(Self iterable) noexcept: Dict{}{
+    Iterator iterator = std::get<Iterator>(iterable->m_value);
+    while(!static_cast<bool>(iterator->done())){
+        Self self = iterator->next();
+        // assume self is a pair: (key, value)
+        List vec = static_cast<List>(*self);
+        auto key = vec[0];
+        auto val = vec[1];
+        this->m_data[key] = val;
+    }
+}
+
 /*
-Dict::Dict(Self iterable) noexcept{}
 Dict::Dict(const Dict& dict) noexcept{}
 Dict::Dict(Dict&& dict) noexcept{}
 Dict& Dict::operator=(const Dict& dict) noexcept{}
