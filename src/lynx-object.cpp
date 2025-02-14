@@ -2108,8 +2108,12 @@ bool Object::is_float(void) const{
     return this->m_kind == Object::Kind::Float;
 }
 
+// -*-
+bool Object::is_complex(void) const{
+    return this->m_kind == Object::Kind::Complex;
+}
+
 /*
-bool Object::is_complex(void) const{}
 bool Object::is_number(void) const{}
 bool Object::is_symbol(void) const{}
 bool Object::is_string(void) const{}
