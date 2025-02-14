@@ -766,8 +766,13 @@ usize Dict::len(void) const{
     return this->m_data.size();
 }
 
+void Dict::remove(const Self& key){
+    if(this->contains(key)){
+        this->m_data.erase(key);
+    }
+}
+
 /*
-void Dict::remove(const Self& key){}
 Self Dict::popitem(const Self& key){}
 Self& Dict::operator[](const Self& key){}
 const Self& Dict::operator[](const Self& key) const{}
