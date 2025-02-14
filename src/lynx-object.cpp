@@ -873,8 +873,26 @@ Self Dict::items(void) const{
 }
 
 
+/**
+ * @brief Update an existing entry of key with new values. 
+ * 
+ * If 'key' is not found in the dictionary, then return an Error object.
+ * 
+ * @param key 
+ * @param value 
+ * @return Self 
+ */
+Self Dict::update(const Self& key, const Self& value){
+    if(this->contains(key)){
+        auto old = this->m_data[key];
+        this->m_data[key] = value;
+        return std::move(old);
+    }
+    Error err = Error(Error::Kind::KeyError, "key not found");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
-Self Dict::update(const Self& key, const Self value){}
 Dict::UserDict Dict::data(void) const{}
 Self operator+(const Dict& lhs, const Dict& rhs){}
 */

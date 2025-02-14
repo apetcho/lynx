@@ -510,7 +510,7 @@ public:
     Self values(void) const;
     Self keys(void) const;
     Self items(void) const;
-    Self update(const Self& key, const Self value);
+    Self update(const Self& key, const Self& value);
 
     Dict::UserDict data(void) const{ return this->m_data; }
 
