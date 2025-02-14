@@ -2441,10 +2441,34 @@ Self Object::unwrap(void) const{
     return std::move(result.ok());
 }
 
-/*
-Error Object::err(void) const{}
+/**
+ * @brief Return object type-name.
+ * 
+ * @return Symbol 
+ */
+Symbol Object::type(void) const{
+    if(this->is_nil()){ return Symbol("nil"); }
+    if(this->is_bool()){ return Symbol("Bool"); }
+    if(this->is_integer()){ return Symbol("Integer"); }
+    if(this->is_float()){ return Symbol("Float"); }
+    if(this->is_complex()){ return Symbol("Complex"); }
+    if(this->is_symbol()){ return Symbol("Symbol"); }
+    if(this->is_string()){ return Symbol("String"); }
+    if(this->is_tuple()){ return Symbol("Tuple"); }
+    if(this->is_list()){ return Symbol("List"); }
+    if(this->is_hashmap()){ return Symbol("HashMap"); }
+    if(this->is_hashset()){ return Symbol("HashSet"); }
+    if(this->is_iterator()){
+        std::stringstream stream;
+        stream << static_cast<Str>(this->type()) << "Iterator";
+        return Symbol(stream.str());
+    }
+    // assume user-defined type through struct-syntax
+    auto cls = std::get<Structure>(this->m_value);
+    return cls.name();
+}
 
-Symbol Object::type(void) const{}
+/*
 Str Object::repr(void) const{}
 usize Object::hash(void) const{}
 Iterator Object::iter(void) const{}
