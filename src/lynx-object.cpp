@@ -1698,13 +1698,41 @@ Object operator>>(const Object& lhs, const Object& rhs){
     return Object((xnum >> ynum));
 }
 
+/**
+ * @brief Implement equal-to "==" operation on object.
+ * 
+ * The equal-to is applicable on the following builtins objects:
+ *      - Nil
+ *      - Bool
+ *      - Integer
+ *      - Float
+ *      - Complex
+ *      - Symbol
+ *      - String
+ *      - <Tuple> ???
+ * If object does not support
+ * 
+ * @param lhs 
+ * @param rhs 
+ * @return true 
+ * @return false 
+ */
+Object operator==(const Object& lhs, const Object& rhs){
+    Object x = lhs;
+    Object y = rhs;
+    Args args{};
+    args.push_back(std::make_shared<Object>(x));
+    args.push_back(std::make_shared<Object>(y));
+    Object obj{};
+    return Object(*obj.__eq__(args));
+}
+
 /*
-bool operator==(const Object& lhs, const Object& rhs){}
-bool operator!=(const Object& lhs, const Object& rhs){}
-bool operator<=(const Object& lhs, const Object& rhs){}
-bool operator>=(const Object& lhs, const Object& rhs){}
-bool operator<(const Object& lhs, const Object& rhs){}
-bool operator>(const Object& lhs, const Object& rhs){}
+Object operator!=(const Object& lhs, const Object& rhs){}
+Object operator<=(const Object& lhs, const Object& rhs){}
+Object operator>=(const Object& lhs, const Object& rhs){}
+Object operator<(const Object& lhs, const Object& rhs){}
+Object operator>(const Object& lhs, const Object& rhs){}
 
 Object operator+(const Object& lhs, const Object& rhs){}
 Object operator-(const Object& lhs, const Object& rhs){}

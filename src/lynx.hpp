@@ -593,12 +593,12 @@ public:
     // --------------------------
     // -*- Relation Operators -*-
     // --------------------------
-    friend bool operator==(const Object& lhs, const Object& rhs);
-    friend bool operator!=(const Object& lhs, const Object& rhs);
-    friend bool operator<=(const Object& lhs, const Object& rhs);
-    friend bool operator>=(const Object& lhs, const Object& rhs);
-    friend bool operator<(const Object& lhs, const Object& rhs);
-    friend bool operator>(const Object& lhs, const Object& rhs);
+    friend Object operator==(const Object& lhs, const Object& rhs);
+    friend Object operator!=(const Object& lhs, const Object& rhs);
+    friend Object operator<=(const Object& lhs, const Object& rhs);
+    friend Object operator>=(const Object& lhs, const Object& rhs);
+    friend Object operator<(const Object& lhs, const Object& rhs);
+    friend Object operator>(const Object& lhs, const Object& rhs);
 
     // ----------------------------
     // -*- Arithmetic Operators -*-
@@ -740,7 +740,7 @@ public:
     Self head(Args args);
     Self tail(Args args);
     Self last(Args args);
-    Self extend(Args args);
+    // Self extend(Args args); // lhs + rhs
     Self append(Args args); // also for Set, aliased as 'add'
     Self pop(Args args);
     Self push(Args args);
