@@ -1787,9 +1787,18 @@ Object operator>=(const Object& lhs, const Object& rhs){
     return Object((x || y));
 }
 
-/*
-Object operator>(const Object& lhs, const Object& rhs){}
+/**
+ * @brief Implement ">" on object.
+ * 
+ * @param lhs 
+ * @param rhs 
+ * @return Object 
+ */
+Object operator>(const Object& lhs, const Object& rhs){
+    return Object((!(lhs <= rhs)));
+}
 
+/*
 Object operator+(const Object& lhs, const Object& rhs){}
 Object operator-(const Object& lhs, const Object& rhs){}
 Object operator/(const Object& lhs, const Object& rhs){}
