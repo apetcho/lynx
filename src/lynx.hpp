@@ -2,6 +2,8 @@
 #define __LYNX_HPP__
 
 #include<filesystem>
+#include<unordered_map>
+#include<unordered_set>
 #include<exception>
 #include<stdexcept>
 #include<iostream>
@@ -171,6 +173,8 @@ class Lynx;
 // class TestCase;
 
 class Object;
+class Set;
+class Dict;
 class Error;
 class Result;
 class Structure;
@@ -254,9 +258,10 @@ private:
     Str m_data;
 };
 
+
 #define LYNX_TYPE_VARIANTS()                                \
     Nil, bool, i64, f64, Complex, Symbol, Str,              \
-    List, HSet, HMap, Structure, Iterator, CFun, Ast, Result
+    List, Set, Dict, Structure, Iterator, CFun, Ast, Result
 
 
 class Error final{
@@ -436,6 +441,85 @@ private:
     HashMap<Symbol, Self> m_object_attributes;
 };
 
+class Set final{
+public:
+    // -
+    struct Hasher{
+        usize operator()(const Self& lhs);
+    };
+
+    struct Equal{
+        bool operator()(const Self& lhs, const Self& rhs);
+    };
+
+    using UserSet = std::unordered_set<Self, Hasher, Equal>;
+
+    // -
+    explicit Set() noexcept;
+    explicit Set(Self iterable) noexcept;
+    LYNX_DECLARE_COPY(Set);
+    LYNX_DECLARE_MOVE(Set);
+    ~Set();
+    bool contains(const Self& key) const;
+    usize len(void) const;
+    void insert(const Self& item);
+    bool is_disjoint(const Set& hset) const;
+    bool is_superset(const Set& hset) const;
+    bool is_subset(const Set& hset) const;
+    void remove(const Self& item);
+    void clear(void);
+    Set::UserSet data(void) const;
+
+    friend Set operator+(const Set& lhs, const Set& rhs);
+    friend Set operator-(const Set& lhs, const Set& rhs);
+    friend Set operator|(const Set& lhs, const Set& rhs);
+    friend Set operator^(const Set& lhs, const Set& rhs);
+    friend Set operator&(const Set& lhs, const Set& rhs);
+
+    friend class Object;
+
+private:
+    UserSet m_data;
+};
+
+class Dict final{
+public:
+    struct Hasher{
+        usize operator()(const Self& lhs);
+    };
+
+    struct Equal{
+        bool operator()(const Self& lhs, const Self& rhs);
+    };
+    // -
+    using UserDict = std::unordered_map<Self, Self, Hasher, Equal>;
+    // -
+
+    explicit Dict() noexcept;
+    explicit Dict(Self iterable) noexcept;
+    LYNX_DECLARE_COPY(Dict);
+    LYNX_DECLARE_MOVE(Dict);
+    ~Dict();
+    bool contains(const Self& key) const;
+    usize len(void) const;
+    void remove(const Self& key);
+    Self popitem(const Self& key);
+    Self& operator[](const Self& key);
+    const Self& operator[](const Self& key) const;
+    friend Self operator+(const Dict& lhs, const Dict& rhs);
+    Self values(void) const;
+    Self keys(void) const;
+    Self items(void) const;
+    Self update(const Self& key, const Self value);
+
+    Dict::UserDict data(void) const;
+
+    friend class Object;
+
+private:
+    UserDict m_data;
+};
+
 
 class Object final{
 public:
@@ -453,8 +537,8 @@ public:
     explicit Object(Symbol sym) noexcept;               // Sym
     explicit Object(Str str) noexcept;                  // String
     explicit Object(Kind kind, List data) noexcept;     // Tutple, List
-    explicit Object(HSet data) noexcept;                // Set
-    explicit Object(HMap data) noexcept;                // Dict
+    explicit Object(Set data) noexcept;                // Set
+    explicit Object(Dict data) noexcept;                // Dict
     explicit Object(Structure klass) noexcept;          // Struct
     explicit Object(Iterator iter) noexcept;            // Iter
     explicit Object(const Str& name, CFun cfun) noexcept;// CFun
@@ -671,7 +755,9 @@ public:
     Self hasattr(Args args);
     Self delattr(Args args);
 
-
+    friend class Set;
+    friend class Dict;
+    
     friend std::ostream& operator<<(std::ostream& os, const Object& obj);
 
 private:

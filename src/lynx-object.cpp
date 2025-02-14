@@ -497,6 +497,80 @@ void Structure::delete_object_attribute(const Str& key){
     this->m_object_attributes.erase(sym);
 }
 
+// -----------
+// -*- Set -*-
+// ------------
+/**
+ * @brief Compute the hash-value of 'key'
+ * 
+ * Builitn hashable objects include boolean, integer, tuple, string, and symbol.
+ * 
+ * @param lhs 
+ * @return usize 
+ */
+usize Set::Hasher::operator()(const Self& key){
+    Args args = {key};
+    Self self = key->__hash__(args);
+    auto hashVal = static_cast<usize>(static_cast<i64>(*self));
+    return hashVal;
+}
+
+/*
+bool Set::Equal::operator()(const Self& lhs, const Self& rhs){}
+Set::Set() noexcept{}
+Set::Set(Self iterable) noexcept{}
+Set::Set(const Set& hset) noexcept{}
+Set::Set(Set&& hset) noexcept{}
+Set& Sef::operator=(const Set& hset){}
+Set& Sef::operator=(Set&& hset){}
+Set::~Set(){}
+bool Set::contains(const Self& key) const{}
+usize Set::len(void) const{}
+void Set::insert(const Self& item){}
+bool Set::is_disjoint(const Set& hset) const{}
+bool Set::is_superset(const Set& hset) const{}
+bool Set::is_subset(const Set& hset) const{}
+void Set::remove(const Self& item){}
+void Set::clear(void){}
+Set::UserSet Set::data(void) const{}
+
+Set operator+(const Set& lhs, const Set& rhs){}
+Set operator-(const Set& lhs, const Set& rhs){}
+Set operator|(const Set& lhs, const Set& rhs){}
+Set operator^(const Set& lhs, const Set& rhs){}
+Set operator&(const Set& lhs, const Set& rhs){}
+*/
+
+
+// ------------
+// -*- Dict -*-
+// ------------
+
+/*
+usize Dict::Hasher::operator()(const Self& lhs){}
+bool Dict::Equal::operator()(const Self& lhs, const Self& rhs){}
+
+Dict::Dict() noexcept{}
+Dict::Dict(Self iterable) noexcept{}
+Dict::Dict(const Dict& dict) noexcept{}
+Dict::Dict(Dict&& dict) noexcept{}
+Dict& Dict::operator=(const Dict& dict) noexcept{}
+Dict& Dict::operator=(Dict&& dict) noexcept{}
+Dict::~Dict(){}
+bool Dict::contains(const Self& key) const{}
+usize Dict::len(void) const{}
+void Dict::remove(const Self& key){}
+Self Dict::popitem(const Self& key){}
+Self& Dict::operator[](const Self& key){}
+const Self& Dict::operator[](const Self& key) const{}
+Self Dict::values(void) const{}
+Self Dict::keys(void) const{}
+Self Dict::items(void) const{}
+Self Dict::update(const Self& key, const Self value){}
+Dict::UserDict Dict::data(void) const{}
+Self operator+(const Dict& lhs, const Dict& rhs){}
+*/
+
 // --------------
 // -*- Object -*-
 // --------------
@@ -629,7 +703,7 @@ Object::Object(Object::Kind kind, List data) noexcept
  * Create a HashSet object.
  * @param data 
  */
-Object::Object(HSet data) noexcept
+Object::Object(Set data) noexcept
 : m_kind{Object::Kind::Set}
 , m_value{data}
 , m_name{Symbol("")}
@@ -645,7 +719,7 @@ Object::Object(HSet data) noexcept
  * Create a HashMap object;
  * @param data 
  */
-Object::Object(HMap data) noexcept
+Object::Object(Dict data) noexcept
 : m_kind{Object::Kind::Dict}
 , m_value{data}
 , m_name{Symbol("")}
@@ -821,9 +895,11 @@ Object::~Object(){
         List vec = std::get<List>(this->m_value);
         for(auto& item: vec){ item.reset();}
     }else if(this->is_hashset()){
-        std::get<HSet>(this->m_value).clear();
+        //! @todo
+        // std::get<HSet>(this->m_value).clear();
     }else if(this->is_hashmap()){
-        std::get<HMap>(this->m_value).clear();
+        //! @todo
+        // std::get<HMap>(this->m_value).clear();
     }
 }
 
@@ -1046,21 +1122,23 @@ Object::operator List(){
             xs.emplace_back(std::make_shared<Object>(Str{*iter}));
         }
     }else if(this->is_hashset()){
-        HSet hset = std::get<HSet>(this->m_value);
-        for(auto iter = hset.cbegin(); iter != hset.cend(); iter++){
-            Self self = *iter;
-            xs.emplace_back(std::make_shared<Object>(*self));
-        }
+        //! @todo
+        // HSet hset = std::get<HSet>(this->m_value);
+        // for(auto iter = hset.cbegin(); iter != hset.cend(); iter++){
+        //     Self self = *iter;
+        //     xs.emplace_back(std::make_shared<Object>(*self));
+        // }
     }else if(this->is_hashmap()){
-        HMap hmap = std::get<HMap>(this->m_value);
-        for(auto iter = hmap.cbegin(); iter != hmap.cend(); iter++){
-            Self key = iter->first;
-            Self val = iter->second;
-            Vec<Self> item{};
-            item.push_back(key);
-            item.push_back(val);
-            xs.emplace_back(std::make_shared<Object>(Object::Kind::Tuple, item));
-        }
+        //! @todo
+        // HMap hmap = std::get<HMap>(this->m_value);
+        // for(auto iter = hmap.cbegin(); iter != hmap.cend(); iter++){
+        //     Self key = iter->first;
+        //     Self val = iter->second;
+        //     Vec<Self> item{};
+        //     item.push_back(key);
+        //     item.push_back(val);
+        //     xs.emplace_back(std::make_shared<Object>(Object::Kind::Tuple, item));
+        // }
     }else if(this->is_iterable()){
         Iterator iterator = std::get<Iterator>(this->m_value);
         while(!static_cast<bool>(iterator->done())){
@@ -1076,8 +1154,19 @@ Object::operator List(){
     return xs;
 }
 
+/**
+ * @brief Convert object into a HSet object.
+ * 
+ * @return HSet 
+ */
+Object::operator HSet(){
+    HSet hset{};
+
+    return hset;
+}
+
+
 /*
-Object::operator HSet(){}
 Object::operator HMap(){}
 Object::operator CFun(){}
 Object::operator Result(){}
