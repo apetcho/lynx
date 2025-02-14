@@ -2142,8 +2142,12 @@ bool Object::is_list(void) const{
     return this->m_kind == Object::Kind::Vector;
 }
 
+// -*-
+bool Object::is_hashset(void) const{
+    return this->m_kind == Object::Kind::Set;
+}
+
 /*
-bool Object::is_hashset(void) const{}
 bool Object::is_hashmap(void) const{}
 bool Object::is_builtin(void) const{}
 bool Object::is_function(void) const{}
