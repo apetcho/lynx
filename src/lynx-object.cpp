@@ -2209,8 +2209,14 @@ bool Object::is_result(void) const{
     return this->m_kind == Object::Kind::Result;
 }
 
+// -*-
+bool Object::is_ok(void) const{
+    // Assumes object is a Result kind
+    auto result = std::get<Result>(this->m_value);
+    return result.is_ok();
+}
+
 /*
-bool Object::is_ok(void) const{}
 bool Object::is_structure(void) const{}
 bool is_builitn_type(void) const;
 
