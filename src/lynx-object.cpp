@@ -2557,9 +2557,19 @@ Self Object::conj(Args args){
     return std::make_shared<Object>(std::conj(z));
 }
 
-/*
-Self Object::polar(Args args){}
+// -*-
+Self Object::polar(Args args){
+    if(!check_argcount(args, 2)){
+        Error err(Error::Kind::ValueError, "invalid number of argument");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto rho = std::get<f64>(args[0]->m_value);
+    auto theta = std::get<f64>(args[1]->m_value);
+    return std::make_shared<Object>(std::polar(rho, theta));
+}
 
+
+/*
 // -*---------------------------------
 // -*- Sequence Specific Operators -*-
 // -----------------------------------
