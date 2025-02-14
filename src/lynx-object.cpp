@@ -2147,8 +2147,12 @@ bool Object::is_hashset(void) const{
     return this->m_kind == Object::Kind::Set;
 }
 
+// -*-
+bool Object::is_hashmap(void) const{
+    return this->m_kind == Object::Kind::Dict;
+}
+
 /*
-bool Object::is_hashmap(void) const{}
 bool Object::is_builtin(void) const{}
 bool Object::is_function(void) const{}
 bool Object::is_macro(void) const{}
