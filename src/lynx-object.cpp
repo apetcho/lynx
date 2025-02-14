@@ -1727,8 +1727,19 @@ Object operator==(const Object& lhs, const Object& rhs){
     return Object(*obj.__eq__(args));
 }
 
+
+/**
+ * @brief Implement "not-equal" (!=) operation on object.
+ * 
+ * @param lhs 
+ * @param rhs 
+ * @return Object 
+ */
+Object operator!=(const Object& lhs, const Object& rhs){
+    return Object(!(lhs == rhs));
+}
+
 /*
-Object operator!=(const Object& lhs, const Object& rhs){}
 Object operator<=(const Object& lhs, const Object& rhs){}
 Object operator>=(const Object& lhs, const Object& rhs){}
 Object operator<(const Object& lhs, const Object& rhs){}
