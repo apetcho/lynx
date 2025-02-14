@@ -813,8 +813,22 @@ Self& Dict::operator[](const Self& key){
     return this->m_data[key];
 }
 
+/**
+ * @brief Get the value of entry with key.
+ * 
+ * If key not found return Error value with KeyError symbol and message.
+ * @param key 
+ * @return const Self& 
+ */
+const Self& Dict::operator[](const Self& key) const{
+    if(this->contains(key)){
+        auto entry = this->m_data.find(key);
+        return entry->second;
+    }
+    throw std::runtime_error("key not found");
+}
+
 /*
-const Self& Dict::operator[](const Self& key) const{}
 Self Dict::values(void) const{}
 Self Dict::keys(void) const{}
 Self Dict::items(void) const{}
