@@ -533,9 +533,23 @@ bool Set::Equal::operator()(const Self& lhs, const Self& rhs){
  */
 Set::Set() noexcept: m_data{}{}
 
+/**
+ * @brief Construct a new Set:: Set object
+ * 
+ * Construct a Set object from iterable (assumed to iterable) object.
+ * 
+ * Each item in the iterable is assumed to be hashable.
+ * @param iterable 
+ */
+Set::Set(Self iterable) noexcept: Set{}{
+    Iterator iterator = std::get<Iterator>(iterable->m_value);
+    while(static_cast<bool>(iterator->done())){
+        Self key = iterator->next();
+        this->m_data.insert(key);
+    }
+}
 
 /*
-Set::Set(Self iterable) noexcept{}
 Set::Set(const Set& hset) noexcept{}
 Set::Set(Set&& hset) noexcept{}
 Set& Sef::operator=(const Set& hset){}
