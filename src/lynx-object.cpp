@@ -2086,11 +2086,15 @@ const Self& Object::operator[](const Self& key) const{
     return std::get<Dict>(this->m_value)[key];
 }
 
+// -------------------------
+// -*- Object Predicates -*-
+// -------------------------
+bool Object::is_nil(void) const{
+    return this->m_kind == Object::Kind::None;
+}
+
+
 /*
-// ------------------
-// -*- Predicates -*-
-// ------------------
-bool Object::is_nil(void) const{}
 bool Object::is_bool(void) const{}
 bool Object::is_integer(void) const{}
 bool Object::is_float(void) const{}
