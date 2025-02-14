@@ -2172,8 +2172,17 @@ bool Object::is_lambda(void) const{
     return this->m_kind == Object::Kind::Lambda;
 }
 
+// -*-
+bool Object::is_callable(void) const{
+    return (
+        this->is_builtin() ||
+        this->is_function() ||
+        this->is_lambda() ||
+        this->is_macro()
+    );
+}
+
 /*
-bool Object::is_callable(void) const{}
 bool Object::is_hashable(void) const{}
 bool Object::is_ok(void) const{}
 bool Object::is_structure(void) const{}
