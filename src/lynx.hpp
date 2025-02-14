@@ -445,11 +445,11 @@ class Set final{
 public:
     // -
     struct Hasher{
-        usize operator()(const Self& lhs);
+        usize operator()(const Self& lhs) const;
     };
 
     struct Equal{
-        bool operator()(const Self& lhs, const Self& rhs);
+        bool operator()(const Self& lhs, const Self& rhs) const;
     };
 
     using UserSet = std::unordered_set<Self, Hasher, Equal>;
@@ -485,11 +485,11 @@ private:
 class Dict final{
 public:
     struct Hasher{
-        usize operator()(const Self& lhs);
+        usize operator()(const Self& lhs) const;
     };
 
     struct Equal{
-        bool operator()(const Self& lhs, const Self& rhs);
+        bool operator()(const Self& lhs, const Self& rhs) const;
     };
     // -
     using UserDict = std::unordered_map<Self, Self, Hasher, Equal>;
@@ -757,7 +757,7 @@ public:
 
     friend class Set;
     friend class Dict;
-    
+
     friend std::ostream& operator<<(std::ostream& os, const Object& obj);
 
 private:

@@ -508,7 +508,7 @@ void Structure::delete_object_attribute(const Str& key){
  * @param lhs 
  * @return usize 
  */
-usize Set::Hasher::operator()(const Self& key){
+usize Set::Hasher::operator()(const Self& key) const {
     Args args = {key};
     Self self = key->__hash__(args);
     auto hashVal = static_cast<usize>(static_cast<i64>(*self));
@@ -523,7 +523,7 @@ usize Set::Hasher::operator()(const Self& key){
  * @return true 
  * @return false 
  */
-bool Set::Equal::operator()(const Self& lhs, const Self& rhs){
+bool Set::Equal::operator()(const Self& lhs, const Self& rhs) const{
     return (*lhs) == (*rhs);
 }
 
@@ -575,8 +575,19 @@ Set::~Set(){
     }
 }
 
+/**
+ * @brief Check whether this Set-object contains 'key'.
+ * 
+ * @param key 
+ * @return true 
+ * @return false 
+ */
+bool Set::contains(const Self& key) const{
+    if(this->m_data.find(key) != this->m_data.end()){ return true; }
+    return false;
+}
+
 /*
-bool Set::contains(const Self& key) const{}
 usize Set::len(void) const{}
 void Set::insert(const Self& item){}
 bool Set::is_disjoint(const Set& hset) const{}
