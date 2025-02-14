@@ -1550,13 +1550,23 @@ Object& Object::operator!(){
 Object operator&&(const Object& lhs, const Object& rhs){
     Object x = lhs;
     Object y = rhs;
+    return Object((static_cast<bool>(x) && static_cast<bool>(y)));
+}
+
+/**
+ * @brief Implement logical and (&&) operation on Object.
+ * 
+ * @param lhs 
+ * @param rhs 
+ * @return Object 
+ */
+Object operator||(const Object& lhs, const Object& rhs){
+    Object x = lhs;
+    Object y = rhs;
     return Object((static_cast<bool>(x) || static_cast<bool>(y)));
 }
 
-
 /*
-Object operator||(const Object& lhs, const Object& rhs){}
-
 Object& Object::operator~(){}
 Object operator|(const Object& lhs, const Object& rhs){}
 Object operator&(const Object& lhs, const Object& rhs){}
