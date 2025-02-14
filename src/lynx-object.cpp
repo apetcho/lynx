@@ -587,10 +587,27 @@ bool Set::contains(const Self& key) const{
     return false;
 }
 
+// -*-
+usize Set::len(void) const{ return this->m_data.size(); }
+
+// -*-
+void Set::insert(const Self& item){
+    this->m_data.insert(item);
+}
+
+// -*-
+bool Set::is_disjoint(const Set& hset) const{
+    for(auto key=this->m_data.begin(); key != this->m_data.end(); key++){
+        if(hset.contains(*key)){ return false; }
+    }
+    for(auto key=hset.m_data.begin(); key != hset.m_data.end(); key++){
+        if(this->contains(*key)){ return false;}
+    }
+
+    return true;
+}
+
 /*
-usize Set::len(void) const{}
-void Set::insert(const Self& item){}
-bool Set::is_disjoint(const Set& hset) const{}
 bool Set::is_superset(const Set& hset) const{}
 bool Set::is_subset(const Set& hset) const{}
 void Set::remove(const Self& item){}
