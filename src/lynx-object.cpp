@@ -2736,8 +2736,24 @@ Self Object::find_all(Args args){
 }
 
 
+// -*-
+Self Object::find_last(Args args){
+    if(!check_argcount(args, 2)){
+        Error err(Error::Kind::ValueError, "invalid number of argument");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto rv = this->find_all(args);
+    auto vec = std::get<List>(rv->m_value);
+    if(vec.size()==0){
+        auto obj = Object(static_cast<i64>(-1));
+        return std::make_shared<Object>(obj);
+    }
+    auto pos = *(vec[vec.size()-1]);
+    auto idx = static_cast<i64>(pos);
+    return std::make_shared<Object>(idx);
+}
+
 /*
-Self Object::find_last(Args args){}
 Self Object::slice(Args args){}
 Self Object::sort(Args args){}
 
