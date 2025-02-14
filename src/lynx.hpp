@@ -663,6 +663,14 @@ public:
     // -
     bool is_builitn_type(void) const;
 
+    const bool& is_structure_instance(void) const{
+        return this->m_is_structure_instance;
+    }
+
+    bool& is_structure_instance(void){
+        return this->m_is_structure_instance;
+    }
+
     void as_version(void){ this->m_is_version = true; }
     bool is_version(void) const{ return this->m_is_version; }
 
@@ -776,6 +784,7 @@ private:
     bool m_newtype;
     bool m_constant;
     bool m_fixed_type;
+    bool m_is_structure_instance;
 
     Str m_doc = ""; // builtin function documentation string
 

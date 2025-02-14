@@ -2216,9 +2216,13 @@ bool Object::is_ok(void) const{
     return result.is_ok();
 }
 
+// -*-
+bool Object::is_structure(void) const{
+    return this->m_kind == Object::Kind::Struct;
+}
+
 /*
-bool Object::is_structure(void) const{}
-bool is_builitn_type(void) const;
+bool Object::is_builitn_type(void) const{}
 
 
 // ------------------------------
