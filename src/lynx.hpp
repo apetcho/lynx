@@ -614,15 +614,20 @@ public:
     // Num
     friend Object operator*(const Object& lhs, const Object& rhs);
     // Num, Set (union), Tuple, List, Dict
-    Object& operator+=(const Object& lhs);
+    Object& operator+=(const Object& rhs);
     // Num, Set (difference)
-    Object& operator-=(const Object& lhs);
+    Object& operator-=(const Object& rhs);
     // Num
-    Object& operator/=(const Object& lhs);
+    Object& operator/=(const Object& rhs);
     // Num
-    Object& operator%=(const Object& lhs);
+    Object& operator%=(const Object& rhs);
     // Num
-    Object& operator*=(const Object& lhs);
+    Object& operator*=(const Object& rhs);
+    Object& operator|=(const Object& rhs);
+    Object& operator&=(const Object& rhs);
+    Object& operator^=(const Object& rhs);
+    Object& operator<<=(const Object& rhs);
+    Object& operator>>=(const Object& rhs);
 
     // -----------------------
     // -*- Index Operators -*-
@@ -663,19 +668,10 @@ public:
     // -
     bool is_builitn_type(void) const;
 
-    const bool& is_structure_instance(void) const{
-        return this->m_is_structure_instance;
-    }
-
-    bool& is_structure_instance(void){
-        return this->m_is_structure_instance;
-    }
-
     void as_version(void){ this->m_is_version = true; }
     bool is_version(void) const{ return this->m_is_version; }
 
-    void as_newtype(void){ this->m_newtype = true; }
-    bool is_newtype(void) const{ return this->m_newtype; }
+    bool is_usertype(void) const{ return this->is_structure(); }
 
     void as_constant(void){ this->m_constant = true; }
     bool is_constant(void) const{ return this->m_constant; }
@@ -740,8 +736,12 @@ public:
     Self join(Args args);
     Self endswith(Args args);
     Self startswith(Args args);
-    Self chr(Args args);
-    Self ord(Args args);
+    Self isnumeric(Args args);
+    Self isupper(Args args);
+    Self isspace(Args args);
+    Self ltrim(Args args);
+    Self rtrim(Args args);
+    Self trim(Args args);
 
     // -*- List Specific methods -*-
     Self index(Args args);
@@ -779,10 +779,10 @@ private:
     Value m_value;
     Symbol m_name; // builtin function name
     bool m_is_version;
-    bool m_newtype;
+    bool m_usertype;
     bool m_constant;
     bool m_fixed_type;
-    bool m_is_structure_instance;
+    // bool m_is_structure_instance;
 
     Str m_doc = ""; // builtin function documentation string
 
@@ -834,8 +834,6 @@ protected:
     // Indexing
     Self __getitem__(Args args);
     Self __setitem__(Args args);
-    // Slicing-ops
-    Self __slice__(Args args);
     // Iterable
     Self __next__(Args args);
     Self __done__(Args args);
@@ -855,7 +853,6 @@ protected:
     Self __bool__(Args args);
     Self __integer__(Args args);
     Self __float__(Args args);
-    Self __cmplx__(Args args);
     Self __tuple__(Args args);
     Self __list__(Args args);
     Self __hashset__(Args args);

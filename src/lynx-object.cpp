@@ -923,7 +923,7 @@ Object::Object() noexcept
 , m_value{Nil{}}
 , m_name{Symbol("")}
 , m_is_version{false}
-, m_newtype{false}
+, m_usertype{false}
 , m_constant{false}
 , m_fixed_type{false}{}
 
@@ -939,7 +939,7 @@ Object::Object(bool val) noexcept
 , m_value{val}
 , m_name{Symbol("")}
 , m_is_version{false}
-, m_newtype{false}
+, m_usertype{false}
 , m_constant{false}
 , m_fixed_type{false}{}
 
@@ -955,7 +955,7 @@ Object::Object(i64 num) noexcept
 , m_value{num}
 , m_name{Symbol("")}
 , m_is_version{false}
-, m_newtype{false}
+, m_usertype{false}
 , m_constant{false}
 , m_fixed_type{false}{}
 
@@ -970,7 +970,7 @@ Object::Object(f64 num) noexcept
 , m_value{num}
 , m_name{Symbol("")}
 , m_is_version{false}
-, m_newtype{false}
+, m_usertype{false}
 , m_constant{false}
 , m_fixed_type{false}{}
 
@@ -985,7 +985,7 @@ Object::Object(Complex z) noexcept
 , m_value{z}
 , m_name{Symbol("")}
 , m_is_version{false}
-, m_newtype{false}
+, m_usertype{false}
 , m_constant{false}
 , m_fixed_type{false}{}
 
@@ -1001,7 +1001,7 @@ Object::Object(Symbol sym) noexcept
 , m_value{sym}
 , m_name{Symbol("")}
 , m_is_version{false}
-, m_newtype{false}
+, m_usertype{false}
 , m_constant{false}
 , m_fixed_type{false}{}
 
@@ -1016,7 +1016,7 @@ Object::Object(Str str) noexcept
 , m_value{str}
 , m_name{Symbol("")}
 , m_is_version{false}
-, m_newtype{false}
+, m_usertype{false}
 , m_constant{false}
 , m_fixed_type{false}{}
 
@@ -1032,7 +1032,7 @@ Object::Object(Object::Kind kind, List data) noexcept
 , m_value{data}
 , m_name{Symbol("")}
 , m_is_version{false}
-, m_newtype{false}
+, m_usertype{false}
 , m_constant{false}
 , m_fixed_type{false}{}
 
@@ -1047,7 +1047,7 @@ Object::Object(Set data) noexcept
 , m_value{data}
 , m_name{Symbol("")}
 , m_is_version{false}
-, m_newtype{false}
+, m_usertype{false}
 , m_constant{false}
 , m_fixed_type{false}{}
 
@@ -1063,7 +1063,7 @@ Object::Object(Dict data) noexcept
 , m_value{data}
 , m_name{Symbol("")}
 , m_is_version{false}
-, m_newtype{false}
+, m_usertype{false}
 , m_constant{false}
 , m_fixed_type{false}{}
 
@@ -1079,7 +1079,7 @@ Object::Object(Structure klass) noexcept
 , m_value{klass}
 , m_name{Symbol("")}
 , m_is_version{false}
-, m_newtype{false}
+, m_usertype{false}
 , m_constant{false}
 , m_fixed_type{false}{}
 
@@ -1095,7 +1095,7 @@ Object::Object(Iterator iter) noexcept
 , m_value{iter}
 , m_name{Symbol("")}
 , m_is_version{false}
-, m_newtype{false}
+, m_usertype{false}
 , m_constant{false}
 , m_fixed_type{false}{}
 
@@ -1113,7 +1113,7 @@ Object::Object(const Str& name, CFun cfun) noexcept
 , m_value{cfun}
 , m_name{Symbol(name)}
 , m_is_version{false}
-, m_newtype{false}
+, m_usertype{false}
 , m_constant{false}
 , m_fixed_type{false}{}
 
@@ -1129,7 +1129,7 @@ Object::Object(Ast ast) noexcept
 , m_value{ast}
 , m_name{Symbol("")}
 , m_is_version{false}
-, m_newtype{false}
+, m_usertype{false}
 , m_constant{false}
 , m_fixed_type{false}{
     if(ast->kind() == AstKind::LambdaDefExpr){
@@ -1152,7 +1152,7 @@ Object::Object(Result result) noexcept
 , m_value{result}
 , m_name{Symbol("")}
 , m_is_version{false}
-, m_newtype{false}
+, m_usertype{false}
 , m_constant{false}
 , m_fixed_type{false}{}
 
@@ -1167,7 +1167,7 @@ Object::Object(const Object& obj) noexcept
 , m_value{obj.m_value}
 , m_name{obj.m_name}
 , m_is_version{obj.m_is_version}
-, m_newtype{obj.m_newtype}
+, m_usertype{obj.m_usertype}
 , m_constant{obj.m_constant}
 , m_fixed_type{obj.m_fixed_type}{}
 
@@ -1182,7 +1182,7 @@ Object::Object(Object&& obj) noexcept
 , m_value{std::move(obj.m_value)}
 , m_name{std::move(obj.m_name)}
 , m_is_version{std::move(obj.m_is_version)}
-, m_newtype{std::move(obj.m_newtype)}
+, m_usertype{std::move(obj.m_usertype)}
 , m_constant{std::move(obj.m_constant)}
 , m_fixed_type{std::move(obj.m_fixed_type)}{}
 
@@ -1198,7 +1198,7 @@ Object& Object::operator=(const Object& obj) noexcept{
         this->m_value = obj.m_value;
         this->m_name = obj.m_name;
         this->m_is_version = obj.m_is_version;
-        this->m_newtype = obj.m_newtype;
+        this->m_usertype = obj.m_usertype;
         this->m_constant = obj.m_constant;
         this->m_fixed_type = obj.m_fixed_type;
     }
@@ -1218,7 +1218,7 @@ Object& Object::operator=(Object&& obj) noexcept{
         this->m_value = std::move(obj.m_value);
         this->m_name = std::move(obj.m_name);
         this->m_is_version = std::move(obj.m_is_version);
-        this->m_newtype = std::move(obj.m_newtype);
+        this->m_usertype = std::move(obj.m_usertype);
         this->m_constant = std::move(obj.m_constant);
         this->m_fixed_type = std::move(obj.m_fixed_type);
     }
@@ -1940,14 +1940,13 @@ Object operator*(const Object& lhs, const Object& rhs){
  * (5) HashSet: (lhs += rhs) -> HashSet
  * (6) HashMap: (lhs += rhs) -> HashMap 
  * 
- * @param lhs 
  * @param rhs 
  * @return Object 
  */
-Object& Object::operator+=(const Object& lhs){
+Object& Object::operator+=(const Object& rhs){
     Args args{};
     args.push_back(std::make_shared<Object>(*this));
-    args.push_back(std::make_shared<Object>(lhs));
+    args.push_back(std::make_shared<Object>(rhs));
     Self self = Object().__add__(args);
     this->m_value = std::move(self->m_value);
 
@@ -1967,14 +1966,13 @@ Object& Object::operator+=(const Object& lhs){
  *      - Complex -= Number -> Complex
  * (4) HashSet: (lhs -= rhs) -> HashSet
  * 
- * @param lhs 
  * @param rhs 
  * @return Object 
  */
-Object& Object::operator-=(const Object& lhs){
+Object& Object::operator-=(const Object& rhs){
     Args args{};
     args.push_back(std::make_shared<Object>(*this));
-    args.push_back(std::make_shared<Object>(lhs));
+    args.push_back(std::make_shared<Object>(rhs));
     Self self = Object().__sub__(args);
     this->m_value = std::move(self->m_value);
 
@@ -1993,14 +1991,13 @@ Object& Object::operator-=(const Object& lhs){
  * (3) Complex: (z1 /= z2) -> Complex
  *      - Complex /= Number -> Complex
  * 
- * @param lhs 
  * @param rhs 
  * @return Object 
  */
-Object& Object::operator/=(const Object& lhs){
+Object& Object::operator/=(const Object& rhs){
     Args args{};
     args.push_back(std::make_shared<Object>(*this));
-    args.push_back(std::make_shared<Object>(lhs));
+    args.push_back(std::make_shared<Object>(rhs));
     Self self = Object().__div__(args);
     this->m_value = std::move(self->m_value);
 
@@ -2017,14 +2014,13 @@ Object& Object::operator/=(const Object& lhs){
  *      - Float %= Integer -> Float
  *      - Integer %= Float -> Float
  * 
- * @param lhs 
  * @param rhs 
  * @return Object 
  */
-Object& Object::operator%=(const Object& lhs){
+Object& Object::operator%=(const Object& rhs){
     Args args{};
     args.push_back(std::make_shared<Object>(*this));
-    args.push_back(std::make_shared<Object>(lhs));
+    args.push_back(std::make_shared<Object>(rhs));
     Self self = Object().__mod__(args);
     this->m_value = std::move(self->m_value);
 
@@ -2041,15 +2037,69 @@ Object& Object::operator%=(const Object& lhs){
  *      - Float *= Integer -> Float
  *      - Integer *= Float -> Float
  * 
- * @param lhs 
  * @param rhs 
  * @return Object 
  */
-Object& Object::operator*=(const Object& lhs){
+Object& Object::operator*=(const Object& rhs){
     Args args{};
     args.push_back(std::make_shared<Object>(*this));
-    args.push_back(std::make_shared<Object>(lhs));
+    args.push_back(std::make_shared<Object>(rhs));
     Self self = Object().__mul__(args);
+    this->m_value = std::move(self->m_value);
+
+    return *this;
+}
+
+// -*-
+Object& Object::operator|=(const Object& rhs){
+    Args args{};
+    args.push_back(std::make_shared<Object>(*this));
+    args.push_back(std::make_shared<Object>(rhs));
+    Self self = Object().__bit_or__(args);
+    this->m_value = std::move(self->m_value);
+
+    return *this;
+}
+
+// -*-
+Object& Object::operator&=(const Object& rhs){
+    Args args{};
+    args.push_back(std::make_shared<Object>(*this));
+    args.push_back(std::make_shared<Object>(rhs));
+    Self self = Object().__bit_and__(args);
+    this->m_value = std::move(self->m_value);
+
+    return *this;
+}
+
+// -*-
+Object& Object::operator^=(const Object& rhs){
+    Args args{};
+    args.push_back(std::make_shared<Object>(*this));
+    args.push_back(std::make_shared<Object>(rhs));
+    Self self = Object().__bit_xor__(args);
+    this->m_value = std::move(self->m_value);
+
+    return *this;
+}
+
+// -*-
+Object& Object::operator<<=(const Object& rhs){
+    Args args{};
+    args.push_back(std::make_shared<Object>(*this));
+    args.push_back(std::make_shared<Object>(rhs));
+    Self self = Object().__bit_shl__(args);
+    this->m_value = std::move(self->m_value);
+
+    return *this;
+}
+
+// -*-
+Object& Object::operator>>=(const Object& rhs){
+    Args args{};
+    args.push_back(std::make_shared<Object>(*this));
+    args.push_back(std::make_shared<Object>(rhs));
+    Self self = Object().__bit_shr__(args);
     this->m_value = std::move(self->m_value);
 
     return *this;
@@ -2594,6 +2644,13 @@ Self Object::endswith(Args args){}
 Self Object::startswith(Args args){}
 Self Object::chr(Args args){}
 Self Object::ord(Args args){}
+
+Self isnumeric(Args);
+Self isupper(Args);
+Self isspace(Args);
+Self ltrim(Args);
+Self rtrim(Args);
+Self trim(Args);
 
 Self Object::index(Args args){}
 Self Object::remove(Args args){}
