@@ -694,7 +694,6 @@ public:
     Self operator()(const Str& fname, Args args);
 
     // -*-
-    Str format(void) const;
     Self unwrap(void) const;
 
     // -*-

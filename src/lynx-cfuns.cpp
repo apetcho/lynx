@@ -5,6 +5,43 @@
 // -*----------------------------------------------------------------*-
 namespace lynx{
 // -
+/**
+ * @brief Lynx string-formatter
+ * 
+ * The formater is used by the builtin function `format`
+ * 
+ */
+struct Formatter{
+    explicit Formatter(const Str& str) noexcept;
+    LYNX_DECLARE_MOVE(Formatter);
+    ~Formatter();
+    Str operator()(const Lynx& interp);
+
+    // -*-
+    enum class Kind{
+        LBrace,     // '{'
+        RBrace,     // '}'
+        Expr,       // expr
+        Colon,      // ':'
+        Dot,        // '.',
+        FSpec,      // FormatSpec: 'i', 'b', 'o', 'x' , 'f', 'e', 'E', 's', 'a', 'r'
+        Ident,      // identifier
+        Any,        // any-other-character-string
+    };
+    /*
+    FormatSpecs:
+        - Integer: i, [0][w]i, b, x
+        - Float: f, e, E, [0][w][.][p](f|e|E)
+        - String: s
+        - Generic: a
+        - Parseable-string: r 
+    */
+    struct Token{
+        Formatter::Kind kind;
+        Str lexme;
+    };
+};
+// -
 /*
 Self fn_input(Vec<Self> argv);
 Self fn_println(Vec<Self> argv);

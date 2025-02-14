@@ -2490,19 +2490,30 @@ Iterator Object::iter(void) const{
     return std::get<Iterator>(this->m_value);
 }
 
-/*
-Str Object::format(void) const{}
+// -*-
+static bool check_argcount(Args args, i32 count){
+    return (args.size() == count);
+}
 
 // -------------------------------
 // -*- Complex-numbers methods -*-
 // -------------------------------
-Self Object::real(Args);
-Self Object::imag(Args);
-Self Object::abs(Args);
-Self Object::arg(Args);
-Self Object::norm(Args);
-Self Object::conj(Args);
-Self Object::polar(Args);
+Self Object::real(Args args){
+    if(!check_argcount(args, 1)){
+        Error err(Error::Kind::ValueError, "invalid number of argument");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto z = std::get<Complex>(args[0]->m_value);
+    return std::make_shared<Object>(z.real());
+}
+
+/*
+Self Object::imag(Args){}
+Self Object::abs(Args){}
+Self Object::arg(Args){}
+Self Object::norm(Args){}
+Self Object::conj(Args){}
+Self Object::polar(Args){}
 
 // -*---------------------------------
 // -*- Sequence Specific Operators -*-
