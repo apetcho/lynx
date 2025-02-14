@@ -1739,10 +1739,31 @@ Object operator!=(const Object& lhs, const Object& rhs){
     return Object(!(lhs == rhs));
 }
 
+
+Object operator<(const Object& lhs, const Object& rhs){
+    if(lhs.is_number() && rhs.is_number()){
+        if(lhs.is_integer() && rhs.is_integer()){
+            auto xnum = static_cast<i64>(Object(lhs));
+            auto ynum = static_cast<i64>(Object(rhs));
+            return Object((xnum < ynum));
+        }else{
+            auto xnum = static_cast<f64>(Object(lhs));
+            auto ynum = static_cast<f64>(Object(rhs));
+            return Object((xnum < ynum));
+        }
+    }
+
+    // -
+    Object obj{};
+    Args args{};
+    args.push_back(std::make_shared<Object>(lhs));
+    args.push_back(std::make_shared<Object>(rhs));
+    return Object((*Object().__lt__(args)));
+}
+
 /*
 Object operator<=(const Object& lhs, const Object& rhs){}
 Object operator>=(const Object& lhs, const Object& rhs){}
-Object operator<(const Object& lhs, const Object& rhs){}
 Object operator>(const Object& lhs, const Object& rhs){}
 
 Object operator+(const Object& lhs, const Object& rhs){}
