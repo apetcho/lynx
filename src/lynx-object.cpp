@@ -1514,11 +1514,22 @@ Object::operator Dict(){
     return std::get<Dict>(this->m_value);
 }
 
-/*
-Object::operator CFun(){}
-Object::operator Result(){}
-Object::operator Ast(){}
+// -*-
+Object::operator CFun(){
+    return std::get<CFun>(this->m_value);
+}
 
+// -*-
+Object::operator Result(){
+    return std::get<Result>(this->m_value);
+}
+
+// -*-
+Object::operator Ast(){
+    return std::get<Ast>(this->m_value);
+}
+
+/*
 Object& Object::operator!(){}
 Object operator&&(const Object& lhs, const Object& rhs){}
 Object operator||(const Object& lhs, const Object& rhs){}
