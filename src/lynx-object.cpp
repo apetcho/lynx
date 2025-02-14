@@ -1494,9 +1494,9 @@ Object::operator List(){
 }
 
 /**
- * @brief Convert object into a HSet object.
+ * @brief Convert object into a Set object.
  * 
- * @return HSet 
+ * @return Set 
  */
 Object::operator Set(){
     Set hset{};
@@ -1505,8 +1505,16 @@ Object::operator Set(){
 }
 
 
+/**
+ * @brief Convert object into a Dict object.
+ * 
+ * @return Dict 
+ */
+Object::operator Dict(){
+    return std::get<Dict>(this->m_value);
+}
+
 /*
-Object::operator Dict(){}
 Object::operator CFun(){}
 Object::operator Result(){}
 Object::operator Ast(){}
