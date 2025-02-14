@@ -1567,8 +1567,20 @@ Object operator||(const Object& lhs, const Object& rhs){
     return Object((static_cast<bool>(x) || static_cast<bool>(y)));
 }
 
+/**
+ * @brief Implement bitwise 'not' (~) operation on Object.
+ * 
+ * Assume object is an integer.
+ * @return Object& 
+ */
+Object& Object::operator~(){
+    auto num = std::get<i64>(this->m_value);
+    num = ~num;
+    this->m_value = num;
+    return *this;
+}
+
 /*
-Object& Object::operator~(){}
 Object operator|(const Object& lhs, const Object& rhs){}
 Object operator&(const Object& lhs, const Object& rhs){}
 Object operator^(const Object& lhs, const Object& rhs){}
