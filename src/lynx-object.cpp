@@ -2310,13 +2310,89 @@ Self Object::operator()(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
-/*
 // ------------------------
 // -*- call type method -*-
 // ------------------------
-Self Object::operator()(const Str& fname, Args args){}
+Self Object::operator()(const Str& fname, Args args){
+    if(this->is_bool()){
+        if(Lynx::boolMethods.find(fname) != Lynx::boolMethods.end()){
+            Self (Object::*fun)(Args);
+            fun = Lynx::boolMethods[fname];
+            return (this->*fun)(args);
+        }
+    }else if(this->is_integer()){
+        if(Lynx::integerMethods.find(fname) != Lynx::integerMethods.end()){
+            Self (Object::*fun)(Args);
+            fun = Lynx::integerMethods[fname];
+            return (this->*fun)(args);
+        }
+    }else if(this->is_float()){
+        if(Lynx::floatMethods.find(fname) != Lynx::floatMethods.end()){
+            Self (Object::*fun)(Args);
+            fun = Lynx::floatMethods[fname];
+            return (this->*fun)(args);
+        }
+    }else if(this->is_complex()){
+        if(Lynx::complexMethods.find(fname) != Lynx::complexMethods.end()){
+            Self (Object::*fun)(Args);
+            fun = Lynx::complexMethods[fname];
+            return (this->*fun)(args);
+        }
+    }else if(this->is_tuple()){
+        if(Lynx::tupleMethods.find(fname) != Lynx::tupleMethods.end()){
+            Self (Object::*fun)(Args);
+            fun = Lynx::tupleMethods[fname];
+            return (this->*fun)(args);
+        }
+    }else if(this->is_list()){
+        if(Lynx::listMethods.find(fname) != Lynx::listMethods.end()){
+            Self (Object::*fun)(Args);
+            fun = Lynx::listMethods[fname];
+            return (this->*fun)(args);
+        }
+    }else if(this->is_string()){
+        if(Lynx::stringMethods.find(fname) != Lynx::stringMethods.end()){
+            Self (Object::*fun)(Args);
+            fun = Lynx::stringMethods[fname];
+            return (this->*fun)(args);
+        }
+    }else if(this->is_hashset()){
+        if(Lynx::hashsetMethods.find(fname) != Lynx::hashsetMethods.end()){
+            Self (Object::*fun)(Args);
+            fun = Lynx::hashsetMethods[fname];
+            return (this->*fun)(args);
+        }
+    }else if(this->is_hashmap()){
+        if(Lynx::hashmapMethods.find(fname) != Lynx::hashmapMethods.end()){
+            Self (Object::*fun)(Args);
+            fun = Lynx::hashmapMethods[fname];
+            return (this->*fun)(args);
+        }
+    }else if(this->is_result()){
+        if(Lynx::resultMethods.find(fname) != Lynx::resultMethods.end()){
+            Self (Object::*fun)(Args);
+            fun = Lynx::complexMethods[fname];
+            return (this->*fun)(args);
+        }
+    }else if(this->is_structure()){
+        auto cls = std::get<Structure>(this->m_value);
+        if(cls.methods().find(Symbol(fname)) != cls.methods().end()){
+            auto self = cls.methods()[Symbol(fname)];
+            auto ast = std::get<Ast>(self->m_value);
+            auto fun = reinterpret_cast<FunDefExprAst*>(ast.get());
+            auto fn = *fun;
+            return fn(args);
+        }
+    }
 
-Str Object::format(void) const{}
+    std::stringstream stream;
+    stream << static_cast<Str>(this->type());
+    stream << " does not implement method '" << fname << "'";
+    auto err = Error(Error::Kind::SyntaxError, stream.str());
+    return std::make_shared<Object>(Result(err));
+}
+
+/*
 Self Object::ok(void) const{}
 Error Object::err(void) const{}
 
@@ -2324,6 +2400,8 @@ Symbol Object::type(void) const{}
 Str Object::repr(void) const{}
 usize Object::hash(void) const{}
 Iterator Object::iter(void) const{}
+
+Str Object::format(void) const{}
 
 // -------------------------------
 // -*- Complex-numbers methods -*-
