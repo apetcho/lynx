@@ -515,8 +515,19 @@ usize Set::Hasher::operator()(const Self& key){
     return hashVal;
 }
 
+/**
+ * @brief Implement Set-key '==' comparator.
+ * 
+ * @param lhs 
+ * @param rhs 
+ * @return true 
+ * @return false 
+ */
+bool Set::Equal::operator()(const Self& lhs, const Self& rhs){
+    return (*lhs) == (*rhs);
+}
+
 /*
-bool Set::Equal::operator()(const Self& lhs, const Self& rhs){}
 Set::Set() noexcept{}
 Set::Set(Self iterable) noexcept{}
 Set::Set(const Set& hset) noexcept{}
