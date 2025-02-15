@@ -3619,6 +3619,26 @@ Self Object::pop(Args args){
 }
 
 
+// -*- list.push(item)
+Self Object::push(Args args){
+    if(!check_argcount(args, 2)){
+        Error err(Error::Kind::ValueError, "`push()`: invalid number of arguments.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = args[0];
+    if(!self->is_list()){
+        Error err(Error::Kind::TypeError, "`push()`: incorrect method call.");
+        return std::make_shared<Object>(Result(err));
+    }else{
+        auto vec = std::get<List>(self->m_value);
+        auto item = *args[1];
+        vec.push_back(std::make_shared<Object>(item));
+        return std::make_shared<Object>(Object::Kind::Vector, vec);
+    }
+    Error err(Error::Kind::TypeError, "`push()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
 
     if(!check_argcount(args, 2)){
@@ -3635,7 +3655,7 @@ Self Object::pop(Args args){
 
 
 list.push(item)
-Self Object::push(Args args){}
+
 
 Self Object::keys(Args args){}
 Self Object::values(Args args){}
