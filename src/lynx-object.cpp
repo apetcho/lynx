@@ -3248,13 +3248,48 @@ Self Object::startswith(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+// -*-
+Self Object::isnumeric(Args args){
+    if(!check_argcount(args, 0)){
+        Error err(Error::Kind::ValueError, "`isnumeric()`: invalid number of arguments.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = *args[0];
+    if(self.is_string()){
+        auto str = static_cast<Str>(self);
+        auto flag = false;
+        auto isfloat = (
+            (str.find(".") != Str::npos) ||
+            (str.find("e") != Str::npos) ||
+            (str.find("E")!=Str::npos)
+        );
+        if(isfloat){
+            try{
+                usize pos{};
+                auto num = std::stod(str, &pos);
+                if(pos == str.length()){ flag = true; }
+                LYNX_UNUSED(num);
+            }catch(...){}
+        }else{
+            try{
+                usize pos{};
+                auto num = std::stoll(str, &pos);
+                if(pos == str.length()){ flag = true; }
+                LYNX_UNUSED(num);
+            }catch(...){}
+        }
+        return std::make_shared<Object>(flag);
+    }
+    Error err(Error::Kind::TypeError, "`isnumeric()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
-Self Object::isnumeric(Args){}
-Self Object::isupper(Args){}
-Self Object::isspace(Args){}
-Self Object::ltrim(Args){}
-Self Object::rtrim(Args){}
-Self Object::trim(Args){}
+Self Object::isupper(Args args){}
+Self Object::isspace(Args args){}
+Self Object::ltrim(Args args){}
+Self Object::rtrim(Args args){}
+Self Object::trim(Args args){}
 
 // ---------------------------------
 // -*- String Specific Operators -*-
