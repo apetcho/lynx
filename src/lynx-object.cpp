@@ -3156,7 +3156,7 @@ Self Object::join(Args args){
 // -*- obj.replace(old, new)
 Self Object::replace(Args args){
     if(!check_argcount(args, 3)){
-        Error err(Error::Kind::ValueError, "`replace()`: invalid number of argument.");
+        Error err(Error::Kind::ValueError, "`replace()`: invalid number of arguments.");
         return std::make_shared<Object>(Result(err));
     }
     auto self = *args[0];
@@ -3180,7 +3180,7 @@ Self Object::replace(Args args){
 // -*-
 Self Object::replace_all(Args args){
     if(!check_argcount(args, 3)){
-        Error err(Error::Kind::ValueError, "`replace_all()`: invalid number of argument.");
+        Error err(Error::Kind::ValueError, "`replace_all()`: invalid number of arguments.");
         return std::make_shared<Object>(Result(err));
     }
     auto self = *args[0];
@@ -3204,7 +3204,7 @@ Self Object::replace_all(Args args){
 // -*-
 Self Object::endswith(Args args){
     if(!check_argcount(args, 2)){
-        Error err(Error::Kind::ValueError, "`endswith()`: invalid number of argument.");
+        Error err(Error::Kind::ValueError, "`endswith()`: invalid number of arguments.");
         return std::make_shared<Object>(Result(err));
     }
     auto self = *args[0];
@@ -3226,8 +3226,29 @@ Self Object::endswith(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+// -*- str.startswith(prefix)
+Self Object::startswith(Args args){
+    if(!check_argcount(args, 2)){
+        Error err(Error::Kind::ValueError, "`startswith()`: invalid number of arguments.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = *args[0];
+    auto rhs = *args[1];
+    if(self.is_string() && rhs.is_string()){
+        auto str = static_cast<Str>(self);
+        auto prefix = static_cast<Str>(rhs);
+        if(prefix.length() > str.length()){
+            return std::make_shared<Object>(false);    
+        }
+        auto len = prefix.length();
+        auto sub = str.substr(0, len);
+        return std::make_shared<Object>((sub == prefix));
+    }
+    Error err(Error::Kind::TypeError, "`startswith()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
-Self Object::startswith(Args args){}
 Self Object::isnumeric(Args){}
 Self Object::isupper(Args){}
 Self Object::isspace(Args){}
