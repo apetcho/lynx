@@ -3468,8 +3468,47 @@ Self Object::remove(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+
+// -*- list.insert(idx, item), hset.insert(key)
+Self Object::insert(Args args){
+    if(args.size() < 2 || args.size() > 3){
+        Error err(Error::Kind::ValueError, "`insert()`: invalid number of arguments.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = args[0];
+    if(check_argcount(args, 2)){ // hset.insert(key)
+        if(!self->is_hashset()){
+            Error err(Error::Kind::ValueError, "`insert()`: incorrect method call.");
+            return std::make_shared<Object>(Result(err));
+        }
+        auto hset = std::get<Set>(self->m_value);
+        auto key = args[1];
+        hset.insert(key);
+        return std::make_shared<Object>(hset);
+    }
+
+    if(check_argcount(args, 3)){ // list.insert(idx, item)
+        if(!self->is_list()){
+            Error err(Error::Kind::ValueError, "`insert()`: incorrect method call.");
+            return std::make_shared<Object>(Result(err));
+        }
+        auto obj = *self;
+        auto key = args[1];
+        if(!key->is_integer()){
+            Error err(Error::Kind::TypeError, "`insert()`: invalid argument type for index.");
+            return std::make_shared<Object>(Result(err));
+        }
+        auto idx = static_cast<int>(std::get<i64>(key->m_value));
+        obj[idx] = args[2];
+        
+        return std::make_shared<Object>(obj);
+    }
+    
+    Error err(Error::Kind::TypeError, "`insert()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
-Self Object::insert(Args args){}
 Self Object::head(Args args){}
 Self Object::tail(Args args){}
 Self Object::last(Args args){}
