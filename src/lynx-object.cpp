@@ -3005,8 +3005,34 @@ Self Object::lower(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+// -*-
+Self Object::capitalize(Args args){
+    if(check_argcount(args, 1)){
+        Error err(Error::Kind::ValueError, "invalid number of arguments to `upper`");
+        return std::make_shared<Object>(Result(err));
+    }
+    // obj.upper()
+    auto self = args[0];
+    if(self->is_string()){
+        auto str = std::get<Str>(self->m_value);
+        Str xstr{};
+        bool done = false;
+        for(auto ptr = str.begin(); ptr != str.end(); ptr++){
+            auto c = *ptr;
+            if(!done){
+                xstr += std::isspace(c) ? c : std::toupper(c);
+            }else{
+                xstr += std::tolower(c);
+            }
+        }
+        return std::make_shared<Object>(xstr);
+    }
+
+    Error err(Error::Kind::SyntaxError, "invalid `upper` method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
-Self Object::capitalize(Args args){}
 Self Object::title(Args args){}
 Self Object::split(Args args){}
 Self Object::join(Args args){}
