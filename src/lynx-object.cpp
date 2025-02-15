@@ -3201,11 +3201,33 @@ Self Object::replace_all(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+// -*-
+Self Object::endswith(Args args){
+    if(!check_argcount(args, 2)){
+        Error err(Error::Kind::ValueError, "`endswith()`: invalid number of argument.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = *args[0];
+    auto rhs = *args[1];
+    if(self.is_string() && rhs.is_string()){
+        auto str = static_cast<Str>(self);
+        auto suffix = static_cast<Str>(rhs);
+        if(suffix.length() > str.length()){
+            return std::make_shared<Object>(false);    
+        }
+        auto xlen = str.length();
+        auto ylen = suffix.length();
+        auto pos = xlen - ylen;
+        auto sub = str.substr(pos);
+
+        return std::make_shared<Object>((sub == suffix));
+    }
+    Error err(Error::Kind::TypeError, "`endswith()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
-Self Object::endswith(Args args){}
 Self Object::startswith(Args args){}
-Self Object::chr(Args args){}
-Self Object::ord(Args args){}
 Self Object::isnumeric(Args){}
 Self Object::isupper(Args){}
 Self Object::isspace(Args){}
