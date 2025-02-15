@@ -1,5 +1,6 @@
 #include "lynx.hpp"
 #include<algorithm>
+#include<cctype>
 
 // -*----------------------------------------------------------------*-
 // -*- begin::namespace::lynx                                       -*-
@@ -2958,36 +2959,59 @@ Self Object::reverse(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
-
-/*
 // ---------------------------------
 // -*- String Specific Operators -*-
 // ---------------------------------
-Self Object::upper(Args args){}
+Self Object::upper(Args args){
+    // -*-
+    if(check_argcount(args, 1)){
+        Error err(Error::Kind::ValueError, "invalid number of arguments to `upper`");
+        return std::make_shared<Object>(Result(err));
+    }
+    // obj.upper()
+    auto self = args[0];
+    if(self->is_string()){
+        auto str = std::get<Str>(self->m_value);
+        Str xstr{};
+        for(auto ptr = str.begin(); ptr != str.end(); ptr++){
+            auto c = *ptr;
+            xstr += std::toupper(c);
+        }
+        return std::make_shared<Object>(xstr);
+    }
+
+    Error err(Error::Kind::SyntaxError, "invalid `upper` method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
+/*
 Self Object::lower(Args args){}
 Self Object::capitalize(Args args){}
 Self Object::title(Args args){}
 Self Object::split(Args args){}
 Self Object::join(Args args){}
+Self Object::replace(Args args){}
+Self Object::replace_all(Args args){}
 Self Object::endswith(Args args){}
 Self Object::startswith(Args args){}
 Self Object::chr(Args args){}
 Self Object::ord(Args args){}
+Self Object::isnumeric(Args){}
+Self Object::isupper(Args){}
+Self Object::isspace(Args){}
+Self Object::ltrim(Args){}
+Self Object::rtrim(Args){}
+Self Object::trim(Args){}
 
-Self isnumeric(Args);
-Self isupper(Args);
-Self isspace(Args);
-Self ltrim(Args);
-Self rtrim(Args);
-Self trim(Args);
-
+// ---------------------------------
+// -*- String Specific Operators -*-
+// ---------------------------------
 Self Object::index(Args args){}
 Self Object::remove(Args args){}
 Self Object::insert(Args args){}
 Self Object::head(Args args){}
 Self Object::tail(Args args){}
 Self Object::last(Args args){}
-Self Object::extend(Args args){}
 Self Object::append(Args args){}
 Self Object::pop(Args args){}
 Self Object::push(Args args){}
@@ -2995,8 +3019,6 @@ Self Object::push(Args args){}
 Self Object::keys(Args args){}
 Self Object::values(Args args){}
 Self Object::items(Args args){}
-// dict[key]        <Self get(Args args){}> | const Self& Obj::op[](Self k)
-// dict[key] = val  <Self put(Args args){}> | const Self& Obj::op[](Self k)
 Self Object::popitem(Args args){}
 Self Object::update(Args args){}
 

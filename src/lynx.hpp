@@ -738,6 +738,8 @@ public:
     Self title(Args args);
     Self split(Args args);
     Self join(Args args);
+    Self replace(Args args);
+    Self replace_all(Args args);
     Self endswith(Args args);
     Self startswith(Args args);
     Self isnumeric(Args args);
@@ -754,7 +756,6 @@ public:
     Self head(Args args);
     Self tail(Args args);
     Self last(Args args);
-    // Self extend(Args args); // lhs + rhs
     Self append(Args args); // also for Set, aliased as 'add'
     Self pop(Args args);
     Self push(Args args);
