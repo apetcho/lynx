@@ -3330,8 +3330,30 @@ Self Object::islower(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+// -*-
+Self Object::isspace(Args args){
+    if(!check_argcount(args, 0)){
+        Error err(Error::Kind::ValueError, "`isspace()`: invalid number of arguments.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = *args[0];
+    if(self.is_string()){
+        auto flag = true;
+        auto str = static_cast<Str>(self);
+        for(auto ptr=str.cbegin(); ptr != str.cend(); ptr++){
+            auto c = *ptr;
+            if(!std::isspace(c)){
+                flag = false;
+                break;
+            }
+        }
+        return std::make_shared<Object>(flag);
+    }
+    Error err(Error::Kind::TypeError, "`isspace()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
-Self Object::isspace(Args args){}
 Self Object::ltrim(Args args){}
 Self Object::rtrim(Args args){}
 Self Object::trim(Args args){}
