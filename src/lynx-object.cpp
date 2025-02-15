@@ -3111,8 +3111,49 @@ Self Object::split(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+// -*-
+Self Object::join(Args args){
+    // obj.join(["1", "aa", ...])
+    if(!check_argcount(args, 2)){
+        Error err(Error::Kind::ValueError, "invalid number of arguments to `join`");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = args[0];
+    if(!self->is_string()){
+        Error err(Error::Kind::TypeError, "`join()`: invalid method.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto argv = args[1];
+    if(!argv->is_list()){
+        Error err(Error::Kind::TypeError, "`join()`: invalid argument type.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto vec = static_cast<List>(*argv);
+    if(vec.size()==0){
+        return std::make_shared<Object>(Str{});
+    }
+    if(vec.size() == 1){
+        if(!vec[0]->is_string()){
+            Error err(Error::Kind::TypeError, "`join()`: invalid list element type.");
+            return std::make_shared<Object>(Result(err));
+        }
+        auto val = *vec[0];
+        auto str = static_cast<Str>(val);
+        return std::make_shared<Object>(str);
+    }
+    std::stringstream stream;
+    auto delim = std::get<Str>(self->m_value);
+    auto str = static_cast<Str>(*vec[0]);
+    stream << str;
+    for(auto i=1; i < vec.size(); i++){
+        str = static_cast<Str>(*vec[i]);
+        stream << delim << str;
+    }
+
+    return std::make_shared<Object>(stream.str());
+}
+
 /*
-Self Object::join(Args args){}
 Self Object::replace(Args args){}
 Self Object::replace_all(Args args){}
 Self Object::endswith(Args args){}
