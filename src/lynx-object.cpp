@@ -3508,8 +3508,32 @@ Self Object::insert(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+// -*- list.head()
+Self Object::head(Args args){
+    if(!check_argcount(args, 0)){
+        Error err(Error::Kind::ValueError, "`head()`: invalid number of arguments.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = args[0];
+    if(!self->is_list()){
+        Error err(Error::Kind::SyntaxError, "`head()`: incorrect method call.");
+        return std::make_shared<Object>(Result(err));
+    }else{
+        auto vec = std::get<List>(self->m_value);
+        if(vec.size()==0){
+            Error err(Error::Kind::ValueError, "`head()`: invalid method call.");
+            return std::make_shared<Object>(Result(err));
+        }
+        auto obj = *self;
+        auto item = obj[0];
+        return std::make_shared<Object>(*item);
+    }
+    Error err(Error::Kind::TypeError, "`head()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
+
 /*
-Self Object::head(Args args){}
 Self Object::tail(Args args){}
 Self Object::last(Args args){}
 Self Object::append(Args args){}
