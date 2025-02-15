@@ -3532,9 +3532,53 @@ Self Object::head(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+// -*- list.tail() -> list
+Self Object::tail(Args args){
+    if(!check_argcount(args, 1)){
+        Error err(Error::Kind::ValueError, "`tail()`: invalid number of arguments.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = args[0];
+    if(!self->is_list()){
+        Error err(Error::Kind::TypeError, "`tail()`: incorrect method call.");
+        return std::make_shared<Object>(Result(err));
+    }else{
+        auto vec = std::get<List>(self->m_value);
+        if(vec.size()==0){
+            Error err(Error::Kind::ValueError, "`tail()`: empty list.");
+            return std::make_shared<Object>(Result(err));
+        }else if(vec.size()==1){
+            List xs{};
+            return std::make_shared<Object>(Object::Kind::Vector, xs);
+        }
+        List data{};
+        auto ptr = vec.cbegin() + 1;
+        while(ptr!=vec.cend()){
+            auto x = *ptr;
+            auto obj = *x;
+            data.push_back(std::make_shared<Object>(obj));
+        }
+        return std::make_shared<Object>(Object::Kind::Vector, data);
+    }
+    Error err(Error::Kind::TypeError, "`tail()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
+}
 
 /*
-Self Object::tail(Args args){}
+
+    if(!check_argcount(args, 2)){
+        Error err(Error::Kind::ValueError, "`index()`: invalid number of arguments.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = args[0];
+    if(self->is_string() || self->is_list() || self->is_tuple()){
+        self = Object().find(args);
+        return std::make_shared<Object>(*self);
+    }
+    Error err(Error::Kind::TypeError, "`index()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
+
+
 Self Object::last(Args args){}
 Self Object::append(Args args){}
 Self Object::pop(Args args){}
