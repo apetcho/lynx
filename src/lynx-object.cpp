@@ -3432,8 +3432,43 @@ Self Object::index(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+// -*- list.remove(item), hset.remove(key)
+Self Object::remove(Args args){
+    if(!check_argcount(args, 2)){
+        Error err(Error::Kind::ValueError, "`remove()`: invalid number of arguments.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = args[0];
+    if(self->is_list()){
+        auto vec = std::get<List>(self->m_value);
+        Vec<Object> data{};
+        for(const auto& x: vec){
+            data.push_back(Object(*x));
+        }
+        auto item = *args[1];
+        for(auto ptr=data.begin(); ptr != data.end(); ptr++){
+            auto obj = *ptr;
+            if(obj == item){
+                data.erase(ptr);
+                break;
+            }
+        }
+        vec = {};
+        for(const auto& x: data){
+            vec.push_back(std::make_shared<Object>(x));
+        }
+        return std::make_shared<Object>(Object::Kind::Vector, vec);
+    }else if(self->is_hashset()){
+        auto hset = std::get<Set>(self->m_value);
+        auto key = args[1];
+        hset.remove(key);
+        return std::make_shared<Object>(hset);
+    }
+    Error err(Error::Kind::TypeError, "`remove()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
-Self Object::remove(Args args){}
 Self Object::insert(Args args){}
 Self Object::head(Args args){}
 Self Object::tail(Args args){}
