@@ -12,6 +12,7 @@
 #include<variant>
 #include<cassert>
 #include<cstdint>
+#include<limits>
 #include<string>
 #include<vector>
 #include<memory>
@@ -541,12 +542,14 @@ public:
     explicit Object(Dict data) noexcept;                // Dict
     explicit Object(Structure klass) noexcept;          // Struct
     explicit Object(Iterator iter) noexcept;            // Iter
-    explicit Object(const Str& name, CFun cfun) noexcept;// CFun
+    explicit Object(const Str& name, CFun cfun, int argc=0) noexcept;// CFun
     explicit Object(Ast ast) noexcept;                  // Fun, Lambda, Macro
     explicit Object(Result result) noexcept;            // OkErr
     LYNX_DECLARE_COPY(Object);
     LYNX_DECLARE_MOVE(Object);
     ~Object();
+
+    int argc(void) const;
 
     // ------------------------------
     // -*- Type Casting Operators -*-
@@ -724,6 +727,7 @@ public:
     // String, Tuple, List
     Self slice(Args args);
     Self sort(Args args);
+    Self reverse(Args args);
 
     // ---------------------------------
     // -*- String Specific Operators -*-
@@ -777,7 +781,10 @@ private:
     using Value = std::variant<LYNX_TYPE_VARIANTS()>;
     Object::Kind m_kind;
     Value m_value;
-    Symbol m_name; // builtin function name
+    Symbol m_name;  // builtin function name
+    // builtin function's argument-count, -1 signifies variadic function, INT_MAX means is
+    // not defined
+    int m_argc = std::numeric_limits<int>::max();
     bool m_is_version;
     bool m_usertype;
     bool m_constant;
@@ -2062,6 +2069,7 @@ struct LambdaDefExprAst final: public BinaryExprAst{
     Vec<Parameter> parameters() const;
     Ast body(void) const;
     Self operator()(Args args);
+    int argc(void) const;
 };
 
 /**
@@ -2111,6 +2119,7 @@ struct FunDefExprAst final: public BaseAst{
     Ast body(void) const;
     Self operator()(Args args);
     Str docstr(void) const;
+    int argc(void) const;
 };
 
 /**
@@ -2145,6 +2154,7 @@ struct MacroDefExprAst final: public BaseAst {
     Ast body(void) const;
     Self operator()(Args args);
     Str docstr(void) const;
+    int argc(void) const;
 
 private:
     Vec<Parameter> m_params;

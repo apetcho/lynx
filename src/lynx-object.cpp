@@ -1109,10 +1109,11 @@ Object::Object(Iterator iter) noexcept
  * @param name 
  * @param cfun 
  */
-Object::Object(const Str& name, CFun cfun) noexcept
+Object::Object(const Str& name, CFun cfun, int argc) noexcept
 : m_kind{Object::Kind::None}
 , m_value{cfun}
 , m_name{Symbol(name)}
+, m_argc{argc}
 , m_is_version{false}
 , m_usertype{false}
 , m_constant{false}
@@ -1205,6 +1206,24 @@ Object& Object::operator=(const Object& obj) noexcept{
     }
 
     return *this;
+}
+
+// -*-
+int Object::argc(void) const{
+    if(this->is_lambda()){
+        auto ast = std::get<Ast>(this->m_value);
+        auto lambda = reinterpret_cast<LambdaDefExprAst*>(ast.get());
+        return lambda->argc();
+    }else if(this->is_macro()){
+        auto ast = std::get<Ast>(this->m_value);
+        auto macro = reinterpret_cast<MacroDefExprAst*>(ast.get());
+        return macro->argc();
+    }else if(this->is_function()){
+        auto ast = std::get<Ast>(this->m_value);
+        auto fun = reinterpret_cast<FunDefExprAst*>(ast.get());
+        return fun->argc();
+    }
+    return this->m_argc;
 }
 
 /**
@@ -2852,10 +2871,63 @@ Self Object::slice(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+
+// -*-
+Self Object::sort(Args args){
+    // assumes args has at least 1-element and it is a list or a tuple
+    auto self = args[0];
+    if(self->is_list() || self->is_tuple()){
+        if(check_argcount(args, 1)){
+            // obj.sort()
+            auto vec = std::get<List>(self->m_value);
+            Vec<Object> xs{};
+            for(const auto& x: vec){
+                xs.push_back(Object(*x));
+            }
+            std::sort(xs.begin(), xs.end());
+            vec = {};
+            for(const auto& x: xs){
+                vec.push_back(std::make_shared<Object>(x));
+            }
+            if(self->is_list()){
+                return std::make_shared<Object>(Object::Kind::Vector, vec);
+            }
+            return std::make_shared<Object>(Object::Kind::Tuple, vec);
+        }else if(check_argcount(args, 2)){
+            // obj.sort(predicate);
+            auto predicate = args[1];
+            if(!predicate->is_callable() || predicate->argc() != 2){
+                Error err(Error::Kind::TypeError, "expect a callable as argument to `sort` method.");
+                return std::make_shared<Object>(Result(err));
+            }
+            auto keyfn = [&predicate](const Self& lhs, const Self& rhs){
+                Args argv{};
+                argv.push_back(std::make_shared<Object>(*lhs));
+                argv.push_back(std::make_shared<Object>(*rhs));
+                auto fn = *predicate;
+                auto rv = fn(argv);
+                return static_cast<bool>(*rv);
+            };
+            auto vec = std::get<List>(self->m_value);
+            List xs{};
+            for(const auto& x: vec){
+                xs.push_back(std::make_shared<Object>(*x));
+            }
+            std::sort(xs.begin(), xs.end(), keyfn);
+            if(self->is_list()){
+                return std::make_shared<Object>(Object::Kind::Vector, xs);
+            }
+            return std::make_shared<Object>(Object::Kind::Tuple, xs);
+        }
+    }
+
+    Error err(Error::Kind::SyntaxError, "invalid `sort` method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
 
-Self slice(Args args);
-Self Object::sort(Args args){}
+Self Object::reverse(Args args){}
 
 // ---------------------------------
 // -*- String Specific Operators -*-
