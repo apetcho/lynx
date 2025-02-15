@@ -2963,7 +2963,6 @@ Self Object::reverse(Args args){
 // -*- String Specific Operators -*-
 // ---------------------------------
 Self Object::upper(Args args){
-    // -*-
     if(check_argcount(args, 1)){
         Error err(Error::Kind::ValueError, "invalid number of arguments to `upper`");
         return std::make_shared<Object>(Result(err));
@@ -2984,8 +2983,29 @@ Self Object::upper(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+// -*-
+Self Object::lower(Args args){
+    if(check_argcount(args, 1)){
+        Error err(Error::Kind::ValueError, "invalid number of arguments to `upper`");
+        return std::make_shared<Object>(Result(err));
+    }
+    // obj.upper()
+    auto self = args[0];
+    if(self->is_string()){
+        auto str = std::get<Str>(self->m_value);
+        Str xstr{};
+        for(auto ptr = str.begin(); ptr != str.end(); ptr++){
+            auto c = *ptr;
+            xstr += std::tolower(c);
+        }
+        return std::make_shared<Object>(xstr);
+    }
+
+    Error err(Error::Kind::SyntaxError, "invalid `upper` method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
-Self Object::lower(Args args){}
 Self Object::capitalize(Args args){}
 Self Object::title(Args args){}
 Self Object::split(Args args){}
