@@ -3353,10 +3353,48 @@ Self Object::isspace(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+// -*-
+Self Object::ltrim(Args args){
+    if(!check_argcount(args, 0)){
+        Error err(Error::Kind::ValueError, "`isspace()`: invalid number of arguments.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = *args[0];
+    if(self.is_string()){
+        auto str = static_cast<Str>(self);
+        str.erase(
+            str.begin(), std::find_if(
+            str.begin(), str.end(),
+            [](unsigned char ch){ return ch != ' '; })
+        );
+        return std::make_shared<Object>(str);
+    }
+    Error err(Error::Kind::TypeError, "`isspace()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
-Self Object::ltrim(Args args){}
 Self Object::rtrim(Args args){}
 Self Object::trim(Args args){}
+
+
+/// Remove from the end of the string the given character (by default, space).
+inline auto trimright(std::string str, unsigned char character = ' ') -> std::string
+{
+    str.erase(std::find_if(str.rbegin(), str.rend(),
+                           [&](unsigned char ch)
+                           { return ch != character; })
+                  .base(),
+              str.end());
+    return str;
+}
+
+/// Trim the string from both ends
+inline auto trim(std::string str, unsigned char character = ' ') -> std::string
+{
+    return trimleft(trimright(str, character), character);
+}
+
 
 // ---------------------------------
 // -*- String Specific Operators -*-
