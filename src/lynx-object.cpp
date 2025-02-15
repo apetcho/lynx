@@ -3250,7 +3250,7 @@ Self Object::startswith(Args args){
 
 // -*-
 Self Object::isnumeric(Args args){
-    if(!check_argcount(args, 0)){
+    if(!check_argcount(args, 1)){
         Error err(Error::Kind::ValueError, "`isnumeric()`: invalid number of arguments.");
         return std::make_shared<Object>(Result(err));
     }
@@ -3286,7 +3286,7 @@ Self Object::isnumeric(Args args){
 
 // -*- str.isupper()
 Self Object::isupper(Args args){
-    if(!check_argcount(args, 0)){
+    if(!check_argcount(args, 1)){
         Error err(Error::Kind::ValueError, "`isupper()`: invalid number of arguments.");
         return std::make_shared<Object>(Result(err));
     }
@@ -3309,7 +3309,7 @@ Self Object::isupper(Args args){
 
 // -*-
 Self Object::islower(Args args){
-    if(!check_argcount(args, 0)){
+    if(!check_argcount(args, 1)){
         Error err(Error::Kind::ValueError, "`islower()`: invalid number of arguments.");
         return std::make_shared<Object>(Result(err));
     }
@@ -3332,7 +3332,7 @@ Self Object::islower(Args args){
 
 // -*-
 Self Object::isspace(Args args){
-    if(!check_argcount(args, 0)){
+    if(!check_argcount(args, 1)){
         Error err(Error::Kind::ValueError, "`isspace()`: invalid number of arguments.");
         return std::make_shared<Object>(Result(err));
     }
@@ -3355,7 +3355,7 @@ Self Object::isspace(Args args){
 
 // -*-
 Self Object::ltrim(Args args){
-    if(!check_argcount(args, 0)){
+    if(!check_argcount(args, 1)){
         Error err(Error::Kind::ValueError, "`ltrim()`: invalid number of arguments.");
         return std::make_shared<Object>(Result(err));
     }
@@ -3376,7 +3376,7 @@ Self Object::ltrim(Args args){
 
 // -*-
 Self Object::rtrim(Args args){
-    if(!check_argcount(args, 0)){
+    if(!check_argcount(args, 1)){
         Error err(Error::Kind::ValueError, "`ltrim()`: invalid number of arguments.");
         return std::make_shared<Object>(Result(err));
     }
@@ -3396,17 +3396,26 @@ Self Object::rtrim(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
-/*
-Self Object::trim(Args args){}
-
-
-/// Trim the string from both ends
-inline auto trim(std::string str, unsigned char character = ' ') -> std::string
-{
-    return trimleft(trimright(str, character), character);
+// -*-
+Self Object::trim(Args args){
+    if(!check_argcount(args, 1)){
+        Error err(Error::Kind::ValueError, "`ltrim()`: invalid number of arguments.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = args[0];
+    if(self->is_string()){
+        auto str = static_cast<Str>(*self);
+        self = Object().ltrim(args);
+        args = {};
+        args.push_back(std::make_shared<Object>(*self));
+        self = Object().rtrim(args);
+        return std::make_shared<Object>(*self);
+    }
+    Error err(Error::Kind::TypeError, "`ltrim()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
 }
 
-
+/*
 // ---------------------------------
 // -*- String Specific Operators -*-
 // ---------------------------------
