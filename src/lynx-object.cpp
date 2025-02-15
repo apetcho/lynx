@@ -3415,11 +3415,24 @@ Self Object::trim(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
-/*
 // ---------------------------------
 // -*- String Specific Operators -*-
 // ---------------------------------
-Self Object::index(Args args){}
+Self Object::index(Args args){
+    if(!check_argcount(args, 2)){
+        Error err(Error::Kind::ValueError, "`index()`: invalid number of arguments.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = args[0];
+    if(self->is_string() || self->is_list() || self->is_tuple()){
+        self = Object().find(args);
+        return std::make_shared<Object>(*self);
+    }
+    Error err(Error::Kind::TypeError, "`index()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
+/*
 Self Object::remove(Args args){}
 Self Object::insert(Args args){}
 Self Object::head(Args args){}
