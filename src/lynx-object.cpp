@@ -3588,6 +3588,37 @@ Self Object::last(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+// -*- list.pop(), list.pop(idx)
+Self Object::pop(Args args){
+    if(args.size() == 0 || args.size() > 2){
+        Error err(Error::Kind::ValueError, "`pop()`: invalid number of arguments.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = args[0];
+    if(!self->is_list()){
+        Error err(Error::Kind::TypeError, "`pop()`: incorrect method call.");
+        return std::make_shared<Object>(Result(err));
+    }else{
+        auto vec = std::get<List>(self->m_value);
+        if(vec.size()==0){
+            Error err(Error::Kind::ValueError, "`pop()`: cannot pop empty list.");
+            return std::make_shared<Object>(Result(err));
+        }
+        Object item{};
+        if(args.size()==1){
+            vec.erase(vec.begin());
+        }else{
+            auto key = *args[1];
+            auto idx = static_cast<int>(static_cast<i64>(key));
+            vec.erase((vec.begin()+idx));
+        }
+        return std::make_shared<Object>(Object::Kind::Vector, vec);
+    }
+    Error err(Error::Kind::TypeError, "`pop()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
+
 /*
 
     if(!check_argcount(args, 2)){
@@ -3603,8 +3634,7 @@ Self Object::last(Args args){
     return std::make_shared<Object>(Result(err));
 
 
-Self Object::append(Args args){}
-Self Object::pop(Args args){}
+list.push(item)
 Self Object::push(Args args){}
 
 Self Object::keys(Args args){}

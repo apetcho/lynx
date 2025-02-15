@@ -757,7 +757,6 @@ public:
     Self head(Args args);
     Self tail(Args args);
     Self last(Args args);
-    Self append(Args args); // also for Set, aliased as 'add'
     Self pop(Args args);
     Self push(Args args);
 
