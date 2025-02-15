@@ -3284,8 +3284,30 @@ Self Object::isnumeric(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+// -*- str.isupper()
+Self Object::isupper(Args args){
+    if(!check_argcount(args, 0)){
+        Error err(Error::Kind::ValueError, "`isnumeric()`: invalid number of arguments.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = *args[0];
+    if(self.is_string()){
+        auto flag = true;
+        auto str = static_cast<Str>(self);
+        for(auto ptr=str.cbegin(); ptr != str.cend(); ptr++){
+            auto c = *ptr;
+            if(!std::isupper(c)){
+                flag = false;
+                break;
+            }
+        }
+        return std::make_shared<Object>(flag);
+    }
+    Error err(Error::Kind::TypeError, "`isnumeric()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
-Self Object::isupper(Args args){}
 Self Object::isspace(Args args){}
 Self Object::ltrim(Args args){}
 Self Object::rtrim(Args args){}
