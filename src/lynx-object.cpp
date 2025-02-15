@@ -2743,6 +2743,9 @@ Self Object::find_last(Args args){
         return std::make_shared<Object>(Result(err));
     }
     auto rv = this->find_all(args);
+    if(rv->is_result()){
+        return std::make_shared<Object>(*rv);
+    }
     auto vec = std::get<List>(rv->m_value);
     if(vec.size()==0){
         auto obj = Object(static_cast<i64>(-1));
@@ -2753,8 +2756,105 @@ Self Object::find_last(Args args){
     return std::make_shared<Object>(idx);
 }
 
+// -*-
+Self Object::slice(Args args){
+    auto self = args[0];
+    if(check_argcount(args, 2)){
+        // [start:]
+        auto idx = static_cast<int>(static_cast<i64>(*(args[1])));
+        if(self->is_string()){
+            auto str = std::get<Str>(self->m_value);
+            if(idx >= 0 && idx < str.length()){
+                auto xstr = str.substr(idx);
+                return std::make_shared<Object>(xstr);
+            }
+        }else if(self->is_list() || self->is_tuple()){
+            auto vec = std::get<List>(self->m_value);
+            if(idx >= 0 && idx < vec.size()){
+                auto ptr = vec.begin() + idx;
+                List xs{};
+                for(; ptr != vec.end(); ptr++){
+                    auto obj = *ptr;
+                    xs.push_back(std::make_shared<Object>(*obj));
+                }
+                if(self->is_list()){
+                    return std::make_shared<Object>(Object::Kind::Vector, xs);
+                }
+                return std::make_shared<Object>(Object::Kind::Tuple, xs);
+            }
+        }
+    }else if(check_argcount(args, 3)){
+        // obj[start:stop]
+        // assumes args[1] and args[2] are integers
+        auto start = static_cast<int>(static_cast<i64>(*args[1]));
+        auto stop = static_cast<int>(static_cast<i64>(*args[2]));
+        if(start > stop){
+            Error err(Error::Kind::SyntaxError, "incorred slicing-syntax");
+            return std::make_shared<Object>(Result(err));        
+        }
+        auto n = stop - start;
+        if(self->is_string()){
+            auto str = std::get<Str>(self->m_value);
+            auto xstr = str.substr(start, n);
+            return std::make_shared<Object>(xstr);
+        }else if(self->is_list() || self->is_tuple()){
+            auto vec = std::get<List>(self->m_value);
+            auto ptr = vec.begin();
+            List xs{};
+            for(auto i=0; i <= n; i++){
+                auto x = ptr + (start + i);
+                auto val = *x;
+                auto obj = *val;
+                xs.push_back(std::make_shared<Object>(obj));
+            }
+            if(self->is_list()){
+                return std::make_shared<Object>(Object::Kind::Vector, xs);
+            }
+            return std::make_shared<Object>(Object::Kind::Tuple, xs);
+        }
+    }else if(check_argcount(args, 4)){
+        // obj[start:step:stop];
+        // assumes `start`, `step`, and `stop` are integers
+        auto start = static_cast<int>(static_cast<i64>(*args[1]));
+        auto step = static_cast<int>(static_cast<i64>(*args[2]));
+        auto stop = static_cast<int>(static_cast<i64>(*args[3]));
+        if((start < 0 || start > stop) || (step < 0)){
+            Error err(Error::Kind::SyntaxError, "incorrect slicing-syntax");
+            return std::make_shared<Object>(Result(err));
+        }
+        auto n = stop - start;
+        if(self->is_string()){
+            auto str = std::get<Str>(self->m_value);
+            auto ptr = str.begin() + start;
+            Str xstr{};
+            for(auto i = 0; i <= n; i += step){
+                auto c = *(ptr + i);
+                xstr += c;
+            }
+            return std::make_shared<Object>(xstr);
+        }else if(self->is_tuple() || self->is_list()){
+            auto vec = std::get<List>(self->m_value);
+            auto ptr = vec.begin() + start;
+            List xs{};
+            for(auto i=0; i <= n; i += step){
+                auto xp = *(ptr + i);
+                auto x = *xp;
+                xs.push_back(std::make_shared<Object>(x));
+            }
+            if(self->is_list()){
+                return std::make_shared<Object>(Object::Kind::Vector, xs);
+            }
+            return std::make_shared<Object>(Object::Kind::Tuple, xs);
+        }
+    }
+
+    Error err(Error::Kind::SyntaxError, "invalid number of arguments");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
-Self Object::slice(Args args){}
+
+Self slice(Args args);
 Self Object::sort(Args args){}
 
 // ---------------------------------
