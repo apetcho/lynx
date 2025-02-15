@@ -2986,7 +2986,7 @@ Self Object::upper(Args args){
 // -*-
 Self Object::lower(Args args){
     if(check_argcount(args, 1)){
-        Error err(Error::Kind::ValueError, "invalid number of arguments to `upper`");
+        Error err(Error::Kind::ValueError, "invalid number of arguments to `lower`");
         return std::make_shared<Object>(Result(err));
     }
     // obj.upper()
@@ -3001,14 +3001,14 @@ Self Object::lower(Args args){
         return std::make_shared<Object>(xstr);
     }
 
-    Error err(Error::Kind::SyntaxError, "invalid `upper` method call.");
+    Error err(Error::Kind::SyntaxError, "invalid `lower` method call.");
     return std::make_shared<Object>(Result(err));
 }
 
 // -*-
 Self Object::capitalize(Args args){
     if(check_argcount(args, 1)){
-        Error err(Error::Kind::ValueError, "invalid number of arguments to `upper`");
+        Error err(Error::Kind::ValueError, "invalid number of arguments to `capitalize`");
         return std::make_shared<Object>(Result(err));
     }
     // obj.upper()
@@ -3028,12 +3028,39 @@ Self Object::capitalize(Args args){
         return std::make_shared<Object>(xstr);
     }
 
-    Error err(Error::Kind::SyntaxError, "invalid `upper` method call.");
+    Error err(Error::Kind::SyntaxError, "invalid `capitalize` method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
+// -*-
+Self Object::title(Args args){
+    if(check_argcount(args, 1)){
+        Error err(Error::Kind::ValueError, "invalid number of arguments to `title`");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = args[0];
+    if(self->is_string()){
+        auto str = std::get<Str>(self->m_value);
+        Str xstr{};
+        bool flag{};
+        bool fcar{true};
+        for(auto ptr=str.begin(); ptr != str.end(); ptr++){
+            auto c = *ptr;
+            flag = std::isspace(c) ? true: false;
+            if(!flag && fcar){
+                xstr += std::toupper(c);
+                fcar = false;
+            }
+            if(flag){ fcar = true; }
+        }
+        return std::make_shared<Object>(xstr);
+    }
+
+    Error err(Error::Kind::SyntaxError, "invalid `title` method call.");
     return std::make_shared<Object>(Result(err));
 }
 
 /*
-Self Object::title(Args args){}
 Self Object::split(Args args){}
 Self Object::join(Args args){}
 Self Object::replace(Args args){}
