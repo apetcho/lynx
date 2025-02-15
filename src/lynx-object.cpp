@@ -3564,6 +3564,30 @@ Self Object::tail(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+// -*- list.last() -> Self
+Self Object::last(Args args){
+    if(!check_argcount(args, 1)){
+        Error err(Error::Kind::ValueError, "`last()`: invalid number of arguments.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = args[0];
+    if(!self->is_list()){
+        Error err(Error::Kind::TypeError, "`last()`: incorrect method call.");
+        return std::make_shared<Object>(Result(err));
+    }else{
+        auto vec = std::get<List>(self->m_value);
+        if(vec.size()==0){
+            Error err(Error::Kind::ValueError, "`last()`: empty list.");
+            return std::make_shared<Object>(Result(err));
+        }
+        auto item = vec[vec.size()-1];
+        auto obj = *item;
+        return std::make_shared<Object>(obj);
+    }
+    Error err(Error::Kind::TypeError, "`last()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
 
     if(!check_argcount(args, 2)){
@@ -3579,7 +3603,6 @@ Self Object::tail(Args args){
     return std::make_shared<Object>(Result(err));
 
 
-Self Object::last(Args args){}
 Self Object::append(Args args){}
 Self Object::pop(Args args){}
 Self Object::push(Args args){}
