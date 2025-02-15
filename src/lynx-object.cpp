@@ -2925,10 +2925,41 @@ Self Object::sort(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+
+// -*-
+Self Object::reverse(Args args){
+    // assumes args.size() == 1
+    if(!check_argcount(args, 1)){
+        Error err(Error::Kind::SyntaxError, "invalid `reverse` method call.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = args[0];
+    if(self->is_string()){
+        auto str = std::get<Str>(self->m_value);
+        Str xstr{};
+        for(auto ptr = str.rbegin(); ptr != str.rend(); ptr++){
+            auto c = *ptr;
+            xstr += c;
+        }
+        return std::make_shared<Object>(xstr);
+    }else if(self->is_list() || self->is_tuple()){
+        auto vec = std::get<List>(self->m_value);
+        List xs{};
+        for(const auto& x: vec){
+            xs.push_back(std::make_shared<Object>(*x));
+        }
+        std::reverse(xs.begin(), xs.end());
+        if(self->is_list()){
+            return std::make_shared<Object>(Object::Kind::Vector, xs);
+        }
+        return std::make_shared<Object>(Object::Kind::Tuple, xs);
+    }
+    Error err(Error::Kind::SyntaxError, "invalid `sort` method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
+
 /*
-
-Self Object::reverse(Args args){}
-
 // ---------------------------------
 // -*- String Specific Operators -*-
 // ---------------------------------
