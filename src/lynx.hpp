@@ -744,6 +744,7 @@ public:
     Self startswith(Args args);
     Self isnumeric(Args args);
     Self isupper(Args args);
+    Self islower(Args args);
     Self isspace(Args args);
     Self ltrim(Args args);
     Self rtrim(Args args);
