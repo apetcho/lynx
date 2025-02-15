@@ -2963,7 +2963,7 @@ Self Object::reverse(Args args){
 // -*- String Specific Operators -*-
 // ---------------------------------
 Self Object::upper(Args args){
-    if(check_argcount(args, 1)){
+    if(!check_argcount(args, 1)){
         Error err(Error::Kind::ValueError, "invalid number of arguments to `upper`");
         return std::make_shared<Object>(Result(err));
     }
@@ -2985,7 +2985,7 @@ Self Object::upper(Args args){
 
 // -*-
 Self Object::lower(Args args){
-    if(check_argcount(args, 1)){
+    if(!check_argcount(args, 1)){
         Error err(Error::Kind::ValueError, "invalid number of arguments to `lower`");
         return std::make_shared<Object>(Result(err));
     }
@@ -3007,7 +3007,7 @@ Self Object::lower(Args args){
 
 // -*-
 Self Object::capitalize(Args args){
-    if(check_argcount(args, 1)){
+    if(!check_argcount(args, 1)){
         Error err(Error::Kind::ValueError, "invalid number of arguments to `capitalize`");
         return std::make_shared<Object>(Result(err));
     }
@@ -3034,7 +3034,7 @@ Self Object::capitalize(Args args){
 
 // -*-
 Self Object::title(Args args){
-    if(check_argcount(args, 1)){
+    if(!check_argcount(args, 1)){
         Error err(Error::Kind::ValueError, "invalid number of arguments to `title`");
         return std::make_shared<Object>(Result(err));
     }
@@ -3060,8 +3060,58 @@ Self Object::title(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+// -*-
+Self Object::split(Args args){
+    // obj.split(delim)
+    auto self = args[0];
+    if(check_argcount(args, 1)){
+        // delim = ' '
+        auto str = std::get<Str>(self->m_value);
+        char delim = ' ';
+        List vec{};
+        Str word{};
+        for(auto ptr=str.begin(); ptr != str.end(); ptr++){
+            auto c = *ptr;
+            if(word.length() != 0 && std::isspace(c)){
+                vec.push_back(std::make_shared<Object>(word));
+                word = "";
+            }
+            word += c;
+        }
+        return std::make_shared<Object>(Object::Kind::Tuple, vec);
+    }else if(check_argcount(args, 2)){
+        auto _delim = args[1];
+        if(!_delim->is_string()){
+            Error err(Error::Kind::TypeError, "invalid argument type to method `split`.");
+            return std::make_shared<Object>(Result(err));
+        }
+        auto delim = std::get<Str>(_delim->m_value);
+        auto str = std::get<Str>(self->m_value);
+        List vec{};
+        auto pos = str.find(delim);
+        if(pos == Str::npos){
+            vec.push_back(std::make_shared<Object>(str));
+        }else{
+            auto lastIdx = 0;
+            while(pos != Str::npos){
+                auto word = str.substr(lastIdx, pos);
+                lastIdx += delim.length();
+                pos = str.find(delim, lastIdx);
+                vec.push_back(std::make_shared<Object>(word));
+            }
+            if(lastIdx < str.length()){
+                auto word = str.substr(lastIdx);
+                vec.push_back(std::make_shared<Object>(word));
+            }
+        }
+        return std::make_shared<Object>(Object::Kind::Tuple, vec);
+    }
+
+    Error err(Error::Kind::SyntaxError, "invalid `split` method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
-Self Object::split(Args args){}
 Self Object::join(Args args){}
 Self Object::replace(Args args){}
 Self Object::replace_all(Args args){}
