@@ -3153,8 +3153,31 @@ Self Object::join(Args args){
     return std::make_shared<Object>(stream.str());
 }
 
+// -*- obj.replace(old, new)
+Self Object::replace(Args args){
+    if(!check_argcount(args, 3)){
+        Error err(Error::Kind::ValueError, "`replace()`: invalid number of argument.");
+        return std::make_shared<Object>(Result(err));
+    }
+    auto self = *args[0];
+    auto old = *args[1];
+    auto neo = *args[2];
+    if(self.is_string() && old.is_string() && neo.is_string()){
+        auto str = static_cast<Str>(self);
+        auto lhs = static_cast<Str>(old);
+        auto rhs = static_cast<Str>(neo);
+        auto pos = str.find(lhs);
+        if(pos != Str::npos){
+            str.replace(pos, lhs.length(), rhs);
+            return std::make_shared<Object>(str);
+        }
+        return std::make_shared<Object>(str);
+    }
+    Error err(Error::Kind::TypeError, "`replace()`: invalid method call.");
+    return std::make_shared<Object>(Result(err));
+}
+
 /*
-Self Object::replace(Args args){}
 Self Object::replace_all(Args args){}
 Self Object::endswith(Args args){}
 Self Object::startswith(Args args){}
