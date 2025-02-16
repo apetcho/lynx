@@ -5433,8 +5433,6 @@ Self Object::__getitem__(Args args){
     auto rhs = args[1];
     Object obj{};
     if(lhs->is_string() || lhs->is_tuple() || lhs->is_list() || lhs->is_hashmap()){
-        auto x = static_cast<i64>(*lhs);
-        auto y = static_cast<i64>(*rhs);
         if(lhs->is_string() || lhs->is_tuple() || lhs->is_list()){
             if(!rhs->is_integer()){
                 std::stringstream stream;
@@ -5460,10 +5458,45 @@ Self Object::__getitem__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*- obj[key] = val
+Self Object::__setitem__(Args args){
+    if(check_argcount(args, 3)){
+        std::stringstream stream;
+        stream << "SyntaxError: `obj[key] = val` : invalid number of arguments\n";
+        stream << "Expected 3 arguments, but got " << args.size();
+    }
+    auto lhs = args[0];
+    auto key = args[1];
+    auto rhs = args[2];
+    Object obj{};
+    if(lhs->is_string() || lhs->is_tuple() || lhs->is_list() || lhs->is_hashmap()){
+        if(lhs->is_string() || lhs->is_tuple() || lhs->is_list()){
+            if(!key->is_integer()){
+                std::stringstream stream;
+                stream << "IndexError: index type mismatch.\n";
+                stream << "Expects `Integer` by got '";
+                stream << key->type().str() << "'";
+                throw std::runtime_error(stream.str());
+            }
+            auto self = *lhs;
+            auto idx = static_cast<int>(std::get<i64>(key->m_value));
+            self[idx] = rhs;
+            obj = Object(self);
+        }else{
+            auto self = *lhs;
+            self[key] = rhs;
+            obj = Object(self);
+        }
+    }else{
+        auto val = *Object()("__setitem__", args);
+        obj = Object(val);
+    }
+
+    return std::make_shared<Object>(obj);
+}
 
 /*
 // Indexing
-Self Object::__setitem__(Args args){}
 // Slicing-ops
 Self Object::__slice__(Args args){}
 // Iterable
