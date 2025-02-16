@@ -538,9 +538,19 @@ public:
     explicit Object(bool val) noexcept;                 // Bool
     explicit Object(i64 num) noexcept;                  // Integer
     explicit Object(f64 num) noexcept;                  // Float
+
+    // -*-
     explicit Object(Complex z) noexcept;                // Complex
+    explicit Object(f64 x, f64 y) noexcept
+    : Object{Complex{x, y}}{}
+
     explicit Object(Symbol sym) noexcept;               // Sym
+
+    // -*-
     explicit Object(Str str) noexcept;                  // String
+    explicit Object(const char* cstr) noexcept
+    : Object{Str{cstr}}{};
+
     explicit Object(Kind kind, List data) noexcept;     // Tutple, List
     explicit Object(Set data) noexcept;                // Set
     explicit Object(Dict data) noexcept;                // Dict
@@ -854,7 +864,7 @@ protected:
     Self __next__(Args args);
     Self __done__(Args args);
     // String
-    Self __str__(Args args);
+    Self __string__(Args args);
     // Parse-able string
     Self __repr__(Args args);
     // Hashable

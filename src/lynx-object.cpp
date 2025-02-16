@@ -1,6 +1,7 @@
 #include "lynx.hpp"
 #include<algorithm>
 #include<cctype>
+#include<cstdlib>
 
 // -*----------------------------------------------------------------*-
 // -*- begin::namespace::lynx                                       -*-
@@ -1455,7 +1456,7 @@ Object::operator Str(){
     }else{
         Args args{};
         args.emplace_back(std::make_shared<Object>(*this));
-        Self self = this->__str__(args);
+        Self self = this->__string__(args);
         str = static_cast<Str>(*self);
     }
 
@@ -3930,9 +3931,35 @@ Self Object::expect(Args args){
     return std::make_shared<Object>(obj);
 }
 
-/*
-std::ostream& operator<<(std::ostream& os, const Object& obj){}
+// -*-
+std::ostream& operator<<(std::ostream& os, const Object& obj){
+    Args args{}, argv{};
+    args.push_back(std::make_shared<Object>(obj));
+    args.push_back(std::make_shared<Object>(Object("__string__")));
 
+    argv.push_back(std::make_shared<Object>(obj));
+    argv.push_back(std::make_shared<Object>(Object("__repr__")));
+
+    if(static_cast<bool>(*Object().hasattr(args))){
+        auto method = Str{"__string__"};
+        auto mystr = Object()(method, args);
+        auto str = static_cast<Str>(*mystr);
+        os << str;
+    }else if(static_cast<bool>(*Object().hasattr(argv))){
+        auto method = Str{"__repr__"};
+        auto mystr = Object()(method, args);
+        auto str = static_cast<Str>(*mystr);
+        os << str;
+    }else{
+        std::stringstream stream;
+        stream << std::hex << &obj;
+        os << stream.str();
+    }
+    return os;
+
+}
+
+/*
 // Arithmethic-ops
 Self Object::__add__(Args args){}
 Self Object::__sub__(Args args){}
