@@ -5233,9 +5233,30 @@ Self Object::__bit_shl__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*- (x >> y)
+Self Object::__bit_shr__(Args args){
+    if(check_argcount(args, 2)){
+        std::stringstream stream;
+        stream << "SyntaxError: `>>` : invalid number of arguments\n";
+        stream << "Expected 2 arguments, but got " << args.size();
+    }
+    auto lhs = args[0];
+    auto rhs = args[1];
+    Object obj{};
+    if(lhs->is_integer() && rhs->is_integer()){
+        auto x = static_cast<i64>(*lhs);
+        auto y = static_cast<i64>(*rhs);
+        obj = Object((x >> y));
+    }else{
+        auto val = *Object()(">>", args);
+        obj = Object(val);
+    }
+
+    return std::make_shared<Object>(obj);
+}
+
 /*
 // Bitwise-ops
-Self Object::__bit_shr__(Args args){}
 Self Object::__bit_or_assign__(Args args){}
 Self Object::__bit_xor_assign__(Args args){}
 Self Object::__bit_and_assign__(Args args){}
