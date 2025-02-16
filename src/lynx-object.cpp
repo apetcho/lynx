@@ -3830,6 +3830,7 @@ Self Object::hasattr(Args args){
 // -------------------------------
 // -*- Result specific methods -*-
 // -------------------------------
+// -*- result.ok()
 Self Object::ok(Args args){
     if(check_argcount(args, 1)){
         std::stringstream stream;
@@ -3853,8 +3854,32 @@ Self Object::ok(Args args){
     return std::make_shared<Object>(*val);
 }
 
+// -*- result.ok_or(obj)
+Self Object::ok_or(Args args){
+    if(check_argcount(args, 2)){
+        std::stringstream stream;
+        stream << "ValueError: `.ok_or()` : incorrect number of arguments.\n";
+        stream << "Expect 1 argument.";
+        std::runtime_error(stream.str());
+    }
+    auto self = args[0];
+    if(!self->is_result()){
+        std::stringstream stream;
+        stream << "TypeError: `.ok_or()` : method is not supported.\n";
+        std::runtime_error(stream.str());
+    }
+    auto obj = *args[1];
+    auto result = std::get<Result>(self->m_value);
+    Self val = nullptr;
+    if(!result.is_ok()){
+        val = std::make_shared<Object>(obj);
+    }else{
+        val = result.ok();
+    }
+    return std::make_shared<Object>(*val);
+}
+
 /*
-Self Object::ok_or(Args args){}
 Self Object::expect(Args args){}
 
 std::ostream& operator<<(std::ostream& os, const Object& obj){}
