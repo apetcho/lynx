@@ -3658,6 +3658,23 @@ Self Object::keys(Args args){
     return std::make_shared<Object>(Object::Kind::Vector, vec);
 }
 
+// -*-
+Self Object::values(Args args){
+    // assumes args.size() == 1
+    auto self = args[0];
+    if(!self->is_hashmap()){
+        std::stringstream stream;
+        stream << "SyntaxError: `.values()` method not supported.\n";
+        stream << "expected a HashMap object, but got object of type '";
+        stream << self->type().m_data << "'";
+        throw std::runtime_error(stream.str());
+    }
+    auto dict = std::get<Dict>(self->m_value);
+    auto xs = dict.values();
+    auto vec = std::get<List>(xs->m_value);
+    return std::make_shared<Object>(Object::Kind::Vector, vec);
+}
+
 /*
 
     if(!check_argcount(args, 2)){
@@ -3672,9 +3689,6 @@ Self Object::keys(Args args){
     Error err(Error::Kind::TypeError, "`index()`: invalid method call.");
     return std::make_shared<Object>(Result(err));
 
-
-
-Self Object::values(Args args){}
 Self Object::items(Args args){}
 Self Object::popitem(Args args){}
 Self Object::update(Args args){}
