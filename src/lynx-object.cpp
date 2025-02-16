@@ -3643,11 +3643,16 @@ Self Object::push(Args args){
 // -*- HashMap specific methods -*-
 // --------------------------------
 Self Object::keys(Args args){
-    // assumes args.size() == 1
+    if(check_argcount(args, 1)){
+        std::stringstream stream;
+        stream << "ValueError: incorrent number of arguments. ";
+        stream << "`.keys()` expects 0 argument.";
+        throw std::runtime_error(stream.str());
+    }
     auto self = args[0];
     if(!self->is_hashmap()){
         std::stringstream stream;
-        stream << "SyntaxError: `.keys()` method not supported.\n";
+        stream << "SyntaxError: `.keys()` method is not supported.\n";
         stream << "expected a HashMap object, but got object of type '";
         stream << self->type().m_data << "'";
         throw std::runtime_error(stream.str());
@@ -3660,11 +3665,16 @@ Self Object::keys(Args args){
 
 // -*-
 Self Object::values(Args args){
-    // assumes args.size() == 1
+    if(check_argcount(args, 1)){
+        std::stringstream stream;
+        stream << "ValueError: incorrent number of arguments. ";
+        stream << "`.values()` expects 0 argument.";
+        throw std::runtime_error(stream.str());
+    }
     auto self = args[0];
     if(!self->is_hashmap()){
         std::stringstream stream;
-        stream << "SyntaxError: `.values()` method not supported.\n";
+        stream << "SyntaxError: `.values()` method is not supported.\n";
         stream << "expected a HashMap object, but got object of type '";
         stream << self->type().m_data << "'";
         throw std::runtime_error(stream.str());
@@ -3678,10 +3688,16 @@ Self Object::values(Args args){
 // -*-
 Self Object::items(Args args){
     // assumes args.size() == 1
+    if(check_argcount(args, 1)){
+        std::stringstream stream;
+        stream << "ValueError: incorrent number of arguments. ";
+        stream << "`.items()` expects 0 argument.";
+        throw std::runtime_error(stream.str());
+    }
     auto self = args[0];
     if(!self->is_hashmap()){
         std::stringstream stream;
-        stream << "SyntaxError: `.items()` method not supported.\n";
+        stream << "SyntaxError: `.items()` method is not supported.\n";
         stream << "expected a HashMap object, but got object of type '";
         stream << self->type().m_data << "'";
         throw std::runtime_error(stream.str());
@@ -3694,12 +3710,17 @@ Self Object::items(Args args){
 
 // -*-
 Self Object::popitem(Args args){
-    // assumes args.size() == 2
+    if(check_argcount(args, 2)){
+        std::stringstream stream;
+        stream << "ValueError: incorrent number of arguments. ";
+        stream << "`.popitem()` expects 1 argument.";
+        throw std::runtime_error(stream.str());
+    }
     auto self = args[0];
     auto key = args[1];
     if(!self->is_hashmap()){
         std::stringstream stream;
-        stream << "SyntaxError: `.items()` method not supported.\n";
+        stream << "SyntaxError: `.items()` method is not supported.\n";
         stream << "expected a HashMap object, but got object of type '";
         stream << self->type().m_data << "'";
         throw std::runtime_error(stream.str());
@@ -3710,9 +3731,31 @@ Self Object::popitem(Args args){
     return std::make_shared<Object>(keyval);
 }
 
-/*
+// -*- dict.update(key, val)
+Self Object::update(Args args){
+    if(check_argcount(args, 3)){
+        std::stringstream stream;
+        stream << "ValueError: incorrent number of arguments. ";
+        stream << "`.update()` expects 2 arguments.";
+        throw std::runtime_error(stream.str());
+    }
+    auto self = args[0];
+    auto key = args[1];
+    auto val = args[2];
+    if(!self->is_hashmap()){
+        std::stringstream stream;
+        stream << "SyntaxError: `.update()` method is not supported.\n";
+        stream << "expected a HashMap object, but got object of type '";
+        stream << self->type().m_data << "'";
+        throw std::runtime_error(stream.str());
+    }
+    auto dict = std::get<Dict>(self->m_value);
+    auto xs = dict.update(key, val);
+    auto keyval = *xs;
+    return std::make_shared<Object>(keyval);
+}
 
-Self Object::update(Args args){}
+/*
 
 Self Object::hasattr(Args args){}
 
