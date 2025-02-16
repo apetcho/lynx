@@ -4865,14 +4865,50 @@ Self Object::__pow_assign__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*- (x < y)
+Self Object::__lt__(Args args){
+    if(check_argcount(args, 2)){
+        std::stringstream stream;
+        stream << "SyntaxError: `**=` : invalid number of arguments\n";
+        stream << "Expected 2 arguments, but got " << args.size();
+    }
+    auto lhs = args[0];
+    auto rhs = args[1];
+    Object obj{};
+    if(lhs->is_bool() && rhs->is_bool()){
+        auto x = static_cast<int>(static_cast<bool>(*lhs));
+        auto y = static_cast<int>(static_cast<bool>(*rhs));
+        obj = Object((x < y));
+    }else if(lhs->is_number() && rhs->is_number()){
+        auto isNumeric = [](Self x){
+            return (x->is_integer() || x->is_float());
+        };
+        if(isNumeric(lhs) && isNumeric(rhs)){
+            auto x = static_cast<f64>(*lhs);
+            auto y = static_cast<f64>(*rhs);
+            obj = Object((x < y));
+        }else{
+            std::stringstream stream;
+            auto xname = lhs->type().str();
+            auto yname = rhs->type().str();
+            stream << "SyntaxError: cannot apply `<` to objects of type '";
+            stream << xname << "' and " << yname << "'";
+            throw std::runtime_error(stream.str());
+        }
+    }else if(lhs->is_string() && rhs->is_string()){
+        auto xstr = std::get<Str>(lhs->m_value);
+        auto ystr = std::get<Str>(rhs->m_value);
+        obj = Object((xstr < ystr));
+    }else{
+        auto val = *Object()("<", args);
+        obj = Object(val);
+    }
+
+    return std::make_shared<Object>(obj);
+}
+
 /*
-// Arithmethic-ops
-// Logical-ops
-Self Object::__logical_or__(Args args){}
-Self Object::__logical_and__(Args args){}
-Self Object::__logical_not__(Args args){}
 // Relational-ops
-Self Object::__lt__(Args args){}
 Self Object::__le__(Args args){}
 Self Object::__gt__(Args args){}
 Self Object::__ge__(Args args){}

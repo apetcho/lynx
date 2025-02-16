@@ -835,9 +835,9 @@ protected:
     Self __mod_assign__(Args args);
     Self __pow_assign__(Args args);
     // // Logical-ops
-    Self __logical_or__(Args args);
-    Self __logical_and__(Args args);
-    Self __logical_not__(Args args);
+    // Self __logical_or__(Args args);
+    // Self __logical_and__(Args args);
+    // Self __logical_not__(Args args);
     // Relational-ops
     Self __lt__(Args args);
     Self __le__(Args args);
