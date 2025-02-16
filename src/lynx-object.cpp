@@ -4892,7 +4892,7 @@ Self Object::__lt__(Args args){
             auto xname = lhs->type().str();
             auto yname = rhs->type().str();
             stream << "SyntaxError: cannot apply `<` to objects of type '";
-            stream << xname << "' and " << yname << "'";
+            stream << xname << "' and '" << yname << "'";
             throw std::runtime_error(stream.str());
         }
     }else if(lhs->is_string() && rhs->is_string()){
@@ -4934,7 +4934,7 @@ Self Object::__le__(Args args){
             auto xname = lhs->type().str();
             auto yname = rhs->type().str();
             stream << "SyntaxError: cannot apply `<=` to objects of type '";
-            stream << xname << "' and " << yname << "'";
+            stream << xname << "' and '" << yname << "'";
             throw std::runtime_error(stream.str());
         }
     }else if(lhs->is_string() && rhs->is_string()){
@@ -4976,7 +4976,7 @@ Self Object::__gt__(Args args){
             auto xname = lhs->type().str();
             auto yname = rhs->type().str();
             stream << "SyntaxError: cannot apply `>` to objects of type '";
-            stream << xname << "' and " << yname << "'";
+            stream << xname << "' and '" << yname << "'";
             throw std::runtime_error(stream.str());
         }
     }else if(lhs->is_string() && rhs->is_string()){
@@ -5018,7 +5018,7 @@ Self Object::__ge__(Args args){
             auto xname = lhs->type().str();
             auto yname = rhs->type().str();
             stream << "SyntaxError: cannot apply `>=` to objects of type '";
-            stream << xname << "' and " << yname << "'";
+            stream << xname << "' and '" << yname << "'";
             throw std::runtime_error(stream.str());
         }
     }else if(lhs->is_string() && rhs->is_string()){
@@ -5060,7 +5060,7 @@ Self Object::__eq__(Args args){
             auto xname = lhs->type().str();
             auto yname = rhs->type().str();
             stream << "SyntaxError: cannot apply `==` to objects of type '";
-            stream << xname << "' and " << yname << "'";
+            stream << xname << "' and '" << yname << "'";
             throw std::runtime_error(stream.str());
         }
     }else if(lhs->is_string() && rhs->is_string()){
@@ -5106,7 +5106,7 @@ Self Object::__ne__(Args args){
             auto xname = lhs->type().str();
             auto yname = rhs->type().str();
             stream << "SyntaxError: cannot apply `!=` to objects of type '";
-            stream << xname << "' and " << yname << "'";
+            stream << xname << "' and '" << yname << "'";
             throw std::runtime_error(stream.str());
         }
     }else if(lhs->is_string() && rhs->is_string()){
@@ -5125,10 +5125,35 @@ Self Object::__ne__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*- (~x)
+Self Object::__bit_not__(Args args){
+    if(check_argcount(args, 1)){
+        std::stringstream stream;
+        stream << "SyntaxError: `~` : invalid number of arguments\n";
+        stream << "Expected 1 arguments, but got " << args.size();
+    }
+    auto rhs = args[0];
+    Object obj{};
+    if(rhs->is_integer()){
+        auto y = static_cast<i64>(*rhs);
+        obj = Object((~y));
+        if(0){
+            std::stringstream stream;
+            auto yname = rhs->type().str();
+            stream << "SyntaxError: cannot apply `~` to objects of type '";
+            stream << "'" << yname << "'";
+            throw std::runtime_error(stream.str());
+        }
+    }else{
+        auto val = *Object()("~", args);
+        obj = Object(val);
+    }
+
+    return std::make_shared<Object>(obj);
+}
+
 /*
-// Relational-ops
 // Bitwise-ops
-Self Object::__bit_not__(Args args){}
 Self Object::__bit_or__(Args args){}
 Self Object::__bit_xor__(Args args){}
 Self Object::__bit_and__(Args args){}
@@ -5147,12 +5172,8 @@ Self Object::__slice__(Args args){}
 // Iterable
 Self Object::__next__(Args args){}
 Self Object::__done__(Args args){}
-// Property-handler
-Self Object::__setattr__(Args args){}
-Self Object::__getattr__(Args args){}
-Self Object::__delattr__(Args args){}
 // String
-Self Object::__str__(Args args){}
+Self Object::__string__(Args args){}
 // Parse-able string
 Self Object::__repr__(Args args){}
 // Hashable
