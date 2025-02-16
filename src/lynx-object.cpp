@@ -4747,9 +4747,63 @@ Self Object::__div_assign__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*- (x %= y)
+Self Object::__mod_assign__(Args args){
+    if(check_argcount(args, 2)){
+        std::stringstream stream;
+        stream << "SyntaxError: `%=` : invalid number of arguments\n";
+        stream << "Expected 2 arguments, but got " << args.size();
+    }
+    auto lhs = args[0];
+    auto rhs = args[1];
+    Object obj{};
+    if(lhs->is_number() && rhs->is_number()){
+        if(lhs->is_integer() && rhs->is_integer()){
+            auto x = std::get<i64>(lhs->m_value);
+            auto y = std::get<i64>(rhs->m_value);
+            if(y == 0){
+                throw std::runtime_error("ValueError: division by zero");
+            }
+            obj = Object((x % y));
+        }else if(lhs->is_float() && rhs->is_float()){
+            auto x = std::get<f64>(lhs->m_value);
+            auto y = std::get<f64>(rhs->m_value);
+            if(y == 0.0){
+                throw std::runtime_error("ValueError: division by zero");
+            }
+            obj = Object(std::fmod(x, y));
+        }else if(lhs->is_integer() && rhs->is_float()){
+            auto x = static_cast<f64>(std::get<i64>(lhs->m_value));
+            auto y = std::get<f64>(rhs->m_value);
+            if(y == 0.0){
+                throw std::runtime_error("ValueError: division by zero");
+            }
+            obj = Object(std::fmod(x, y));
+        }else if(lhs->is_float() && rhs->is_integer()){
+            auto x = std::get<f64>(lhs->m_value);
+            auto y = static_cast<f64>(std::get<i64>(rhs->m_value));
+            if(y == 0.0){
+                throw std::runtime_error("ValueError: division by zero");
+            }
+            obj = Object(std::fmod(x, y));
+        }else{
+            std::stringstream stream;
+            auto xname = lhs->type();
+            auto yname = rhs->type();
+            stream << "SyntaxError: cannot apply `%=` to ";
+            stream << "'" << xname.str() << "'  and '" << yname.str() << "'";
+            std::runtime_error(stream.str());
+        }
+    }else{
+        auto val = *Object()("%=", args);
+        obj = Object(val);
+    }
+
+    return std::make_shared<Object>(obj);
+}
+
 /*
 // Arithmethic-ops
-Self Object::__mod_assign__(Args args){}
 Self Object::__pow_assign__(Args args){}
 // Logical-ops
 Self Object::__logical_or__(Args args){}
