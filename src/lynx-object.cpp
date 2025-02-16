@@ -3655,7 +3655,7 @@ Self Object::keys(Args args){
     auto dict = std::get<Dict>(self->m_value);
     auto xs = dict.keys();
     auto vec = std::get<List>(xs->m_value);
-    return std::make_shared<Object>(Object::Kind::Vector, vec);
+    return std::make_shared<Object>(Object::Kind::Tuple, vec);
 }
 
 // -*-
@@ -3672,7 +3672,7 @@ Self Object::values(Args args){
     auto dict = std::get<Dict>(self->m_value);
     auto xs = dict.values();
     auto vec = std::get<List>(xs->m_value);
-    return std::make_shared<Object>(Object::Kind::Vector, vec);
+    return std::make_shared<Object>(Object::Kind::Tuple, vec);
 }
 
 // -*-
@@ -3689,12 +3689,29 @@ Self Object::items(Args args){
     auto dict = std::get<Dict>(self->m_value);
     auto xs = dict.items();
     auto vec = std::get<List>(xs->m_value);
-    return std::make_shared<Object>(Object::Kind::Vector, vec);
+    return std::make_shared<Object>(Object::Kind::Tuple, vec);
+}
+
+// -*-
+Self Object::popitem(Args args){
+    // assumes args.size() == 2
+    auto self = args[0];
+    auto key = args[1];
+    if(!self->is_hashmap()){
+        std::stringstream stream;
+        stream << "SyntaxError: `.items()` method not supported.\n";
+        stream << "expected a HashMap object, but got object of type '";
+        stream << self->type().m_data << "'";
+        throw std::runtime_error(stream.str());
+    }
+    auto dict = std::get<Dict>(self->m_value);
+    auto xs = dict.popitem(key);
+    auto keyval = *xs;
+    return std::make_shared<Object>(keyval);
 }
 
 /*
 
-Self Object::popitem(Args args){}
 Self Object::update(Args args){}
 
 Self Object::hasattr(Args args){}
