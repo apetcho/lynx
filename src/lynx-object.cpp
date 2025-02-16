@@ -4070,7 +4070,7 @@ Self Object::__add__(Args args){
         }
         obj = Object(dict);
     }else{
-        auto val = *Object()("__add__", args);
+        auto val = *Object()("+", args);
         obj = Object(val);
     }
 
@@ -4129,12 +4129,76 @@ Self Object::__sub__(Args args){
             std::stringstream stream;
             auto xname = lhs->type();
             auto yname = rhs->type();
-            stream << "SyntaxError: cannot apply `+` to ";
+            stream << "SyntaxError: cannot apply `*` to ";
             stream << "'" << xname.str() << "'  and '" << yname.str() << "'";
             std::runtime_error(stream.str());
         }
     }else{
-        auto val = *Object()("__add__", args);
+        auto val = *Object()("-", args);
+        obj = Object(val);
+    }
+
+    return std::make_shared<Object>(obj);
+}
+
+// -*- (x * y)
+Self Object::__mul__(Args args){
+    if(check_argcount(args, 2)){
+        std::stringstream stream;
+        stream << "SyntaxError: `*` : invalid number of arguments\n";
+        stream << "Expected 2 arguments, but got " << args.size();
+        std::runtime_error(stream.str());
+    }
+    auto lhs = args[0];
+    auto rhs = args[1];
+    Object obj{};
+    if(lhs->is_number() && rhs->is_number()){
+        if(lhs->is_integer() && rhs->is_integer()){
+            auto x = std::get<i64>(lhs->m_value);
+            auto y = std::get<i64>(rhs->m_value);
+            obj = Object((x * y));
+        }else if(lhs->is_float() && rhs->is_float()){
+            auto x = std::get<f64>(lhs->m_value);
+            auto y = std::get<f64>(rhs->m_value);
+            obj = Object((x * y));
+        }else if(lhs->is_complex() && rhs->is_complex()){
+            auto x = std::get<Complex>(lhs->m_value);
+            auto y = std::get<Complex>(rhs->m_value);
+            obj = Object((x * y));
+        }else if(lhs->is_integer() && rhs->is_float()){
+            auto x = static_cast<f64>(std::get<i64>(lhs->m_value));
+            auto y = std::get<f64>(rhs->m_value);
+            obj = Object((x * y));
+        }else if(lhs->is_float() && rhs->is_integer()){
+            auto x = std::get<f64>(lhs->m_value);
+            auto y = static_cast<f64>(std::get<i64>(rhs->m_value));
+            obj = Object((x * y));
+        }else if(lhs->is_complex() && rhs->is_float()){
+            auto x = std::get<Complex>(lhs->m_value);
+            auto y = std::get<f64>(rhs->m_value);
+            obj = Object((x * y));
+        }else if(lhs->is_float() && rhs->is_complex()){
+            auto x = std::get<f64>(lhs->m_value);
+            auto y = std::get<Complex>(rhs->m_value);
+            obj = Object((x * y));
+        }else if(lhs->is_integer() && rhs->is_complex()){
+            auto x = static_cast<f64>(std::get<i64>(lhs->m_value));
+            auto y = std::get<Complex>(rhs->m_value);
+            obj = Object((x * y));
+        }else if(lhs->is_complex() && rhs->is_integer()){
+            auto x = std::get<Complex>(lhs->m_value);
+            auto y = static_cast<f64>(std::get<i64>(rhs->m_value));
+            obj = Object((x * y));
+        }else{
+            std::stringstream stream;
+            auto xname = lhs->type();
+            auto yname = rhs->type();
+            stream << "SyntaxError: cannot apply `*` to ";
+            stream << "'" << xname.str() << "'  and '" << yname.str() << "'";
+            std::runtime_error(stream.str());
+        }
+    }else{
+        auto val = *Object()("*", args);
         obj = Object(val);
     }
 
@@ -4143,7 +4207,6 @@ Self Object::__sub__(Args args){
 
 /*
 // Arithmethic-ops
-Self Object::__mul__(Args args){}
 Self Object::__div__(Args args){}
 Self Object::__pow__(Args args){}
 Self Object::__add_assign__(Args args){}
