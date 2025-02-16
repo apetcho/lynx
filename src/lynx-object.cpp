@@ -3827,8 +3827,33 @@ Self Object::hasattr(Args args){
     return std::make_shared<Object>(flag);
 }
 
+// -------------------------------
+// -*- Result specific methods -*-
+// -------------------------------
+Self Object::ok(Args args){
+    if(check_argcount(args, 1)){
+        std::stringstream stream;
+        stream << "ValueError: `.ok()` : incorrect number of arguments.\n";
+        stream << "Expect 0 argument.";
+        std::runtime_error(stream.str());
+    }
+    auto self = args[0];
+    if(!self->is_result()){
+        std::stringstream stream;
+        stream << "TypeError: `.ok()` : method is not supported.\n";
+        std::runtime_error(stream.str());
+    }
+    auto result = std::get<Result>(self->m_value);
+    if(!result.is_ok()){
+        std::stringstream stream;
+        stream << "ValueError: `.ok()` : result value wraps an errors.\n";
+        std::runtime_error(stream.str());
+    }
+    auto val = result.ok();
+    return std::make_shared<Object>(*val);
+}
+
 /*
-Self Object::ok(Args args){}
 Self Object::ok_or(Args args){}
 Self Object::expect(Args args){}
 
