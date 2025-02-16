@@ -1456,7 +1456,7 @@ Object::operator Str(){
     }else{
         Args args{};
         args.emplace_back(std::make_shared<Object>(*this));
-        Self self = this->__string__(args);
+        Self self = Object().__string__(args);
         str = static_cast<Str>(*self);
     }
 
@@ -1548,6 +1548,11 @@ Object::operator Ast(){
     return std::get<Ast>(this->m_value);
 }
 
+// -*-
+Object::operator Structure(){
+    return std::get<Structure>(this->m_value);
+}
+
 /**
  * @brief Apply logical not operator on object.
  * 
@@ -1619,12 +1624,12 @@ Object operator|(const Object& lhs, const Object& rhs){
         auto ynum = static_cast<i64>(y);
         return Object((xnum | ynum));
     }
-    // Assumes lhs and rhs are Set-object.
+    // Assumes lhs and rhs are Set-object or user-defined object that implement __bit_or__.
     Args args{};
     args.push_back(std::make_shared<Object>(lhs));
     args.push_back(std::make_shared<Object>(rhs));
-    Object obj = lhs;
-    return Object(*obj.__bit_or__(args));
+    Object obj = *Object().__bit_or__(args);
+    return Object(obj);
 }
 
 /**
@@ -1651,8 +1656,8 @@ Object operator&(const Object& lhs, const Object& rhs){
     Args args{};
     args.push_back(std::make_shared<Object>(lhs));
     args.push_back(std::make_shared<Object>(rhs));
-    Object obj = lhs;
-    return Object(*obj.__bit_and__(args));
+    Object obj = *Object().__bit_and__(args);
+    return Object(obj);
 }
 
 /**
@@ -1679,8 +1684,8 @@ Object operator^(const Object& lhs, const Object& rhs){
     Args args{};
     args.push_back(std::make_shared<Object>(lhs));
     args.push_back(std::make_shared<Object>(rhs));
-    Object obj = lhs;
-    return Object(*obj.__bit_xor__(args));
+    Object obj = *Object().__bit_xor__(args);
+    return Object(obj);
 }
 
 /**
@@ -3958,6 +3963,122 @@ std::ostream& operator<<(std::ostream& os, const Object& obj){
     return os;
 
 }
+
+// -*- (x + y)
+Self Object::__add__(Args args){
+    if(check_argcount(args, 2)){
+        std::stringstream stream;
+        stream << "SyntaxError: invalid application of `+` operator";
+        std::runtime_error(stream.str());
+    }
+    auto lhs = args[0];
+    auto rhs = args[1];
+    Object obj{};
+    if(lhs->is_number() && rhs->is_number()){
+        if(lhs->is_integer() && rhs->is_integer()){
+            auto x = std::get<i64>(lhs->m_value);
+            auto y = std::get<i64>(rhs->m_value);
+            obj = Object((x + y));
+        }else if(lhs->is_float() && rhs->is_float()){
+            auto x = std::get<f64>(lhs->m_value);
+            auto y = std::get<f64>(rhs->m_value);
+            obj = Object((x + y));
+        }else if(lhs->is_complex() && rhs->is_complex()){
+            auto x = std::get<Complex>(lhs->m_value);
+            auto y = std::get<Complex>(rhs->m_value);
+            obj = Object((x + y));
+        }else if(lhs->is_integer() && rhs->is_float()){
+            auto x = static_cast<f64>(std::get<i64>(lhs->m_value));
+            auto y = std::get<f64>(rhs->m_value);
+            obj = Object((x + y));
+        }else if(lhs->is_float() && rhs->is_integer()){
+            auto x = std::get<f64>(lhs->m_value);
+            auto y = static_cast<f64>(std::get<i64>(rhs->m_value));
+            obj = Object((x + y));
+        }else if(lhs->is_complex() && rhs->is_float()){
+            auto x = std::get<Complex>(lhs->m_value);
+            auto y = std::get<f64>(rhs->m_value);
+            obj = Object((x + y));
+        }else if(lhs->is_float() && rhs->is_complex()){
+            auto x = std::get<f64>(lhs->m_value);
+            auto y = std::get<Complex>(rhs->m_value);
+            obj = Object((x + y));
+        }else if(lhs->is_integer() && rhs->is_complex()){
+            auto x = static_cast<f64>(std::get<i64>(lhs->m_value));
+            auto y = std::get<Complex>(rhs->m_value);
+            obj = Object((x + y));
+        }else if(lhs->is_complex() && rhs->is_integer()){
+            auto x = std::get<Complex>(lhs->m_value);
+            auto y = static_cast<f64>(std::get<i64>(rhs->m_value));
+            obj = Object((x + y));
+        }else{
+            std::stringstream stream;
+            auto xname = lhs->type();
+            auto yname = rhs->type();
+            stream << "SyntaxError: cannot apply `+` to ";
+            stream << "'" << xname.str() << "'  and '" << yname.str() << "'";
+            std::runtime_error(stream.str());
+        }
+    }else if(lhs->is_string() && rhs->is_string()){
+        auto xstr = std::get<Str>(lhs->m_value);
+        auto ystr = std::get<Str>(rhs->m_value);
+        Str str{xstr};
+        str += ystr;
+        obj = Object(str);
+    }else if(lhs->is_tuple() && rhs->is_tuple()){
+        auto xvec = std::get<List>(lhs->m_value);
+        auto yvec = std::get<List>(rhs->m_value);
+        List vec{};
+        for(const auto& item: xvec){
+            vec.push_back(std::make_shared<Object>(*item));
+        }
+        for(const auto& item: yvec){
+            vec.push_back(std::make_shared<Object>(*item));
+        }
+        obj = Object(Object::Kind::Tuple, vec);
+    }else if(lhs->is_list() && rhs->is_list()){
+        auto xvec = std::get<List>(lhs->m_value);
+        auto yvec = std::get<List>(rhs->m_value);
+        List vec{};
+        for(const auto& item: xvec){
+            vec.push_back(std::make_shared<Object>(*item));
+        }
+        for(const auto& item: yvec){
+            vec.push_back(std::make_shared<Object>(*item));
+        }
+        obj = Object(Object::Kind::Vector, vec);
+    }else if(lhs->is_hashset() && rhs->is_hashset()){
+        auto xset = std::get<Set>(lhs->m_value).data();
+        auto yset = std::get<Set>(rhs->m_value).data();
+        Set hset{};
+        for(auto iter=xset.cbegin(); iter != xset.cend(); iter++){
+            hset.insert(*iter);
+        }
+        for(auto iter=yset.cbegin(); iter != yset.cend(); iter++){
+            hset.insert(*iter);
+        }
+        obj = Object(hset);
+    }else if(lhs->is_hashmap() && rhs->is_hashmap()){
+        auto xdict = std::get<Dict>(lhs->m_value).data();
+        auto ydict = std::get<Dict>(rhs->m_value).data();
+        Dict dict{};
+        for(const auto& [key, val]: xdict){
+            dict[key] = val;
+        }
+        for(const auto& [key, val]: ydict){
+            dict[key] = val;
+        }
+        obj = Object(dict);
+    }else{
+        auto val = *Object()("__add__", args);
+        obj = Object(val);
+    }
+
+    return std::make_shared<Object>(obj);
+}
+/*
+
+*/
 
 /*
 // Arithmethic-ops
