@@ -3675,21 +3675,25 @@ Self Object::values(Args args){
     return std::make_shared<Object>(Object::Kind::Vector, vec);
 }
 
+// -*-
+Self Object::items(Args args){
+    // assumes args.size() == 1
+    auto self = args[0];
+    if(!self->is_hashmap()){
+        std::stringstream stream;
+        stream << "SyntaxError: `.items()` method not supported.\n";
+        stream << "expected a HashMap object, but got object of type '";
+        stream << self->type().m_data << "'";
+        throw std::runtime_error(stream.str());
+    }
+    auto dict = std::get<Dict>(self->m_value);
+    auto xs = dict.items();
+    auto vec = std::get<List>(xs->m_value);
+    return std::make_shared<Object>(Object::Kind::Vector, vec);
+}
+
 /*
 
-    if(!check_argcount(args, 2)){
-        Error err(Error::Kind::ValueError, "`index()`: invalid number of arguments.");
-        return std::make_shared<Object>(Result(err));
-    }
-    auto self = args[0];
-    if(self->is_string() || self->is_list() || self->is_tuple()){
-        self = Object().find(args);
-        return std::make_shared<Object>(*self);
-    }
-    Error err(Error::Kind::TypeError, "`index()`: invalid method call.");
-    return std::make_shared<Object>(Result(err));
-
-Self Object::items(Args args){}
 Self Object::popitem(Args args){}
 Self Object::update(Args args){}
 
