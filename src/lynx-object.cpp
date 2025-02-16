@@ -5332,7 +5332,7 @@ Self Object::__bit_or_assign__(Args args){
 Self Object::__bit_xor_assign__(Args args){
     if(check_argcount(args, 2)){
         std::stringstream stream;
-        stream << "SyntaxError: `|=` : invalid number of arguments\n";
+        stream << "SyntaxError: `^=` : invalid number of arguments\n";
         stream << "Expected 2 arguments, but got " << args.size();
     }
     auto lhs = args[0];
@@ -5364,10 +5364,41 @@ Self Object::__bit_xor_assign__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*-
+Self Object::__bit_and_assign__(Args args){
+    if(check_argcount(args, 2)){
+        std::stringstream stream;
+        stream << "SyntaxError: `&=` : invalid number of arguments\n";
+        stream << "Expected 2 arguments, but got " << args.size();
+    }
+    auto lhs = args[0];
+    auto rhs = args[1];
+    Object obj{};
+    if(lhs->is_integer() && rhs->is_integer()){
+        auto x = static_cast<i64>(*lhs);
+        auto y = static_cast<i64>(*rhs);
+        obj = Object((x ^ y));
+    }else if(lhs->is_hashset() && rhs->is_hashset()){
+        auto xset = std::get<Set>(lhs->m_value);
+        auto yset = std::get<Set>(rhs->m_value);
+        auto xdata = xset.data();
+        auto ydata = yset.data();
+        Set hset{};
+        for(auto ptr=xdata.cbegin(); ptr != xdata.cend(); ptr++){
+            auto key = *ptr;
+            if(yset.contains(key)){ hset.insert(key); }
+        }
+        obj = Object(hset);
+    }else{
+        auto val = *Object()("&=", args);
+        obj = Object(val);
+    }
+    return std::make_shared<Object>(obj);
+}
+
 
 /*
 // Bitwise-ops
-Self Object::__bit_and_assign__(Args args){}
 Self Object::__bit_shl_assign__(Args args){}
 Self Object::__bit_shr_assign__(Args args){}
 // Indexing
