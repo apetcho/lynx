@@ -5422,9 +5422,47 @@ Self Object::__bit_shr_assign__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*- obj[key]
+Self Object::__getitem__(Args args){
+    if(check_argcount(args, 2)){
+        std::stringstream stream;
+        stream << "SyntaxError: `obj[key]` : invalid number of arguments\n";
+        stream << "Expected 2 arguments, but got " << args.size();
+    }
+    auto lhs = args[0];
+    auto rhs = args[1];
+    Object obj{};
+    if(lhs->is_string() || lhs->is_tuple() || lhs->is_list() || lhs->is_hashmap()){
+        auto x = static_cast<i64>(*lhs);
+        auto y = static_cast<i64>(*rhs);
+        if(lhs->is_string() || lhs->is_tuple() || lhs->is_list()){
+            if(!rhs->is_integer()){
+                std::stringstream stream;
+                stream << "IndexError: index type mismatch.\n";
+                stream << "Expects `Integer` by got '";
+                stream << rhs->type().str() << "'";
+                throw std::runtime_error(stream.str());
+            }
+            auto self = *lhs;
+            auto idx = static_cast<int>(std::get<i64>(rhs->m_value));
+            auto val = self[idx];
+            obj = Object(*val);
+        }else{
+            auto self = *lhs;
+            auto val = self[rhs];
+            obj = Object(*val);
+        }
+    }else{
+        auto val = *Object()("__getitem__", args);
+        obj = Object(val);
+    }
+
+    return std::make_shared<Object>(obj);
+}
+
+
 /*
 // Indexing
-Self Object::__getitem__(Args args){}
 Self Object::__setitem__(Args args){}
 // Slicing-ops
 Self Object::__slice__(Args args){}

@@ -651,10 +651,10 @@ public:
     // -----------------------
     // -*- Index Operators -*-
     // -----------------------
-    // String, List
-    Self& operator[](int idx);
     // String, Tuple, List
+    Self& operator[](int idx);
     const Self& operator[](int idx) const;
+    // String, Tuple, List, Dict
     Self& operator[](const Self& key);
     const Self& operator[](const Self& key) const;
 
