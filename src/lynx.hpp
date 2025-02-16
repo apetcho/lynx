@@ -244,6 +244,8 @@ public:
     Symbol& operator=(Symbol&& other) noexcept;
 
     bool is_defined(void) const{ return this->m_data.length()!=0; }
+    
+    Str str(void) const { return this->m_data; }
 
     operator Str();
     friend bool operator==(const Symbol& lhs, const Symbol& rhs);
@@ -325,10 +327,10 @@ public:
     const Symbol& instance_name() const{ return this->m_instance_name; }
     Symbol& instance_name(){ return this->m_instance_name; }
     
-    HashMap<Symbol, Self> attributes(void) const;
-    HashMap<Symbol, Self> properties(void) const;
-    HashMap<Symbol, Self> object_attribues(void) const;
-    HashMap<Symbol, Self> methods(void) const;
+    HashMap<Str, Self> attributes(void) const;
+    HashMap<Str, Self> properties(void) const;
+    HashMap<Str, Self> object_attribues(void) const;
+    HashMap<Str, Self> methods(void) const;
     void define_initilizer(Self initfn);            // initfn = Object(FunDefAstExpr)
     void initialize(Args args);                     // @init
     void define_attribute(Self attr);               // 
@@ -349,7 +351,7 @@ private:
     // the init function
     // to retrieve this attributes, the following syntax is used:
     // let myattributeValue = obj::attribute
-    HashMap<Symbol, Self> m_attributes;
+    HashMap<Str, Self> m_attributes;
 
     /*
     Store object properties defined int the structure-init block using
@@ -359,8 +361,8 @@ private:
             ...
             @init(x, y){
                 ...
-                @x = x
-                @y = y
+                #x = x
+                #y = y
                 ....
             }
         }
@@ -370,7 +372,7 @@ private:
         let x = point.x
         let y = point.y
     */
-    HashMap<Symbol, Self> m_properties;
+    HashMap<Str, Self> m_properties;
 
     /*
     Store structure's methods:
@@ -414,17 +416,17 @@ private:
 
         struct Point{
             @init(x, y){
-                @x = x
-                @y = y
+                #x = x
+                #y = y
             }
             @operator+(other){
-                let x = @x + other.x
-                let y = @y + other.y
+                let x = #x + other.x
+                let y = #y + other.y
                 return Point(x, y)
             }
 
             fun __str__(){
-                return format("({@x}, {@y})")
+                return format("({#x}, {#y})")
             }
         }
         
@@ -435,13 +437,13 @@ private:
         println(point2)                 ; (3, 2)
         println(point3)                 ; (4, 4)
     */
-    HashMap<Symbol, Self> m_methods;
+    HashMap<Str, Self> m_methods;
     /*
     Store struct-object attributes. This can be accessed as follow:
 
         let myAttr = obj:attr
     */
-    HashMap<Symbol, Self> m_object_attributes;
+    HashMap<Str, Self> m_object_attributes;
 };
 
 class Set final{
@@ -568,6 +570,8 @@ public:
     operator CFun();
     operator Result();
     operator Ast();
+    //! @todo
+    operator Structure();
 
     // -------------------------
     // -*- Logical Operators -*-

@@ -327,33 +327,33 @@ Symbol Structure::name(void) const{
 }
 
 // -*-
-HashMap<Symbol, Self> Structure::attributes(void) const{
+HashMap<Str, Self> Structure::attributes(void) const{
     return this->m_attributes;
 }
 
 // -*-
-HashMap<Symbol, Self> Structure::properties(void) const{
+HashMap<Str, Self> Structure::properties(void) const{
     return this->m_properties;
 }
 
 // -*-
-HashMap<Symbol, Self> Structure::object_attribues(void) const{
+HashMap<Str, Self> Structure::object_attribues(void) const{
     return this->m_object_attributes;
 }
 
 // -*-
-HashMap<Symbol, Self> Structure::methods(void) const{
+HashMap<Str, Self> Structure::methods(void) const{
     return this->m_methods;
 }
 
 // -*-
 void Structure::define_initilizer(Self initfn){
-    this->m_methods[Symbol("@init")] = initfn;
+    this->m_methods["@init"] = initfn;
 }
 
 // -*-
 void Structure::initialize(Args args){
-    auto fn = this->m_methods[Symbol("@init")];
+    auto fn = this->m_methods["@init"];
     auto fun = *fn;
     fun(args);
 }
@@ -384,7 +384,7 @@ void Structure::define_attribute(Self attr){
         );
     }
     auto value = vec[1];
-    this->m_attributes[static_cast<Symbol>(*name)] = value;
+    this->m_attributes[static_cast<Str>(*name)] = value;
 }
 
 // -*-
@@ -413,7 +413,7 @@ void Structure::define_property(Self prop){
         );
     }
     auto value = vec[1];
-    this->m_properties[static_cast<Symbol>(*name)] = value;
+    this->m_properties[static_cast<Str>(*name)] = value;
 }
 
 // -*-
@@ -442,7 +442,7 @@ void Structure::define_object_attribute(Self attr){
         );
     }
     auto value = vec[1];
-    this->m_object_attributes[static_cast<Symbol>(*name)] = value;
+    this->m_object_attributes[static_cast<Str>(*name)] = value;
 }
 
 // -*-
@@ -456,47 +456,44 @@ void Structure::define_method(Self method){
     }
     auto ast = static_cast<Ast>(*method);
     auto fnast = dynamic_cast<FunDefExprAst*>(ast.get());
-    auto name = fnast->name();
+    auto name = fnast->name().str();
     this->m_object_attributes[name] = std::move(method);
 }
 
 // -*-
 void Structure::delete_attribute(const Str& key){
-    Symbol sym(key);
-    if(this->m_attributes.find(sym)==this->m_attributes.end()){
+    if(this->m_attributes.find(key)==this->m_attributes.end()){
         std::stringstream stream;
         stream << "undefined attribute: '" << key << "'\n";
         stream << static_cast<Str>(this->m_name) << " does not have ";
         stream << "attribute '" << key << "'";
         throw std::runtime_error(stream.str());
     }
-    this->m_attributes.erase(sym);
+    this->m_attributes.erase(key);
 }
 
 // -*-
 void Structure::delete_property(const Str& key){
-    Symbol sym(key);
-    if(this->m_properties.find(sym)==this->m_properties.end()){
+    if(this->m_properties.find(key)==this->m_properties.end()){
         std::stringstream stream;
         stream << "undefined property: '" << key << "'\n";
         stream << static_cast<Str>(this->m_name) << " does not have ";
         stream << "property '" << key << "'";
         throw std::runtime_error(stream.str());
     }
-    this->m_properties.erase(sym);
+    this->m_properties.erase(key);
 }
 
 // -*-
 void Structure::delete_object_attribute(const Str& key){
-    Symbol sym(key);
-    if(this->m_object_attributes.find(sym)==this->m_object_attributes.end()){
+    if(this->m_object_attributes.find(key)==this->m_object_attributes.end()){
         std::stringstream stream;
         stream << "undefined object attribute: '" << key << "'\n";
         stream << static_cast<Str>(this->m_instance_name);
         stream << " does not have attribute '" << key << "'";
         throw std::runtime_error(stream.str());
     }
-    this->m_object_attributes.erase(sym);
+    this->m_object_attributes.erase(key);
 }
 
 // -----------
@@ -3755,10 +3752,82 @@ Self Object::update(Args args){
     return std::make_shared<Object>(keyval);
 }
 
+// -*- hasattr(obj, "str") -> bool
+Self Object::hasattr(Args args){
+    if(check_argcount(args, 2)){
+        std::stringstream stream;
+        stream << "ValueError: incorrent number of arguments. ";
+        stream << "`hasattr()` expects 2 arguments.";
+        throw std::runtime_error(stream.str());
+    }
+    auto self = args[0];
+    auto key = Symbol(static_cast<Str>(*args[1]));
+    bool flag{false};
+    if(self->is_bool()){
+        if(Lynx::boolMethods.find(key) != Lynx::boolMethods.end()){
+            flag = true;
+        }
+    }else if(self->is_integer()){
+        if(Lynx::integerMethods.find(key) != Lynx::integerMethods.end()){
+            flag = true;
+        }
+    }else if(self->is_float()){
+        if(Lynx::floatMethods.find(key) != Lynx::floatMethods.end()){
+            flag = true;
+        }
+    }else if(self->is_complex()){
+        if(Lynx::complexMethods.find(key) != Lynx::complexMethods.end()){
+            flag = true;
+        }
+    }else if(self->is_string()){
+        if(Lynx::stringMethods.find(key) != Lynx::stringMethods.end()){
+            flag = true;
+        }
+    }else if(self->is_tuple()){
+        if(Lynx::tupleMethods.find(key) != Lynx::tupleMethods.end()){
+            flag = true;
+        }
+    }else if(self->is_list()){
+        if(Lynx::listMethods.find(key) != Lynx::listMethods.end()){
+            flag = true;
+        }
+    }else if(self->is_hashset()){
+        if(Lynx::hashsetMethods.find(key) != Lynx::hashsetMethods.end()){
+            flag = true;
+        }
+    }else if(self->is_hashmap()){
+        if(Lynx::hashmapMethods.find(key) != Lynx::hashmapMethods.end()){
+            flag = true;
+        }
+    }else if(self->is_structure()){
+        auto attr = key.m_data;
+        auto mystruct = static_cast<Structure>(*self);
+
+        if(attr.substr(0, 2)==Str("::")){
+            //! cls_attribute :=  "::name"
+            auto name = attr.substr(2);
+            auto attributes = mystruct.attributes();
+            if(attributes.find(name) != attributes.end()){ flag = true; }
+        }else if(attr[0]==':'){
+            //! cls_obj_attribute := ":name"
+            auto name = attr.substr(1);
+            auto attributes = mystruct.object_attribues();
+            if(attributes.find(name) != attributes.end()){ flag = true; }
+        }else if(attr[0]=='#'){
+            //! cls_property := "#name"
+            auto name = attr.substr(1);
+            auto properties = mystruct.properties();
+            if(properties.find(name) != properties.end()){ flag = true; }
+        }else{
+            //! cls_method := "name"
+            auto methods = mystruct.methods();
+            if(methods.find(attr) != methods.end()){ flag = true; }
+        }
+    }
+    return std::make_shared<Object>(flag);
+}
+
 /*
-
-Self Object::hasattr(Args args){}
-
 Self Object::ok(Args args){}
 Self Object::ok_or(Args args){}
 Self Object::expect(Args args){}
