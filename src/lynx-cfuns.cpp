@@ -51,24 +51,29 @@ Self fn_eprintln(Args args);
 Self fn_eprint(Args args);
 Self fn_panic(Args args);
 Self fn_format(Args args);
-Self fn_repr(Args args);
 Self fn_chr(Args args);
 Self fn_ord(Args args);
+Self fn_hasattr(Args args);
 Self fn_all(Args args);
 Self fn_any(Args args);
 Self fn_filter(Args args);
 Self fn_reduce(Args args);
 Self fn_map(Args args);
 Self fn_zip(Args args);
+Self fn_foldl(Args args);
+Self fn_foldr(Args args);
+Self fn_sum(Args args);
+Self fn_product(Args args);
 Self fn_range(Args args);
-Self fn_random(Args args);
-Self fn_is_callable(Args args);
-Self fn_is_macro(Args args);
-Self fn_instanceof(Args args);
+Self fn_isCallable(Args args);
+Self fn_isMacro(Args args);
+Self fn_isInstance(Args args);
 Self fn_typeof(Args args);
 Self fn_bool(Args args);
 Self fn_integer(Args args);
 Self fn_float(Args args);
+Self fn_complex(Args args);
+Self fn_polar(Args args);
 Self fn_string(Args args);
 Self fn_tuple(Args args);
 Self fn_list(Args args);
@@ -77,12 +82,48 @@ Self fn_hashmap(Args args);
 Self fn_ok(Args args);
 Self fn_err(Args args);
 Self fn_eval(Args args);
+
+<Module::random>
+Self fn_random(Args args);
+random::Random(seed)
+random::Random(seed, generator)
+random::Random(seed, distribution)
+random::Random(seed, generator, distribution)
+random::Random(seed, distribution, generator)
+    generators:
+        MersenneTwister
+        Ranlux24
+        Ranlux48
+        Knuth
+    distributions:
+        Uniform
+        Bernoulli
+        Binomial
+        Geometric
+        Poisson
+        Exponential
+        Gamma
+        Weibull
+        Normal
+        LogNormal
+        ChiSquare
+        Cauchy
+        FisherF
+        StudentT
+myrandom.nextInteger()
+myrandom.nextFloat()
+random::shuffle(List)
+random::sample()
+random::sample(seed, generator, distribution)
+random::sample(seed, distribution, generator)
+random::reset(seed)
+random::reset(seed, generator, distribution)
+random::reset(seed, distribution, generator)
+
+<Module::math>
 Self fn_abs(Args args);
 Self fn_min(Args args);
 Self fn_max(Args args);
-Self fn_sum(Args args);
-
-<Module::math>
 Self fn_ceil(Args args);
 Self fn_floor(Args args);
 Self fn_round(Args args);

@@ -3639,6 +3639,25 @@ Self Object::push(Args args){
     return std::make_shared<Object>(Result(err));
 }
 
+// --------------------------------
+// -*- HashMap specific methods -*-
+// --------------------------------
+Self Object::keys(Args args){
+    // assumes args.size() == 1
+    auto self = args[0];
+    if(!self->is_hashmap()){
+        std::stringstream stream;
+        stream << "SyntaxError: `.keys()` method not supported.\n";
+        stream << "expected a HashMap object, but got object of type '";
+        stream << self->type().m_data << "'";
+        throw std::runtime_error(stream.str());
+    }
+    auto dict = std::get<Dict>(self->m_value);
+    auto xs = dict.keys();
+    auto vec = std::get<List>(xs->m_value);
+    return std::make_shared<Object>(Object::Kind::Vector, vec);
+}
+
 /*
 
     if(!check_argcount(args, 2)){
@@ -3654,19 +3673,17 @@ Self Object::push(Args args){
     return std::make_shared<Object>(Result(err));
 
 
-list.push(item)
 
-
-Self Object::keys(Args args){}
 Self Object::values(Args args){}
 Self Object::items(Args args){}
 Self Object::popitem(Args args){}
 Self Object::update(Args args){}
 
-Self Object::setattr(Args args){}
-Self Object::getattr(Args args){}
 Self Object::hasattr(Args args){}
-Self Object::delattr(Args args){}
+
+Self Object::ok(Args args){}
+Self Object::ok_or(Args args){}
+Self Object::expect(Args args){}
 
 std::ostream& operator<<(std::ostream& os, const Object& obj){}
 
@@ -3725,7 +3742,7 @@ Self Object::__repr__(Args args){}
 Self Object::__hash__(Args args){}
 // Callable
 Self Object::__call__(Args args){}
-// typecat-operators
+// typecat-operators & constructors
 Self Object::__bool__(Args args){}
 Self Object::__integer__(Args args){}
 Self Object::__float__(Args args){}

@@ -306,6 +306,8 @@ public:
     Self ok(void) const;
     Error err(void) const;
     bool is_ok(void) const{ return this->m_ok; }
+    // ok_or()
+    // expect()
 
 private:
     using Value = std::variant<Self, Error>;
@@ -768,10 +770,12 @@ public:
     Self update(Args args);
 
     // -*- Structure Specifics -*-
-    Self setattr(Args args);
-    Self getattr(Args args);
     Self hasattr(Args args);
-    Self delattr(Args args);
+    
+    // -*- Result Specifics -*-
+    Self ok(Args args);
+    Self ok_or(Args args);
+    Self expect(Args args);
 
     friend class Set;
     friend class Dict;
@@ -845,10 +849,6 @@ protected:
     // Iterable
     Self __next__(Args args);
     Self __done__(Args args);
-    // Property-handler
-    Self __setattr__(Args args);
-    Self __getattr__(Args args);
-    Self __delattr__(Args args);
     // String
     Self __str__(Args args);
     // Parse-able string
@@ -976,7 +976,7 @@ private:
     LYNX_DEF(Elif, "elif")                  \
     LYNX_DEF(Else, "else")                  \
     LYNX_DEF(For, "for")                    \
-    LYNX_DEF(While, "while")                \
+    LYNX_DEF(While, "loop")                 \
     LYNX_DEF(Break, "break")                \
     LYNX_DEF(Continue, "continue")          \
     LYNX_DEF(Return, "return")              \
@@ -995,9 +995,9 @@ private:
     LYNX_DEF(AtTeardown, "@teardown")       \
     LYNX_DEF(AtDefine, "@define")           \
     LYNX_DEF(AtDoc, "@doc")                 \
-    LYNX_DEF(Key, ":keys")                  \
-    LYNX_DEF(Optional, ":optional")         \
-    LYNX_DEF(Varargs, ":varargs")           \
+    LYNX_DEF(AtKey, "@keys")                \
+    LYNX_DEF(AtOptional, "@optional")       \
+    LYNX_DEF(AtVarargs, "@varargs")         \
     LYNX_DEF(None, "nil")                   \
     LYNX_DEF(True, "true")                  \
     LYNX_DEF(False, "false")
@@ -1027,7 +1027,13 @@ private:
     LYNX_DEF(BitAndAssign, "&=")    \
     LYNX_DEF(BitXorAssign, "^=")    \
     LYNX_DEF(BitShlAssign, "<<=")   \
-    LYNX_DEF(BitShrAssign, ">>=")
+    LYNX_DEF(BitShrAssign, ">>=")   \
+    LYNX_DEF(Less, "<")             \
+    LYNX_DEF(Greater, ">")          \
+    LYNX_DEF(LessEqual, "<=")       \
+    LYNX_DEF(GreaterEqual, ">=")    \
+    LYNX_DEF(Equal, "==")           \
+    LYNX_DEF(NotEqual, "!=")
 
 
 #define LYNX_TOKEN_KINDS()          \
@@ -1192,7 +1198,7 @@ private:
     LYNX_DEF(VarStmt, "VAR_STMT")                               \
     LYNX_DEF(IfStmt, "IF_STMT")                                 \
     LYNX_DEF(ForStmt, "FOR_STMT")                               \
-    LYNX_DEF(WhileStmt, "WHILE_STMT")                           \
+    LYNX_DEF(LoopStmt, "LOOP_STMT")                             \
     LYNX_DEF(BreakStmt, "BREAK_STMT")                           \
     LYNX_DEF(ContinueStmt, "CONTINUE_STMT")                     \
     LYNX_DEF(ReturnStmt, "RETURN_STMT")                         \
@@ -1207,7 +1213,10 @@ private:
     LYNX_DEF(MatchExpr, "MATCH_EXPR")                           \
     LYNX_DEF(WithExpr, "WITH_EXPR")                             \
     LYNX_DEF(AtArgvExpr, "AT_ARGV_EXPR")                        \
-    LYNX_DEF(AtVersionExpr, "AT_VERSION_EXPR")
+    LYNX_DEF(AtVersionExpr, "AT_VERSION_EXPR")                  \
+    LYNX_DEF(AtKeysExpr, "AT_KEYS_EXPR")                        \
+    LYNX_DEF(AtOptionalExpr, "AT_OPTIONAL_EXPR")                \
+    LYNX_DEF(AtVarargsExpr, "AT_VARARGS_EXPR")
 
 
 enum class AstKind{
@@ -1358,7 +1367,7 @@ LYNX_DECLARE_AST_STRUCT(IfStmt);
 // [067]
 LYNX_DECLARE_AST_STRUCT(ForStmt);
 // [068]
-LYNX_DECLARE_AST_STRUCT(WhileStmt);
+LYNX_DECLARE_AST_STRUCT(LoopStmt);
 // [069]
 LYNX_DECLARE_AST_STRUCT(BreakStmt);
 // [070]
@@ -1391,6 +1400,13 @@ LYNX_DECLARE_AST_STRUCT(WithExpr);
 LYNX_DECLARE_AST_STRUCT(AtArgvExpr);
 // [084]
 LYNX_DECLARE_AST_STRUCT(AtVersionExpr);
+// [085]
+LYNX_DECLARE_AST_STRUCT(AtKeysExpr);
+// [086]
+LYNX_DECLARE_AST_STRUCT(AtOptionalExpr);
+// [087]
+LYNX_DECLARE_AST_STRUCT(AtVarargsExpr);
+
 
 // -*-
 class Parameter final{
@@ -2020,9 +2036,9 @@ private:
  *      var svar = value    ; define a struct variable
  *      ; initializer
  *      @init(x, y, z){
- *          @x = x    // instance variable
- *          @y = y    // instance variable
- *          @z = z    // instance variable
+ *          #x = x    // instance variable
+ *          #y = y    // instance variable
+ *          #z = z    // instance variable
  *      }
  *      ; method
  *      fun foo(a, b){ .... }
@@ -2151,6 +2167,7 @@ struct MacroDefExprAst final: public BaseAst {
     LYNX_OVERLOAD_AST_COMMONS();
     // -
     Ast expand(void);
+    // splice()
     Vec<Parameter> parameters(void) const;
     Ast body(void) const;
     Self operator()(Args args);
@@ -2789,8 +2806,8 @@ struct CreateStructObjExprAst final: public BinaryExprAst {
  *      ; Create a point
  *      struct Point {
  *          @init(x, y){
- *              @x = x
- *              @y = y
+ *              #x = x
+ *              #y = y
  *          }
  *      }
  *      ; create a point object
@@ -2814,8 +2831,7 @@ struct AtInitExprAst final: public BinaryExprAst {
  * Implement '@main' main-entry point for a module
  * 
  * Usage:
- *      (1) @main(){ ...}
- *      (2) @main(args){ ... }
+ *      @main{ ...}
  * 
  * [056]
  */
@@ -2947,9 +2963,6 @@ struct AtDefineExprAst final: public TernaryExprAst {
  *      @operator __str__(){ ... }
  *      @operator __repr__(){ ... }
  *      @operator __hash__(){ ... }
- *      @operator __setattr__(){ ... }
- *      @operator __getattr__(){ ... }
- *      @operator __delattr__(){ ... }
  *      @operator __bool__(){}
  *      @operator __integer__(){ ... }
  *      @operator __float__(){ ... }
@@ -2959,8 +2972,6 @@ struct AtDefineExprAst final: public TernaryExprAst {
  *      @operator __hashmap__(){ ... }
  *      @operator __next__(){ ... }
  *      @operator __done__(){ ... }
- *      @operator[](index){ ... }
- *      @operator[](index, val){ ... }
  *      @operator[](key){ ... }
  *      @operator[](key, val){ ... }
  *      @operator +(rhs){ ... }
@@ -3031,15 +3042,15 @@ struct AtDocExprAst final: public UnaryExprAst {
  * node3: alt-node
  * 
  * Usage:
- *      let name = @when(test){ok}{alt}
+ *      let name = when(test){ok}{alt}
  * 
  * [064]
  */
-struct AtWhenExprAst final: public TernaryExprAst {
-    explicit AtWhenExprAst(Vec<Token>::iterator begin, Vec<Token>::iterator end) noexcept;
-    LYNX_DECLARE_COPY(AtWhenExprAst);
-    LYNX_DECLARE_MOVE(AtWhenExprAst);
-    ~AtWhenExprAst() = default;
+struct WhenExprAst final: public TernaryExprAst {
+    explicit WhenExprAst(Vec<Token>::iterator begin, Vec<Token>::iterator end) noexcept;
+    LYNX_DECLARE_COPY(WhenExprAst);
+    LYNX_DECLARE_MOVE(WhenExprAst);
+    ~WhenExprAst() = default;
     LYNX_OVERLOAD_AST_COMMONS();
 };
 
@@ -3155,23 +3166,23 @@ struct ForStmtAst final: public BinaryExprAst {
 };
 
 /**
- * @brief WhileStmtAst
- * Implement 'while' statement semantic
+ * @brief LoopStmtAst
+ * Implement 'loop' statement semantic
  * 
  * lhs: boolVal
  * rhs: blockStmt
  * 
  * Usage:
  * ------
- *      while(test){ ... }
+ *      loop{ ... }
  * 
  * [070]
  */
-struct WhileStmtAst final: public BinaryExprAst {
-    explicit WhileStmtAst(Vec<Token>::iterator begin, Vec<Token>::iterator end) noexcept;
-    LYNX_DECLARE_COPY(WhileStmtAst);
-    LYNX_DECLARE_MOVE(WhileStmtAst);
-    ~WhileStmtAst() = default;
+struct LoopStmtAst final: public BinaryExprAst {
+    explicit LoopStmtAst(Vec<Token>::iterator begin, Vec<Token>::iterator end) noexcept;
+    LYNX_DECLARE_COPY(LoopStmtAst);
+    LYNX_DECLARE_MOVE(LoopStmtAst);
+    ~LoopStmtAst() = default;
     LYNX_OVERLOAD_AST_COMMONS();
 };
 
@@ -3259,7 +3270,7 @@ struct ImportStmtAst final: public BaseAst {
  * Usage:
  * ------
  *      (1) let (x, y) = (1, 2)         ; x=1, y=2
- *      (2) let (x, y) = (1, 2, 3)      ; x=1, y=(2, 3)
+ *      (2) let (x, y) = (1, 2, ...)    ; x=1, y=(2, ...)
  *      (3) let [x, y] = [1, 2]         ; x=1, y=2
  *      (4) let [x, y] = [1, 2, 3]      ; x=1, y=[2, 4]
  * 
@@ -3533,6 +3544,32 @@ struct AtVersionExprAst final: public UnaryExprAst {
     LYNX_OVERLOAD_AST_COMMONS();
 };
 
+//!@todo AtKeys
+struct AtKeysExprAst final: public UnaryExprAst {
+    explicit AtKeysExprAst(Vec<Token>::iterator begin, Vec<Token>::iterator end) noexcept;
+    LYNX_DECLARE_COPY(AtKeysExprAst);
+    LYNX_DECLARE_MOVE(AtKeysExprAst);
+    ~AtKeysExprAst() = default;
+    LYNX_OVERLOAD_AST_COMMONS();
+};
+
+//!@todo AtOptional
+struct AtOptionalExprAst final: public UnaryExprAst {
+    explicit AtOptionalExprAst(Vec<Token>::iterator begin, Vec<Token>::iterator end) noexcept;
+    LYNX_DECLARE_COPY(AtOptionalExprAst);
+    LYNX_DECLARE_MOVE(AtOptionalExprAst);
+    ~AtOptionalExprAst() = default;
+    LYNX_OVERLOAD_AST_COMMONS();
+};
+
+//!@todo AtVarargs
+struct AtVarargsExprAst final: public UnaryExprAst {
+    explicit AtVarargsExprAst(Vec<Token>::iterator begin, Vec<Token>::iterator end) noexcept;
+    LYNX_DECLARE_COPY(AtVarargsExprAst);
+    LYNX_DECLARE_MOVE(AtVarargsExprAst);
+    ~AtVarargsExprAst() = default;
+    LYNX_OVERLOAD_AST_COMMONS();
+};
 
 // ------------------------
 // -*- Lynx Interpreter -*-
@@ -3757,7 +3794,7 @@ public:
     Self operator()(VarStmtAst);
     Self operator()(IfStmtAst);
     Self operator()(ForStmtAst);
-    Self operator()(WhileStmtAst);
+    Self operator()(LoopStmtAst);
     Self operator()(BreakStmtAst);
     Self operator()(ContinueStmtAst);
     Self operator()(ReturnStmtAst);
@@ -3774,6 +3811,9 @@ public:
     Self operator()(WithExprAst);
     Self operator()(AtArgvExprAst);
     Self operator()(AtVersionExprAst);
+    Self operator()(AtKeysExprAst);
+    Self operator()(AtOptionalExprAst);
+    Self operator()(AtVarargsExprAst);
 
 private:
     Str m_license;
