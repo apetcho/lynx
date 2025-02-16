@@ -3841,7 +3841,7 @@ Self Object::ok(Args args){
     auto self = args[0];
     if(!self->is_result()){
         std::stringstream stream;
-        stream << "TypeError: `.ok()` : method is not supported.\n";
+        stream << "SyntaxError: `.ok()` : method is not supported.\n";
         std::runtime_error(stream.str());
     }
     auto result = std::get<Result>(self->m_value);
@@ -3865,7 +3865,7 @@ Self Object::ok_or(Args args){
     auto self = args[0];
     if(!self->is_result()){
         std::stringstream stream;
-        stream << "TypeError: `.ok_or()` : method is not supported.\n";
+        stream << "SyntaxError: `.ok_or()` : method is not supported.\n";
         std::runtime_error(stream.str());
     }
     auto obj = *args[1];
@@ -3879,9 +3879,58 @@ Self Object::ok_or(Args args){
     return std::make_shared<Object>(*val);
 }
 
+// -*-
 /*
-Self Object::expect(Args args){}
+result.expect(msg)
+result.expect(ErrorSymbol)
+result.expect(ErrorSymbol, msg)
+*/
+Self Object::expect(Args args){
+    if(args.size()==0 || args.size() > 3){
+        std::stringstream stream;
+        stream << "ValueError: `.expect()` : incorrect number of arguments.\n";
+        stream << "Expect at least 1 argument and at most 2.";
+        std::runtime_error(stream.str());
+    }
+    auto self = args[0];
+    if(!self->is_result()){
+        std::stringstream stream;
+        stream << "SyntaxError: `.expect()` : method is not supported.\n";
+        std::runtime_error(stream.str());
+    }
+    Object obj{};
+    if(args.size()==2){
+        auto msg = args[1];
+        if(msg->is_symbol()){
+            auto sym = std::get<Symbol>(msg->m_value);
+            Error err(sym, "`.expect()`: an error occured");
+            obj = Object(Result(err));
+        }else if(msg->is_string()){
+            auto sym = std::get<Str>(msg->m_value);
+            Error err(Error::Kind::Error, sym);
+            obj = Object(Result(err));
+        }else{
+            std::stringstream stream;
+            stream << "TypeError: `.expect()`: invalid argument type";
+            std::runtime_error(stream.str());
+        }
+    }else if(args.size()==3){
+        auto sym = args[1];
+        auto msg = args[2];
+        if((!sym->is_symbol()) && (!msg->is_string())){
+            std::stringstream stream;
+            stream << "SyntaxError: `.expect()`: invalid arguments type";
+            std::runtime_error(stream.str());
+        }
+        auto _sym = std::get<Symbol>(sym->m_value);
+        auto _msg = std::get<Str>(msg->m_value);
+        Error err(_sym, _msg);
+        obj = Object(Result(err));
+    }
+    return std::make_shared<Object>(obj);
+}
 
+/*
 std::ostream& operator<<(std::ostream& os, const Object& obj){}
 
 // Arithmethic-ops

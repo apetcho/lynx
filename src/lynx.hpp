@@ -244,7 +244,7 @@ public:
     Symbol& operator=(Symbol&& other) noexcept;
 
     bool is_defined(void) const{ return this->m_data.length()!=0; }
-    
+
     Str str(void) const { return this->m_data; }
 
     operator Str();
@@ -1046,6 +1046,7 @@ private:
     LYNX_DEF(MLComment, "MLComment")\
     LYNX_DEF(Eof, "EOF")            \
     LYNX_DEF(Ident, "IDENTIFIER")   \
+    LYNX_DEF(Wildcard, "_")         \
     LYNX_DEF(LParen, "(")           \
     LYNX_DEF(RParen, ")")           \
     LYNX_DEF(LBrace, "{")           \
