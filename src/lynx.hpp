@@ -709,9 +709,6 @@ public:
     Self operator()(const Str& fname, Args args);
 
     // -*-
-    Self unwrap(void) const;
-
-    // -*-
     Symbol type(void) const;
     Str repr(void) const;
     usize hash(void) const;

@@ -2499,24 +2499,6 @@ Self Object::operator()(const Str& fname, Args args){
 }
 
 /**
- * @brief Unwrap the value encapsulated in Result-object.
- * 
- * Assumes object is a result-type
- * if result-object rather encapsulates an Error, the throw std::runtime_error
- * 
- * @return Self 
- */
-Self Object::unwrap(void) const{
-    auto result = std::get<Result>(this->m_value);
-    if(!result.is_ok()){
-        std::stringstream stream;
-        stream << "Fatal error: " << result.err().message();
-        throw std::runtime_error(stream.str());
-    }
-    return std::move(result.ok());
-}
-
-/**
  * @brief Return object type-name.
  * 
  * @return Symbol 
@@ -5418,9 +5400,29 @@ Self Object::__bit_shl_assign__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*-
+Self Object::__bit_shr_assign__(Args args){
+    if(check_argcount(args, 2)){
+        std::stringstream stream;
+        stream << "SyntaxError: `>>=` : invalid number of arguments\n";
+        stream << "Expected 2 arguments, but got " << args.size();
+    }
+    auto lhs = args[0];
+    auto rhs = args[1];
+    Object obj{};
+    if(lhs->is_integer() && rhs->is_integer()){
+        auto x = static_cast<i64>(*lhs);
+        auto y = static_cast<i64>(*rhs);
+        obj = Object((x >> y));
+    }else{
+        auto val = *Object()(">>=", args);
+        obj = Object(val);
+    }
+
+    return std::make_shared<Object>(obj);
+}
+
 /*
-// Bitwise-ops
-Self Object::__bit_shr_assign__(Args args){}
 // Indexing
 Self Object::__getitem__(Args args){}
 Self Object::__setitem__(Args args){}
