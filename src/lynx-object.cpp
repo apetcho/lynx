@@ -5159,6 +5159,17 @@ Self Object::__bit_or__(Args args){
         auto x = static_cast<i64>(*lhs);
         auto y = static_cast<i64>(*rhs);
         obj = Object((x | y));
+    }else if(lhs->is_hashset() && rhs->is_hashset()){
+        auto xset = std::get<Set>(lhs->m_value).data();
+        auto yset = std::get<Set>(rhs->m_value).data();
+        Set hset{};
+        for(auto iter=xset.cbegin(); iter != xset.cend(); iter++){
+            hset.insert(*iter);
+        }
+        for(auto iter=yset.cbegin(); iter != yset.cend(); iter++){
+            hset.insert(*iter);
+        }
+        obj = Object(hset);
     }else{
         auto val = *Object()("|", args);
         obj = Object(val);
@@ -5255,9 +5266,40 @@ Self Object::__bit_shr__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*- (x |= y)
+Self Object::__bit_or_assign__(Args args){
+    if(check_argcount(args, 2)){
+        std::stringstream stream;
+        stream << "SyntaxError: `|=` : invalid number of arguments\n";
+        stream << "Expected 2 arguments, but got " << args.size();
+    }
+    auto lhs = args[0];
+    auto rhs = args[1];
+    Object obj{};
+    if(lhs->is_integer() && rhs->is_integer()){
+        auto x = static_cast<i64>(*lhs);
+        auto y = static_cast<i64>(*rhs);
+        obj = Object((x | y));
+    }else if(lhs->is_hashset() && rhs->is_hashset()){
+        auto xset = std::get<Set>(lhs->m_value).data();
+        auto yset = std::get<Set>(rhs->m_value).data();
+        Set hset{};
+        for(auto iter=xset.cbegin(); iter != xset.cend(); iter++){
+            hset.insert(*iter);
+        }
+        for(auto iter=yset.cbegin(); iter != yset.cend(); iter++){
+            hset.insert(*iter);
+        }
+        obj = Object(hset);
+    }else{
+        auto val = *Object()("|=", args);
+        obj = Object(val);
+    }
+    return std::make_shared<Object>(obj);
+}
+
 /*
 // Bitwise-ops
-Self Object::__bit_or_assign__(Args args){}
 Self Object::__bit_xor_assign__(Args args){}
 Self Object::__bit_and_assign__(Args args){}
 Self Object::__bit_shl_assign__(Args args){}
