@@ -2271,8 +2271,7 @@ bool Object::is_hashable(void) const{
         this->is_bool() ||
         this->is_integer() ||
         this->is_symbol() ||
-        this->is_string() ||
-        this->is_tuple()
+        this->is_string()
     );
     if(flag){ return true; }
     if(this->is_structure()){
@@ -5833,11 +5832,59 @@ Self Object::__repr__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*- hash(obj), isHashable(obj)
+Self Object::__hash__(Args args){
+    if(check_argcount(args, 1)){
+        std::stringstream stream;
+        stream << "SyntaxError: `__hash__` : invalid number of arguments\n";
+        stream << "Expected 1 arguments, but got " << args.size();
+    }
+    auto self = args[0];
+    Object obj{};
+    auto flag = (
+        self->is_bool() ||
+        self->is_integer() ||
+        self->is_string() ||
+        self->is_symbol()
+    );
+    i64 val{};
+    if(flag){
+        if(self->is_bool()){
+            auto x = static_cast<bool>(*self);
+            val = static_cast<i64>(std::hash<bool>()(x));
+        }else if(self->is_integer()){
+            auto x = static_cast<i64>(*self);
+            val = static_cast<i64>(std::hash<i64>()(x));
+        }else if(self->is_symbol()){
+            auto xval = std::hash<Str>()("Symbol");
+            auto ystr = static_cast<Symbol>(*self).str();
+            auto yval = std::hash<Str>()(ystr);
+            val = static_cast<i64>(xval ^ yval); 
+        }else if(self->is_string()){
+            auto xstr = static_cast<Str>(*self);
+            val = static_cast<i64>(std::hash<Str>()(xstr));
+        }
+    }else{
+        Args argv{};
+        argv.push_back(std::make_shared<Object>(*self));
+        argv.push_back(std::make_shared<Object>("__hash__"));
+        auto xflag = static_cast<bool>(*Object().hasattr(argv));
+        if(!xflag){
+            std::stringstream stream;
+            stream << "AttributeError: object of type '";
+            stream << self->type().str() << "' does not support ";
+            stream << "method `__hash__()`.\nIt is not a hashable object";
+            throw std::runtime_error(stream.str());
+        }
+        auto xself = Object()("__hash__", args);
+        val = static_cast<i64>(*xself);
+    }
+    obj = Object(val);
+    return std::make_shared<Object>(obj);
+}
+
 /*
-// String
-// Parse-able string
 // Hashable
-Self Object::__hash__(Args args){}
 // Callable
 Self Object::__call__(Args args){}
 // typecat-operators & constructors
