@@ -584,6 +584,7 @@ public:
     operator Ast();
     //! @todo
     operator Structure();
+    operator Iterator(){ return this->iter(); }
 
     // -------------------------
     // -*- Logical Operators -*-
@@ -689,14 +690,18 @@ public:
     // -
     bool is_builitn_type(void) const;
 
+    // - used configure object (i.e Tuple) as Version-Data
     void as_version(void){ this->m_is_version = true; }
     bool is_version(void) const{ return this->m_is_version; }
 
+    // used for to identify user-defined type through `struct` semantic
     bool is_usertype(void) const{ return this->is_structure(); }
 
+    // used for '@define' semantic
     void as_constant(void){ this->m_constant = true; }
     bool is_constant(void) const{ return this->m_constant; }
 
+    // used for 'let' semantic
     void as_fixed_type(void){ this->m_fixed_type = true; }
     bool is_fixed_type(void) const { return this->m_fixed_type; }
 
@@ -804,10 +809,10 @@ private:
     // builtin function's argument-count, -1 signifies variadic function, INT_MAX means is
     // not defined
     int m_argc = std::numeric_limits<int>::max();
-    bool m_is_version;
-    bool m_usertype;
-    bool m_constant;
-    bool m_fixed_type;
+    bool m_is_version = false;
+    bool m_usertype = false;
+    bool m_constant = false;
+    bool m_fixed_type = false;
     // bool m_is_structure_instance;
 
     Str m_doc = ""; // builtin function documentation string

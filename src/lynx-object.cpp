@@ -6005,9 +6005,73 @@ Self Object::__float__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*-
+Self Object::__tuple__(Args args){
+    if(check_argcount(args, 1)){
+        std::stringstream stream;
+        stream << "SyntaxError: `__tuple__` : invalid number of arguments\n";
+        stream << "Expected 1 arguments, but got " << args.size();
+    }
+    auto self = args[0];
+    Object obj{};
+    if(self->is_string()){
+        auto str = static_cast<Str>(*self);
+        List vec{};
+        for(auto ptr = str.cbegin(); ptr != str.cend(); ptr++){
+            auto c = *ptr;
+            vec.push_back(std::make_shared<Object>(Str{c}));
+        }
+        obj = Object(Object::Kind::Tuple, vec);
+    }else if(self->is_tuple() || self->is_list()){
+        auto vec = static_cast<List>(*self);
+        obj = Object(Object::Kind::Tuple, vec);
+    }else if(self->is_hashset()){
+        auto data = static_cast<Set>(*self).data();
+        List vec{};
+        for(auto ptr=data.cbegin(); ptr != data.cend(); ptr++){
+            auto key = *ptr;
+            vec.push_back(std::make_shared<Object>(*key));
+        }
+        obj = Object(Object::Kind::Tuple, vec);
+    }else if(self->is_hashmap()){
+        auto data = static_cast<Dict>(*self).data();
+        List vec{};
+        for(const auto& [key, val]: data){
+            List entry{};
+            entry.push_back(std::make_shared<Object>(*key));
+            entry.push_back(std::make_shared<Object>(*val));
+            auto item = Object(Object::Kind::Tuple, entry);
+            vec.push_back(std::make_shared<Object>(item));
+        }
+        obj = Object(Object::Kind::Tuple, vec);
+    }else if(self->is_iterator()){
+        auto iterator = static_cast<Iterator>(*self);
+        List vec{};
+        while(!iterator->done()){
+            auto item = iterator->next();
+            vec.push_back(std::make_shared<Object>(*item));
+        }
+        obj = Object(Object::Kind::Tuple, vec);
+    }else{
+        Args argv{};
+        argv.push_back(std::make_shared<Object>(*self));
+        argv.push_back(std::make_shared<Object>("__tuple__"));
+        auto flag = static_cast<bool>(*Object().hasattr(argv));
+        if(!flag){
+            std::stringstream stream;
+            stream << "ValueError: argument is not convertible to integer";
+            throw std::runtime_error(stream.str());
+        }else{
+            auto val = static_cast<List>(*Object()("__tuple__", args));
+            obj = Object(Object::Kind::Tuple, val);
+        }
+    }
+
+    return std::make_shared<Object>(obj);
+}
+
 /*
 // typecast-operators & constructors
-Self Object::__tuple__(Args args){}
 Self Object::__list__(Args args){}
 Self Object::__hashset__(Args args){}
 Self Object::__hashmap__(Args args){}
