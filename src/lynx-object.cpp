@@ -5516,10 +5516,35 @@ Self Object::__next__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*-
+Self Object::__done__(Args args){
+    if(check_argcount(args, 1)){
+        std::stringstream stream;
+        stream << "SyntaxError: `__next__` : invalid number of arguments\n";
+        stream << "Expected 0 arguments, but got " << args.size();
+    }
+    Object obj{};
+    if(!args[0]->is_iterator()){
+        std::stringstream stream;
+        stream << "TypeError: type mismatch. Expects an `Iterator`";
+        throw std::runtime_error(stream.str());
+    }else{
+        auto iterator = std::get<Iterator>(args[0]->m_value);
+        auto val = *iterator->done();
+        if(!val.is_bool()){
+            std::stringstream stream;
+            stream << "TypeError: expect `__done__()` to return a boolean ";
+            stream << "but '" << val.type().str() << "' is returned";
+            throw std::runtime_error(stream.str());
+        }
+        obj = Object(val);
+    }
+
+    return std::make_shared<Object>(obj);
+}
+
 /*
 // Iterable
-Self Object::__next__(Args args){}
-Self Object::__done__(Args args){}
 // String
 Self Object::__string__(Args args){}
 // Parse-able string
