@@ -69,6 +69,16 @@ bool operator<(const Symbol& lhs, const Str& rhsStr){
     return lhs.m_data < rhsStr;
 }
 
+// ----------
+// -*-
+// ----------
+Symbol Iterable::type() const{
+    throw std::runtime_error(
+        "RuntimeError: not `Iterator::type()` not implemented"
+    );
+}
+
+
 // -------------
 // -*- Error -*-
 // -------------
@@ -2515,9 +2525,8 @@ Symbol Object::type(void) const{
     if(this->is_hashmap()){ return Symbol("HashMap"); }
     if(this->is_hashset()){ return Symbol("HashSet"); }
     if(this->is_iterator()){
-        std::stringstream stream;
-        stream << static_cast<Str>(this->type()) << "Iterator";
-        return Symbol(stream.str());
+        auto iterator = std::get<Iterator>(this->m_value);
+        return iterator->type();
     }
     // assume user-defined type through struct-syntax
     auto cls = std::get<Structure>(this->m_value);
@@ -5908,10 +5917,37 @@ Self Object::__call__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*- Bool(expr)
+Self Object::__bool__(Args args){
+    if(check_argcount(args, 1)){
+        std::stringstream stream;
+        stream << "SyntaxError: `__args__` : invalid number of arguments\n";
+        stream << "Expected 1 arguments, but got " << args.size();
+    }
+    auto self = args[0];
+    Object obj{};
+    if(self->is_builitn_type()){
+        auto val = static_cast<bool>(*self);
+        obj = Object(val);
+    }else{
+        Args argv{};
+        argv.push_back(std::make_shared<Object>(*self));
+        argv.push_back(std::make_shared<Object>("__bool__"));
+        auto flag = static_cast<bool>(*Object().hasattr(argv));
+        if(flag){
+            auto val = static_cast<bool>(*Object()("__bool__", args));
+            obj = Object(val);
+        }else{
+            obj = Object(true);
+        }
+    }
+
+    return std::make_shared<Object>(obj);
+}
+
 
 /*
 // typecast-operators & constructors
-Self Object::__bool__(Args args){}
 Self Object::__integer__(Args args){}
 Self Object::__float__(Args args){}
 Self Object::__tuple__(Args args){}

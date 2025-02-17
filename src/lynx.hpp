@@ -186,6 +186,7 @@ class DictIterator;
 class SetIterator;
 class RangeIterator;
 class Iterable;
+class Symbol;
 class Token;
 
 using Self = Shared<Object>;
@@ -228,6 +229,7 @@ public:
     virtual ~Iterable() = default;
     virtual Self next(void) = 0;
     virtual Self done(void) = 0;
+    virtual Symbol type() const;
 };
 
 // -*-
@@ -887,6 +889,8 @@ public:
     ~StringIterator();
     Self next(void) override;
     Self done(void) override;
+    // -*-
+    Symbol type(void) const override;
 
 private:
     Self m_data;
@@ -899,6 +903,8 @@ public:
     ~TupleIterator();
     Self next(void) override;
     Self done(void) override;
+    // -*-
+    Symbol type(void) const override;
 
 private:
     Self m_data;
@@ -912,6 +918,8 @@ public:
     ~ListIterator();
     Self next(void) override;
     Self done(void) override;
+    // -*-
+    Symbol type(void) const override;
 
 private:
     Self m_data;
@@ -925,6 +933,8 @@ public:
     ~DictIterator();
     Self next(void) override;
     Self done(void) override;
+    // -*-
+    Symbol type(void) const override;
 
 private:
     Self m_data;
@@ -938,6 +948,8 @@ public:
     ~SetIterator();
     Self next(void) override;
     Self done(void) override;
+    // -*-
+    Symbol type(void) const override;
 
 private:
     Self m_data;
@@ -952,6 +964,8 @@ public:
     ~RangeIterator();
     Self next(void) override;
     Self done(void) override;
+    // -*-
+    Symbol type(void) const override;
 
 private:
     Self m_start;
@@ -967,6 +981,12 @@ public:
     ~WrappedIterator();
     Self next(void) override;
     Self done(void) override;
+    Symbol type(void) const override;
+    // {
+    //     std::stringstream stream;
+    //     stream << this->m_userType->type().str() << "Iterator";
+    //     return Symbol(stream.str());
+    // }
 
 private:
     Self m_userType;
