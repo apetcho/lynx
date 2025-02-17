@@ -5426,7 +5426,7 @@ Self Object::__bit_shr_assign__(Args args){
 Self Object::__getitem__(Args args){
     if(check_argcount(args, 2)){
         std::stringstream stream;
-        stream << "SyntaxError: `obj[key]` : invalid number of arguments\n";
+        stream << "SyntaxError: `__getitem__` : invalid number of arguments\n";
         stream << "Expected 2 arguments, but got " << args.size();
     }
     auto lhs = args[0];
@@ -5462,7 +5462,7 @@ Self Object::__getitem__(Args args){
 Self Object::__setitem__(Args args){
     if(check_argcount(args, 3)){
         std::stringstream stream;
-        stream << "SyntaxError: `obj[key] = val` : invalid number of arguments\n";
+        stream << "SyntaxError: `__setitem__` : invalid number of arguments\n";
         stream << "Expected 3 arguments, but got " << args.size();
     }
     auto lhs = args[0];
@@ -5495,10 +5495,28 @@ Self Object::__setitem__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*- iterator.next()
+Self Object::__next__(Args args){
+    if(check_argcount(args, 1)){
+        std::stringstream stream;
+        stream << "SyntaxError: `__next__` : invalid number of arguments\n";
+        stream << "Expected 0 arguments, but got " << args.size();
+    }
+    Object obj{};
+    if(!args[0]->is_iterator()){
+        std::stringstream stream;
+        stream << "TypeError: type mismatch. Expects an `Iterator`";
+        throw std::runtime_error(stream.str());
+    }else{
+        auto iterator = std::get<Iterator>(args[0]->m_value);
+        auto val = *iterator->next();
+        obj = Object(val);
+    }
+
+    return std::make_shared<Object>(obj);
+}
+
 /*
-// Indexing
-// Slicing-ops
-Self Object::__slice__(Args args){}
 // Iterable
 Self Object::__next__(Args args){}
 Self Object::__done__(Args args){}
