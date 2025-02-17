@@ -5975,10 +5975,38 @@ Self Object::__integer__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*- Float(obj)
+Self Object::__float__(Args args){
+    if(check_argcount(args, 1)){
+        std::stringstream stream;
+        stream << "SyntaxError: `__float__` : invalid number of arguments\n";
+        stream << "Expected 1 arguments, but got " << args.size();
+    }
+    auto self = args[0];
+    Object obj{};
+    if(self->is_bool() || self->is_integer() || self->is_float()){
+        auto val = static_cast<f64>(*self);
+        obj = Object(val);
+    }else{
+        Args argv{};
+        argv.push_back(std::make_shared<Object>(*self));
+        argv.push_back(std::make_shared<Object>("__float__"));
+        auto flag = static_cast<bool>(*Object().hasattr(argv));
+        if(!flag){
+            std::stringstream stream;
+            stream << "ValueError: argument is not convertible to integer";
+            throw std::runtime_error(stream.str());
+        }else{
+            auto val = static_cast<f64>(*Object()("__float__", args));
+            obj = Object(val);
+        }
+    }
+
+    return std::make_shared<Object>(obj);
+}
 
 /*
 // typecast-operators & constructors
-Self Object::__float__(Args args){}
 Self Object::__tuple__(Args args){}
 Self Object::__list__(Args args){}
 Self Object::__hashset__(Args args){}
