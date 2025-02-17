@@ -6213,9 +6213,92 @@ Self Object::__hashset__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*-
+Self Object::__hashmap__(Args args){
+    if(check_argcount(args, 1)){
+        std::stringstream stream;
+        stream << "SyntaxError: `__hashmap__` : invalid number of arguments\n";
+        stream << "Expected 1 arguments, but got " << args.size();
+    }
+    auto self = args[0];
+    Object obj{};
+    if(self->is_tuple() || self->is_list()){
+        auto vec = static_cast<List>(*self);
+        Dict dict{};
+        auto idx = 0;
+        for(const auto& item: vec){
+            if(!item->is_tuple()){
+                std::stringstream stream;
+                stream << "TypeError: item type mismatch.";
+                stream << "\nExpect a `Tuple` but got a " << item->type().str();
+                throw std::runtime_error(stream.str());
+            }
+            auto xvec = static_cast<List>(*item);
+            if(xvec.size() != 2){
+                std::stringstream stream;
+                stream << "ValueError: expect items to be (key, value) pairs";
+                throw std::runtime_error(stream.str());
+            }
+            auto key = xvec[0];
+            auto value = xvec[1];
+            if(!key->is_hashable()){
+                std::stringstream stream;
+                stream << "TypeError: key #" << idx << " is not hashable";
+                throw std::runtime_error(stream.str());
+            }
+            dict[key] = value;
+            ++idx;
+        }
+        obj = Object(dict);
+    }else if(self->is_hashmap()){
+        auto dict = static_cast<Dict>(*self);
+        obj = Object(dict);
+    }else if(self->is_iterator()){
+        auto iterator = static_cast<Iterator>(*self);
+        Dict dict{};
+        auto idx = 0;
+        while(!iterator->done()){
+            auto item = iterator->next();
+            if(!item->is_tuple()){
+                std::stringstream stream;
+                stream << "TypeError: item from iterator are not valid HashMap entry type";
+                throw std::runtime_error(stream.str());
+            }
+            auto xvec = static_cast<List>(*item);
+            if(xvec.size() != 2){
+                std::stringstream stream;
+                stream << "ValueError: an item from iterator is not a (key, value) pair.";
+                throw std::runtime_error(stream.str());
+            }
+            if(!xvec[0]->is_hashable()){
+                std::stringstream stream;
+                stream << "TypeError: key " << idx << " is not hashable";
+                throw std::runtime_error(stream.str());
+            }
+            dict[xvec[0]] = xvec[1];
+            ++idx;
+        }
+        obj = Object(dict);
+    }else{
+        Args argv{};
+        argv.push_back(std::make_shared<Object>(*self));
+        argv.push_back(std::make_shared<Object>("__hashmap__"));
+        auto flag = static_cast<bool>(*Object().hasattr(argv));
+        if(!flag){
+            std::stringstream stream;
+            stream << "ValueError: argument is not convertible to integer";
+            throw std::runtime_error(stream.str());
+        }else{
+            auto hset = static_cast<Set>(*Object()("__hashmap__", args));
+            obj = Object(hset);
+        }
+    }
+
+    return std::make_shared<Object>(obj);
+}
+
 /*
 // typecast-operators & constructors
-Self Object::__hashmap__(Args args){}
 */
 
 // -----------------
@@ -6271,19 +6354,12 @@ Self RangeIterator::done(void){}
 
 
 // -*-
-class WrappedIterator final: public Iterable{
-public:
-WrappedIterator::WrappedIterator(Self selfStruct) noexcept;
-WrappedIterator::WrappedIterator(WrappedIterator&& wrappedIter) noexcept;
-WrappedIterator& WrappedIterator::operator=(WrappedIterator&& wrappedIter) noexcept;
-WrappedIterator::~WrappedIterator();
-Self WrappedIterator::next(void) override;
-Self WrappedIterator::done(void) override;
-
-private:
-    Self m_userType;
-};
-
+WrappedIterator::WrappedIterator(Self selfStruct){}
+WrappedIterator::WrappedIterator(WrappedIterator&& wrappedIter){}
+WrappedIterator& WrappedIterator::operator=(WrappedIterator&& wrappedIter){}
+WrappedIterator::~WrappedIterator(){}
+Self WrappedIterator::next(void){}
+Self WrappedIterator::done(void){}
 */
 
 
