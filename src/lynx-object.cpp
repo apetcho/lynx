@@ -3788,6 +3788,10 @@ Self Object::hasattr(Args args){
         if(Lynx::hashmapMethods.find(key) != Lynx::hashmapMethods.end()){
             flag = true;
         }
+    }else if(self->is_iterator()){
+        if(Lynx::iteratorMethods.find(key) != Lynx::iteratorMethods.end()){
+            flag = true;
+        }
     }else if(self->is_structure()){
         auto attr = key.m_data;
         auto mystruct = static_cast<Structure>(*self);
@@ -5584,7 +5588,6 @@ Self Object::__string__(Args args){
         if(vec.size()==0){
             stream << "()";
         }else{
-            //! @todo
             stream << "(";
             Args argv{};
             for(auto idx=0; idx < vec.size(); idx++){
@@ -5598,6 +5601,87 @@ Self Object::__string__(Args args){
             stream << ")";
         }
         obj = Object(stream.str());
+    }else if(self->is_list()){
+        std::stringstream stream;
+        auto vec = static_cast<List>(*self);
+        if(vec.size()==0){
+            stream << "[]";
+        }else{
+            stream << "[";
+            Args argv{};
+            for(auto idx=0; idx < vec.size(); idx++){
+                auto x = vec[idx];
+                argv = {};
+                argv.push_back(std::make_shared<Object>(*x));
+                auto data = static_cast<Str>(*Object().__string__(argv));
+                stream << data;
+                if(idx < vec.size()-1){ stream << ", "; }
+            }
+            stream << "]";
+        }
+        obj = Object(stream.str());
+    }else if(self->is_hashset()){
+        std::stringstream stream;
+        auto data = static_cast<Set>(*self).data();
+        if(data.size()==0){
+            stream << "#{}";
+        }else{
+            stream << "#{ ";
+            Args argv{};
+            usize idx = 0;
+            for(auto ptr=data.cbegin(); ptr != data.cend(); ptr++){
+                auto key = *ptr;
+                argv = {};
+                argv.push_back(std::make_shared<Object>(*key));
+                auto data = static_cast<Str>(*Object().__string__(argv));
+                stream << data;
+                if(idx < data.size()-1){ stream << ", "; }
+                ++idx;
+            }
+            stream << "}";
+        }
+        obj = Object(stream.str());
+    }else if(self->is_hashmap()){
+        std::stringstream stream;
+        auto hmap = static_cast<Dict>(*self).data();
+        if(hmap.size()==0){
+            stream << "{}";
+        }else{
+            stream << "{";
+            Args argv{};
+            usize idx = 0;
+            for(const auto& [key, val]: hmap){
+                argv = {};
+                argv.push_back(std::make_shared<Object>(*key));
+                auto data = static_cast<Str>(*Object().__string__(argv));
+                stream << data << " -> ";
+                argv = {};
+                argv.push_back(std::make_shared<Object>(*val));
+                data = static_cast<Str>(*Object().__string__(argv));
+                stream << data;
+                if(idx < hmap.size()-1){ stream << ", "; }
+                ++idx;
+            }
+            stream << "}";
+        }
+        obj = Object(stream.str());
+    }else{
+        Args argv{};
+        argv.push_back(std::make_shared<Object>(*self));
+        argv.push_back(std::make_shared<Object>(Str{"__string__"}));
+        auto rv = Object().hasattr(argv);
+        auto flag = static_cast<bool>(*rv);
+        if(!flag){
+            std::stringstream stream;
+            stream << "AttributeError: object of type '" << self->type().str();
+            stream << "' does not support method `__string__()`.";
+            throw std::runtime_error(stream.str());
+        }
+        argv = {};
+        argv.push_back(std::make_shared<Object>(*self));
+        auto xstr = Object()("__string__", argv);
+        auto str = static_cast<Str>(*xstr);
+        obj = Object(str);
     }
 
     return std::make_shared<Object>(obj);

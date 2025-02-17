@@ -3730,6 +3730,7 @@ public:
     static CallBackDict hashmapMethods;
     static CallBackDict resultMethods;
     static CallBackDict structMethods;
+    static CallBackDict iteratorMethods;
 
     static HashMap<Str, CFun> builtinFunctions;
     static HashMap<Str, Self> builtinConstants;
