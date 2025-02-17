@@ -6135,10 +6135,86 @@ Self Object::__list__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*-
+Self Object::__hashset__(Args args){
+    if(check_argcount(args, 1)){
+        std::stringstream stream;
+        stream << "SyntaxError: `__hashset__` : invalid number of arguments\n";
+        stream << "Expected 1 arguments, but got " << args.size();
+    }
+    auto self = args[0];
+    Object obj{};
+    if(self->is_string()){
+        auto str = static_cast<Str>(*self);
+        Set hset{};
+        for(auto ptr = str.cbegin(); ptr != str.cend(); ptr++){
+            auto c = *ptr;
+            hset.insert(std::make_shared<Object>(Str{c}));
+        }
+        obj = Object(hset);
+    }else if(self->is_tuple() || self->is_list()){
+        auto vec = static_cast<List>(*self);
+        Set hset{};
+        auto idx = 0;
+        for(const auto& item: vec){
+            if(!item->is_hashable()){
+                std::stringstream stream;
+                stream << "TypeError: item " << idx << " is not hashable";
+                throw std::runtime_error(stream.str());
+            }
+            hset.insert(std::make_shared<Object>(*item));
+            ++idx;
+        }
+        obj = Object(hset);
+    }else if(self->is_hashset()){
+        auto hset = static_cast<Set>(*self);
+        obj = Object(hset);
+    }else if(self->is_hashmap()){
+        auto data = static_cast<Dict>(*self).data();
+        Set hset{};
+        for(const auto& [key, val]: data){
+            List entry{};
+            entry.push_back(std::make_shared<Object>(*key));
+            entry.push_back(std::make_shared<Object>(*val));
+            auto item = Object(Object::Kind::Tuple, entry);
+            hset.insert(std::make_shared<Object>(item));
+        }
+        obj = Object(hset);
+    }else if(self->is_iterator()){
+        auto iterator = static_cast<Iterator>(*self);
+        Set hset{};
+        auto idx = 0;
+        while(!iterator->done()){
+            auto item = iterator->next();
+            if(!item->is_hashable()){
+                std::stringstream stream;
+                stream << "TypeError: entry " << idx << " is not hashable";
+                throw std::runtime_error(stream.str());
+            }
+            hset.insert(std::make_shared<Object>(*item));
+            ++idx;
+        }
+        obj = Object(hset);
+    }else{
+        Args argv{};
+        argv.push_back(std::make_shared<Object>(*self));
+        argv.push_back(std::make_shared<Object>("__hashset__"));
+        auto flag = static_cast<bool>(*Object().hasattr(argv));
+        if(!flag){
+            std::stringstream stream;
+            stream << "ValueError: argument is not convertible to integer";
+            throw std::runtime_error(stream.str());
+        }else{
+            auto hset = static_cast<Set>(*Object()("__hashset__", args));
+            obj = Object(hset);
+        }
+    }
+
+    return std::make_shared<Object>(obj);
+}
 
 /*
 // typecast-operators & constructors
-Self Object::__hashset__(Args args){}
 Self Object::__hashmap__(Args args){}
 */
 
