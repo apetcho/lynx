@@ -2548,6 +2548,12 @@ Iterator Object::iter(void) const{
 }
 
 // -*-
+usize Object::size_of(void) const{
+    //! @todo
+    return 0;
+}
+
+// -*-
 static bool check_argcount(Args args, i32 count){
     return (args.size() == count);
 }
@@ -5547,7 +5553,7 @@ Self Object::__done__(Args args){
     return std::make_shared<Object>(obj);
 }
 
-// -*-
+// -*- String(arg), format("{ident:s}"), [e]print*(arg)
 Self Object::__string__(Args args){
     if(check_argcount(args, 1)){
         std::stringstream stream;
@@ -5626,7 +5632,7 @@ Self Object::__string__(Args args){
         if(data.size()==0){
             stream << "#{}";
         }else{
-            stream << "#{ ";
+            stream << "#{";
             Args argv{};
             usize idx = 0;
             for(auto ptr=data.cbegin(); ptr != data.cend(); ptr++){
@@ -5687,11 +5693,149 @@ Self Object::__string__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*-
+Self Object::__repr__(Args args){
+    if(check_argcount(args, 1)){
+        std::stringstream stream;
+        stream << "SyntaxError: `__string__` : invalid number of arguments\n";
+        stream << "Expected 1 arguments, but got " << args.size();
+    }
+    auto self = args[0];
+    Object obj{};
+    if(self->is_bool()){
+        auto val = static_cast<bool>(*self);
+        obj = val ? Object("'true'") : Object("'false'");
+    }else if(self->is_integer()){
+        std::stringstream stream;
+        auto num = static_cast<i64>(*self);
+        stream << "'" << num << "'";
+        obj = Object(stream.str());
+    }else if(self->is_float()){
+        std::stringstream stream;
+        auto num = static_cast<f64>(*self);
+        stream << "'" << num << "'";
+        obj = Object(stream.str());
+    }else if(self->is_complex()){
+        std::stringstream stream;
+        auto z = static_cast<Complex>(*self);
+        stream << "'Complex(" << z.real() << ", " << z.imag() << ")'";
+        obj = Object(stream.str());
+    }else if(self->is_symbol()){
+        std::stringstream stream;
+        auto sym = static_cast<Symbol>(*self);
+        stream << "'" << sym.str() << "'";
+        obj = Object(stream.str());
+    }else if(self->is_string()){
+        auto str = Str{"'"} + static_cast<Str>(*self) + Str{"'"};
+        obj = Object(str);
+    }else if(self->is_tuple()){
+        std::stringstream stream;
+        auto vec = static_cast<List>(*self);
+        if(vec.size()==0){
+            stream << "'()'";
+        }else{
+            stream << "'(";
+            Args argv{};
+            for(auto idx=0; idx < vec.size(); idx++){
+                auto x = vec[idx];
+                argv = {};
+                argv.push_back(std::make_shared<Object>(*x));
+                auto data = static_cast<Str>(*Object().__repr__(argv));
+                stream << data;
+                if(idx < vec.size()-1){ stream << ", "; }
+            }
+            stream << ")'";
+        }
+        obj = Object(stream.str());
+    }else if(self->is_list()){
+        std::stringstream stream;
+        auto vec = static_cast<List>(*self);
+        if(vec.size()==0){
+            stream << "'[]'";
+        }else{
+            stream << "'[";
+            Args argv{};
+            for(auto idx=0; idx < vec.size(); idx++){
+                auto x = vec[idx];
+                argv = {};
+                argv.push_back(std::make_shared<Object>(*x));
+                auto data = static_cast<Str>(*Object().__repr__(argv));
+                stream << data;
+                if(idx < vec.size()-1){ stream << ", "; }
+            }
+            stream << "]'";
+        }
+        obj = Object(stream.str());
+    }else if(self->is_hashset()){
+        std::stringstream stream;
+        auto data = static_cast<Set>(*self).data();
+        if(data.size()==0){
+            stream << "'#{}'";
+        }else{
+            stream << "'#{";
+            Args argv{};
+            usize idx = 0;
+            for(auto ptr=data.cbegin(); ptr != data.cend(); ptr++){
+                auto key = *ptr;
+                argv = {};
+                argv.push_back(std::make_shared<Object>(*key));
+                auto data = static_cast<Str>(*Object().__repr__(argv));
+                stream << data;
+                if(idx < data.size()-1){ stream << ", "; }
+                ++idx;
+            }
+            stream << "}'";
+        }
+        obj = Object(stream.str());
+    }else if(self->is_hashmap()){
+        std::stringstream stream;
+        auto hmap = static_cast<Dict>(*self).data();
+        if(hmap.size()==0){
+            stream << "'{}'";
+        }else{
+            stream << "'{";
+            Args argv{};
+            usize idx = 0;
+            for(const auto& [key, val]: hmap){
+                argv = {};
+                argv.push_back(std::make_shared<Object>(*key));
+                auto data = static_cast<Str>(*Object().__repr__(argv));
+                stream << data << " -> ";
+                argv = {};
+                argv.push_back(std::make_shared<Object>(*val));
+                data = static_cast<Str>(*Object().__repr__(argv));
+                stream << data;
+                if(idx < hmap.size()-1){ stream << ", "; }
+                ++idx;
+            }
+            stream << "}'";
+        }
+        obj = Object(stream.str());
+    }else{
+        Args argv{};
+        argv.push_back(std::make_shared<Object>(*self));
+        argv.push_back(std::make_shared<Object>(Str{"__repr__"}));
+        auto rv = Object().hasattr(argv);
+        auto flag = static_cast<bool>(*rv);
+        if(!flag){
+            std::stringstream stream;
+            stream << "AttributeError: object of type '" << self->type().str();
+            stream << "' does not support method `__repr__()`.";
+            throw std::runtime_error(stream.str());
+        }
+        argv = {};
+        argv.push_back(std::make_shared<Object>(*self));
+        auto xstr = Object()("__repr__", argv);
+        auto str = static_cast<Str>(*xstr);
+        obj = Object(str);
+    }
+
+    return std::make_shared<Object>(obj);
+}
 
 /*
 // String
 // Parse-able string
-Self Object::__repr__(Args args){}
 // Hashable
 Self Object::__hash__(Args args){}
 // Callable

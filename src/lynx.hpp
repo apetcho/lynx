@@ -713,6 +713,7 @@ public:
     Str repr(void) const;
     usize hash(void) const;
     Iterator iter(void) const;
+    usize size_of(void) const;
 
     Str& docstr(void){ return this->m_doc; }
     const Str& doctrs(void) const{ return this->m_doc; }
