@@ -2258,7 +2258,7 @@ bool Object::is_callable(void) const{
     if(flag){ return true; }
     if(this->is_structure()){
         auto cls = std::get<Structure>(this->m_value);
-        if(cls.methods().find(Symbol("__call__")) != cls.methods().end()){
+        if(cls.methods().find("__call__") != cls.methods().end()){
             return true;
         }
     }
@@ -5543,10 +5543,69 @@ Self Object::__done__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*-
+Self Object::__string__(Args args){
+    if(check_argcount(args, 1)){
+        std::stringstream stream;
+        stream << "SyntaxError: `__string__` : invalid number of arguments\n";
+        stream << "Expected 1 arguments, but got " << args.size();
+    }
+    auto self = args[0];
+    Object obj{};
+    if(self->is_bool()){
+        auto val = static_cast<bool>(*self);
+        obj = val ? Object("true") : Object("false");
+    }else if(self->is_integer()){
+        std::stringstream stream;
+        auto num = static_cast<i64>(*self);
+        stream << num;
+        obj = Object(stream.str());
+    }else if(self->is_float()){
+        std::stringstream stream;
+        auto num = static_cast<f64>(*self);
+        stream << num;
+        obj = Object(stream.str());
+    }else if(self->is_complex()){
+        std::stringstream stream;
+        auto z = static_cast<Complex>(*self);
+        stream << "Complex(" << z.real() << ", " << z.imag() << ")";
+        obj = Object(stream.str());
+    }else if(self->is_symbol()){
+        std::stringstream stream;
+        auto sym = static_cast<Symbol>(*self);
+        stream << sym.str();
+        obj = Object(stream.str());
+    }else if(self->is_string()){
+        auto str = static_cast<Str>(*self);
+        obj = Object(str);
+    }else if(self->is_tuple()){
+        std::stringstream stream;
+        auto vec = static_cast<List>(*self);
+        if(vec.size()==0){
+            stream << "()";
+        }else{
+            //! @todo
+            stream << "(";
+            Args argv{};
+            for(auto idx=0; idx < vec.size(); idx++){
+                auto x = vec[idx];
+                argv = {};
+                argv.push_back(std::make_shared<Object>(*x));
+                auto data = static_cast<Str>(*Object().__string__(argv));
+                stream << data;
+                if(idx < vec.size()-1){ stream << ", "; }
+            }
+            stream << ")";
+        }
+        obj = Object(stream.str());
+    }
+
+    return std::make_shared<Object>(obj);
+}
+
+
 /*
-// Iterable
 // String
-Self Object::__string__(Args args){}
 // Parse-able string
 Self Object::__repr__(Args args){}
 // Hashable
