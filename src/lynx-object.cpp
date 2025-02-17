@@ -5883,11 +5883,34 @@ Self Object::__hash__(Args args){
     return std::make_shared<Object>(obj);
 }
 
+// -*- obj(args)
+Self Object::__call__(Args args){
+    if(check_argcount(args, 1)){
+        std::stringstream stream;
+        stream << "SyntaxError: `__args__` : invalid number of arguments\n";
+        stream << "Expected 1 arguments, but got " << args.size();
+    }
+    auto self = args[0];
+    Args argv{};
+    argv.push_back(std::make_shared<Object>(*self));
+    argv.push_back(std::make_shared<Object>("__call__"));
+    auto xflag = static_cast<bool>(*Object().hasattr(argv));
+    if(!xflag){
+        std::stringstream stream;
+        stream << "AttributeError: object of type '";
+        stream << self->type().str() << "' does not support ";
+        stream << "method `__call__()`.\nIt is not a hashable object";
+        throw std::runtime_error(stream.str());
+    }
+    auto xself = Object()("__call__", args);
+    auto val = static_cast<i64>(*xself);
+    auto obj = Object(val);
+    return std::make_shared<Object>(obj);
+}
+
+
 /*
-// Hashable
-// Callable
-Self Object::__call__(Args args){}
-// typecat-operators & constructors
+// typecast-operators & constructors
 Self Object::__bool__(Args args){}
 Self Object::__integer__(Args args){}
 Self Object::__float__(Args args){}
@@ -5947,6 +5970,21 @@ RangeIterator& RangeIterator::operator=(RangeIterator&& iterator){}
 RangeIterator::~RangeIterator(){}
 Self RangeIterator::next(void){}
 Self RangeIterator::done(void){}
+
+
+// -*-
+class WrappedIterator final: public Iterable{
+public:
+WrappedIterator::WrappedIterator(Self selfStruct) noexcept;
+WrappedIterator::WrappedIterator(WrappedIterator&& wrappedIter) noexcept;
+WrappedIterator& WrappedIterator::operator=(WrappedIterator&& wrappedIter) noexcept;
+WrappedIterator::~WrappedIterator();
+Self WrappedIterator::next(void) override;
+Self WrappedIterator::done(void) override;
+
+private:
+    Self m_userType;
+};
 
 */
 
